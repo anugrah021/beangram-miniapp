@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,12 +7,39 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #1c1d22;
             color: #ffffff;
             text-align: center;
             padding: 20px;
             margin: 0;
+        }
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .lang-switcher {
+            display: flex;
+            gap: 5px;
+            background: #28292e;
+            padding: 4px;
+            border-radius: 20px;
+        }
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: #aaa;
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .lang-btn.active {
+            background: #0088cc;
+            color: white;
         }
         .card {
             background-color: #28292e;
@@ -51,39 +78,106 @@
 </head>
 <body>
 
-    <h2>BeanGram Task Center</h2>
+    <div class="header-bar">
+        <h3 style="margin:0;">BeanGram</h3>
+        <div class="lang-switcher">
+            <button class="lang-btn" id="lang-en" onclick="setLanguage('en')">EN</button>
+            <button class="lang-btn" id="lang-id" onclick="setLanguage('id')">ID</button>
+            <button class="lang-btn" id="lang-ru" onclick="setLanguage('ru')">RU</button>
+        </div>
+    </div>
 
     <!-- Card Informasi User & Saldo -->
     <div class="card">
-        <div>Saldo Kamu:</div>
+        <div id="lbl-balance-title">Your Balance:</div>
         <div class="balance" id="user-balance">0 BGRAM</div>
-        <div id="user-info">Memuat data user...</div>
+        <div id="user-info">Loading user info...</div>
     </div>
 
     <!-- Card Task Join Channel -->
     <div class="card">
-        <h3>Tugas Telegram</h3>
-        <p>Bergabunglah ke Channel resmi kami untuk mendapatkan 500 BGRAM.</p>
-        <button class="btn" onclick="openChannel()">1. Buka Channel</button>
-        <button class="btn" id="claim-btn" onclick="verifyTask('task_channel_1', 'BeanGram_Official')">2. Verifikasi & Klaim</button>
+        <h3 id="lbl-task-title">Telegram Task</h3>
+        <p id="lbl-task-desc">Join our official channel to get 500 BGRAM.</p>
+        <button class="btn" id="btn-open-channel" onclick="openChannel()">1. Open Channel</button>
+        <button class="btn" id="claim-btn" onclick="verifyTask('task_channel_1', 'BeanGram_Official')">2. Verify & Claim</button>
     </div>
 
     <div id="status-msg"></div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Perluas layar Telegram Mini App
+        tg.expand();
 
-        // URL Backend Vercel milikmu yang sudah dikonfigurasi
         const BACKEND_URL = "https://beangram-miniapp.vercel.app"; 
 
-        const user = tg.initDataUnsafe?.user || { id: 12345678, username: "DemoUser" };
+        const user = tg.initDataUnsafe?.user || { id: 12345678, username: "DemoUser", language_code: "en" };
         const telegramId = user.id;
         const username = user.username || "NoUsername";
 
+        // Teks Kamus Terjemahan Frontend
+        const i18n = {
+            en: {
+                balanceTitle: "Your Balance:",
+                loadingUser: "Loading user info...",
+                taskTitle: "Telegram Task",
+                taskDesc: "Join our official channel to get 500 BGRAM.",
+                btnOpen: "1. Open Channel",
+                btnClaim: "2. Verify & Claim",
+                checking: "Checking...",
+                claimed: "Already Claimed",
+                connError: "Connection error to server."
+            },
+            id: {
+                balanceTitle: "Saldo Kamu:",
+                loadingUser: "Memuat data user...",
+                taskTitle: "Tugas Telegram",
+                taskDesc: "Bergabunglah ke Channel resmi kami untuk mendapatkan 500 BGRAM.",
+                btnOpen: "1. Buka Channel",
+                btnClaim: "2. Verifikasi & Klaim",
+                checking: "Memeriksa...",
+                claimed: "Sudah Diklaim",
+                connError: "Terjadi kesalahan koneksi ke server."
+            },
+            ru: {
+                balanceTitle: "Ваш баланс:",
+                loadingUser: "Загрузка данных...",
+                taskTitle: "Задание Telegram",
+                taskDesc: "Присоединяйтесь к нашему официальному каналу, чтобы получить 500 BGRAM.",
+                btnOpen: "1. Открыть канал",
+                btnClaim: "2. Проверить и получить",
+                checking: "Проверка...",
+                claimed: "Уже получено",
+                connError: "Ошибка подключения к серверу."
+            }
+        };
+
+        // Penentuan Bahasa Awal (Otomatis dari Telegram / Default 'en')
+        let currentLang = "en";
+        const tgLang = (user.language_code || "").toLowerCase();
+        if (tgLang.startsWith("id")) currentLang = "id";
+        else if (tgLang.startsWith("ru")) currentLang = "ru";
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`lang-${lang}`).classList.add('active');
+
+            const t = i18n[lang];
+            document.getElementById("lbl-balance-title").innerText = t.balanceTitle;
+            document.getElementById("lbl-task-title").innerText = t.taskTitle;
+            document.getElementById("lbl-task-desc").innerText = t.taskDesc;
+            document.getElementById("btn-open-channel").innerText = t.btnOpen;
+
+            const claimBtn = document.getElementById("claim-btn");
+            if (!claimBtn.disabled || claimBtn.getAttribute("data-state") !== "claimed") {
+                claimBtn.innerText = t.btnClaim;
+            } else {
+                claimBtn.innerText = t.claimed;
+            }
+        }
+
         document.getElementById("user-info").innerText = `@${username} (ID: ${telegramId})`;
 
-        // 1. Fungsi Ambil Saldo User dari Supabase via Backend
         async function fetchUserData() {
             try {
                 const res = await fetch(`${BACKEND_URL}/get-user?telegram_id=${telegramId}`);
@@ -96,22 +190,21 @@
             }
         }
 
-        // 2. Buka Link Channel Telegram
         function openChannel() {
             tg.openTelegramLink("https://t.me/BeanGram_Official");
         }
 
-        // 3. Verifikasi Keanggotaan & Klaim Task
         async function verifyTask(taskId, channelUsername) {
             const claimBtn = document.getElementById("claim-btn");
             const statusMsg = document.getElementById("status-msg");
+            const t = i18n[currentLang];
 
             claimBtn.disabled = true;
-            claimBtn.innerText = "Memeriksa...";
+            claimBtn.innerText = t.checking;
             statusMsg.innerText = "";
 
             try {
-                const url = `${BACKEND_URL}/verify-channel?telegram_id=${telegramId}&username=${username}&channel=${channelUsername}&task_id=${taskId}`;
+                const url = `${BACKEND_URL}/verify-channel?telegram_id=${telegramId}&username=${username}&channel=${channelUsername}&task_id=${taskId}&lang=${currentLang}`;
                 const res = await fetch(url);
                 const data = await res.json();
 
@@ -119,26 +212,29 @@
                     statusMsg.style.color = "#4CAF50";
                     statusMsg.innerText = data.message;
                     document.getElementById("user-balance").innerText = `${data.balance} BGRAM`;
-                    claimBtn.innerText = "Sudah Diklaim";
+                    claimBtn.innerText = t.claimed;
+                    claimBtn.setAttribute("data-state", "claimed");
                 } else if (data.status === "claimed") {
                     statusMsg.style.color = "#FFC107";
                     statusMsg.innerText = data.message;
-                    claimBtn.innerText = "Sudah Diklaim";
+                    claimBtn.innerText = t.claimed;
+                    claimBtn.setAttribute("data-state", "claimed");
                 } else {
                     statusMsg.style.color = "#F44336";
                     statusMsg.innerText = data.message;
                     claimBtn.disabled = false;
-                    claimBtn.innerText = "2. Verifikasi & Klaim";
+                    claimBtn.innerText = t.btnClaim;
                 }
             } catch (err) {
                 statusMsg.style.color = "#F44336";
-                statusMsg.innerText = "Terjadi kesalahan koneksi ke server.";
+                statusMsg.innerText = t.connError;
                 claimBtn.disabled = false;
-                claimBtn.innerText = "2. Verifikasi & Klaim";
+                claimBtn.innerText = t.btnClaim;
             }
         }
 
-        // Jalankan pemanggilan data saldo saat aplikasi terbuka
+        // Inisialisasi Tampilan & Bahasa
+        setLanguage(currentLang);
         fetchUserData();
     </script>
 </body>
