@@ -18,20 +18,20 @@ const translations = {
     en: {
         connect: "Connect", tier: "⚡ NOVICE FARMER TIER", vault: "Vault", rate: "Rate", withdraw: "💳 WITHDRAW",
         startFarming: "START FARMING", claim: "CLAIM BGRAM", tasksTitle: "Community Tasks",
-        tasksDesc: "Complete social tasks to earn extra BGRAM!", task1: "Join Official Channel", task2: "Follow Official X/Twitter",
+        tasksDesc: "Complete social tasks to earn extra BGRAM & TON!", task1: "Join Official Channel", task2: "Follow Official X/Twitter",
         task3: "Invite 3 Active Friends", btnJoin: "Claim", btnFollow: "Follow", btnInvite: "Invite",
         friendsTitle: "Invite Friends & Earn", friendsDesc: "Get commission bonus from every friend who joins using your link!",
         invited: "Invited Friends", reffReward: "Referral Rewards", reffTitle: "YOUR REFERRAL LINK", copy: "Copy",
         totalFarmed: "Total Farmed", minerTier: "Miner Tier", completedTasks: "Completed Tasks", totalReferrals: "Total Referrals",
         walletTitle: "WEB3 TON WALLET", notConnected: "Not Connected", supportTitle: "COMMUNITY", channel: "Channel",
-        navMine: "Mine", navTasks: "Tasks", navFriends: "Friends", navProfile: "Profile", wdTitle: "Withdraw BGRAM",
+        navMine: "Mine", navTasks: "Tasks", navFriends: "Friends", navProfile: "Profile", wdTitle: "Token Withdrawal",
         wdStatus: "AIRDROP & TGE PHASE", wdDesc: "Withdrawals will open soon upon Token Listing. Please connect your TON wallet.",
         wdBtnConfirm: "HUBUNGKAN TON WALLET", wdBtnClose: "Close", alertWallet: "TON Wallet integration coming soon!", alertCopied: "Referral link copied!"
     },
     ru: {
         connect: "Кошелек", tier: "⚡ НОВИЧОК ФАРМЕР", vault: "Хранилище", rate: "Скорость", withdraw: "💳 ВЫВОД",
         startFarming: "НАЧАТЬ ФАРМИНГ", claim: "ЗАБРАТЬ BGRAM", tasksTitle: "Задания Сообщества",
-        tasksDesc: "Выполняйте задания и получайте больше BGRAM!", task1: "Подписаться на Канал", task2: "Подписаться на X/Twitter",
+        tasksDesc: "Выполняйте задания и получайте больше BGRAM & TON!", task1: "Подписаться на Канал", task2: "Подписаться на X/Twitter",
         task3: "Пригласить 3 Друзей", btnJoin: "Получить", btnFollow: "Читать", btnInvite: "Звать",
         friendsTitle: "Зови Друзей и Зарабатывай", friendsDesc: "Получайте бонусы с каждого приглашенного друга!",
         invited: "Приглашено Друзей", reffReward: "Награды за Рефералов", reffTitle: "ВАША РЕФЕРАЛЬНАЯ ССЫЛКА", copy: "Копировать",
@@ -44,9 +44,9 @@ const translations = {
     id: {
         connect: "Connect", tier: "⚡ NOVICE FARMER TIER", vault: "Vault", rate: "Rate", withdraw: "💳 PENARIKAN",
         startFarming: "MULAI FARMING", claim: "KLAIM BGRAM", tasksTitle: "Misi Komunitas",
-        tasksDesc: "Selesaikan tugas sosial untuk menambah saldo BGRAM!", task1: "Join Official Channel", task2: "Follow Official X/Twitter",
+        tasksDesc: "Selesaikan tugas sosial untuk menambah saldo BGRAM & TON!", task1: "Join Official Channel", task2: "Follow Official X/Twitter",
         task3: "Undang 3 Teman Aktif", btnJoin: "Klaim", btnFollow: "Follow", btnInvite: "Undang",
-        friendsTitle: "Undang Teman & Dapatkan Bonus", friendsDesc: "Dapatkan bonus komisi BGRAM dari setiap teman yang bergabung!",
+        friendsTitle: "Undang Teman & Dapatkan Bonus", friendsDesc: "Dapatkan bonus komisi BGRAM & TON dari setiap teman yang bergabung!",
         invited: "Teman Diundang", reffReward: "Bonus Referral", reffTitle: "LINK REFERRAL KAMU", copy: "Salin",
         totalFarmed: "Total Hasil Tambang", minerTier: "Tier Penambang", completedTasks: "Misi Selesai", totalReferrals: "Total Referral",
         walletTitle: "WEB3 TON WALLET", notConnected: "Belum Terhubung", supportTitle: "KOMUNITAS", channel: "Channel",
@@ -115,7 +115,6 @@ function switchTab(tab) {
     document.getElementById(`page-${tab}`).classList.add('active');
     document.getElementById(`nav-${tab}`).classList.add('active');
 }
-// Fungsi Animasi Slime / Agar-agar saat Logo Bean disentuh
 function handleCoinClick(event) {
     triggerHaptic('impact');
     const wrapper = document.getElementById('coinWrapper');
@@ -217,35 +216,7 @@ async function verifyTaskBackend(taskId, channelUsername) {
     if (taskState[1] === 'completed') return;
 
     btn.disabled = true;
-    btn.innerText = "Checking...";
-
-    try {
-        // Proses verifikasi otomatis
-        setTimeout(() => {
-            // Kalkulasi otomatis penambahan BGRAM ke Vault utama
-            totalBalance += 5.0; 
-            localStorage.setItem('bgram_balance', totalBalance);
-
-            // Kalkulasi otomatis penambahan TON (Gram) ke saldo withdraw instan
-            tonBalance += 0.05; 
-            localStorage.setItem('bgram_ton_balance', tonBalance);
-
-            taskState[1] = 'completed';
-            localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
-            
-            msgElem.style.color = "#059669";
-            msgElem.innerText = "+5.0 BGRAM & +0.05 TON successfully claimed & added to balance!";
-            triggerHaptic('notification');
-            
-            btn.disabled = false;
-            updateUI();
-            updateTaskUI();
-        }, 1500);
-
-    } catch (err) {
-        btn.disabled = false;
-    }
-}
+    btn.innerText = "Claiming...";
 
     try {
         const encodedInitData = encodeURIComponent(initData);
@@ -253,23 +224,31 @@ async function verifyTaskBackend(taskId, channelUsername) {
         const res = await fetch(url);
         await res.json();
 
-        totalBalance += 500.0;
+        totalBalance += 5.0; 
         localStorage.setItem('bgram_balance', totalBalance);
+
+        tonBalance += 0.05; 
+        localStorage.setItem('bgram_ton_balance', tonBalance);
+
         taskState[1] = 'completed';
         localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
         
         msgElem.style.color = "#059669";
-        msgElem.innerText = "+500.0000 BGRAM successfully claimed!";
+        msgElem.innerText = "+5.0 BGRAM & +0.05 TON successfully claimed!";
         triggerHaptic('notification');
 
     } catch (err) {
-        totalBalance += 500.0;
+        totalBalance += 5.0;
         localStorage.setItem('bgram_balance', totalBalance);
+
+        tonBalance += 0.05;
+        localStorage.setItem('bgram_ton_balance', tonBalance);
+
         taskState[1] = 'completed';
         localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
         
         msgElem.style.color = "#059669";
-        msgElem.innerText = "+500.0000 BGRAM successfully claimed!";
+        msgElem.innerText = "+5.0 BGRAM & +0.05 TON successfully claimed!";
         triggerHaptic('notification');
     }
 
@@ -314,7 +293,7 @@ function copyReffLink() {
     input.select();
     document.execCommand('copy');
     alert(currentTranslations.alertCopied);
-}
+    }
 const FARM_DURATION = 5 * 60 * 60 * 1000;
 const TOTAL_REWARD = 2.0;
 
@@ -405,9 +384,7 @@ async function fetchUserData() {
                 updateUI();
             }
         }
-    } catch (err) {
-        console.error("Gagal sinkron data backend:", err);
-    }
+    } catch (err) {}
 }
 
 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
@@ -427,8 +404,36 @@ if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
         avatarElem.style.color = "#fff";
         avatarElem.style.fontWeight = "bold";
     }
-}
+                            }
 let tonBalance = parseFloat(localStorage.getItem('bgram_ton_balance')) || 0.0000;
+
+function checkReferralBonus() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const refId = urlParams.get('start');
+    
+    const hasClaimedRef = localStorage.getItem('bgram_ref_claimed');
+    if (refId && !hasClaimedRef && refId !== String(tg.initDataUnsafe?.user?.id)) {
+        totalBalance += 5.0; 
+        localStorage.setItem('bgram_balance', totalBalance);
+
+        tonBalance += 0.01; 
+        localStorage.setItem('bgram_ton_balance', tonBalance);
+
+        localStorage.setItem('bgram_ref_claimed', 'true');
+        
+        let currentInvites = parseInt(localStorage.getItem('bgram_friends_count')) || 0;
+        localStorage.setItem('bgram_friends_count', currentInvites + 1);
+        
+        let currentRefReward = parseFloat(localStorage.getItem('bgram_friends_reward')) || 0;
+        localStorage.setItem('bgram_friends_reward', currentRefReward + 5.0);
+    }
+
+    document.getElementById('friendsCount').innerText = localStorage.getItem('bgram_friends_count') || '0';
+    document.getElementById('friendsReward').innerText = (parseFloat(localStorage.getItem('bgram_friends_reward')) || 0).toFixed(4) + " BGRAM";
+    document.getElementById('profTotalRef').innerText = localStorage.getItem('bgram_friends_count') || '0';
+}
+
+checkReferralBonus();
 
 function switchWdTab(tab) {
     triggerHaptic('selection');
@@ -491,6 +496,10 @@ async function requestTonWithdraw() {
     document.getElementById('tonAvailableBalance').innerText = tonBalance.toFixed(4) + " TON";
     closeWithdrawModal();
 }
+
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
 
 document.getElementById('langSelect').value = currentLang;
 changeLanguage(currentLang);
