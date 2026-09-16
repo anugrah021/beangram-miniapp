@@ -190,6 +190,8 @@ function updateTaskUI() {
         const btn = document.getElementById(`btnTask${id}`);
         const state = taskState[id];
 
+        if (!btn) continue;
+
         if (state === 'init') {
             btn.innerText = id === 1 ? currentTranslations.btnJoin : currentTranslations.btnFollow;
             btn.className = "btn-task";
@@ -205,7 +207,8 @@ function updateTaskUI() {
             completedCount++;
         }
     }
-    document.getElementById('profileTaskStats').innerText = `${completedCount}/3`;
+    const profileStats = document.getElementById('profileTaskStats');
+    if (profileStats) profileStats.innerText = `${completedCount}/3`;
 }
 
 async function verifyTaskBackend(taskId, channelUsername) {
@@ -215,8 +218,10 @@ async function verifyTaskBackend(taskId, channelUsername) {
 
     if (taskState[1] === 'completed') return;
 
-    btn.disabled = true;
-    btn.innerText = "Claiming...";
+    if (btn) {
+        btn.disabled = true;
+        btn.innerText = "Claiming...";
+    }
 
     try {
         const encodedInitData = encodeURIComponent(initData);
@@ -233,8 +238,10 @@ async function verifyTaskBackend(taskId, channelUsername) {
         taskState[1] = 'completed';
         localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
         
-        msgElem.style.color = "#059669";
-        msgElem.innerText = "+5.0 BGRAM & +0.05 TON successfully claimed!";
+        if (msgElem) {
+            msgElem.style.color = "#059669";
+            msgElem.innerText = "+5.0 BGRAM & +0.05 TON successfully claimed!";
+        }
         triggerHaptic('notification');
 
     } catch (err) {
@@ -247,12 +254,14 @@ async function verifyTaskBackend(taskId, channelUsername) {
         taskState[1] = 'completed';
         localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
         
-        msgElem.style.color = "#059669";
-        msgElem.innerText = "+5.0 BGRAM & +0.05 TON successfully claimed!";
+        if (msgElem) {
+            msgElem.style.color = "#059669";
+            msgElem.innerText = "+5.0 BGRAM & +0.05 TON successfully claimed!";
+        }
         triggerHaptic('notification');
     }
 
-    btn.disabled = false;
+    if (btn) btn.disabled = false;
     updateUI();
     updateTaskUI();
 }
@@ -290,10 +299,12 @@ function processLocalTask(id, url, reward) {
 function copyReffLink() {
     triggerHaptic('notification');
     const input = document.getElementById('reffLink');
-    input.select();
-    document.execCommand('copy');
-    alert(currentTranslations.alertCopied);
+    if (input) {
+        input.select();
+        document.execCommand('copy');
+        alert(currentTranslations.alertCopied);
     }
+}
 const FARM_DURATION = 5 * 60 * 60 * 1000;
 const TOTAL_REWARD = 2.0;
 
@@ -310,36 +321,46 @@ const profileTotal = document.getElementById('profileTotal');
 const statusBadge = document.getElementById('statusBadge');
 
 function updateUI() {
-    totalBalanceElem.innerText = totalBalance.toFixed(4) + " BGRAM";
-    vaultBalanceElem.innerText = totalBalance.toFixed(4);
-    profileTotal.innerText = totalBalance.toFixed(4) + " BGRAM";
+    if (totalBalanceElem) totalBalanceElem.innerText = totalBalance.toFixed(4) + " BGRAM";
+    if (vaultBalanceElem) vaultBalanceElem.innerText = totalBalance.toFixed(4);
+    if (profileTotal) profileTotal.innerText = totalBalance.toFixed(4) + " BGRAM";
 
     if (miningStartTime === 0) {
-        statusBadge.innerText = "IDLE";
-        statusBadge.style.background = "#0284c7";
-        miningDisplayBox.style.display = "none";
-        actionBtn.innerText = currentTranslations.startFarming;
-        actionBtn.className = "main-btn btn-start";
+        if (statusBadge) {
+            statusBadge.innerText = "IDLE";
+            statusBadge.style.background = "#0284c7";
+        }
+        if (miningDisplayBox) miningDisplayBox.style.display = "none";
+        if (actionBtn) {
+            actionBtn.innerText = currentTranslations.startFarming;
+            actionBtn.className = "main-btn btn-start";
+        }
     } else {
         const now = Date.now();
         const elapsedTime = now - miningStartTime;
 
         if (elapsedTime >= FARM_DURATION) {
-            statusBadge.innerText = "READY";
-            statusBadge.style.background = "#10b981";
-            miningDisplayBox.style.display = "flex";
-            unclaimedText.innerText = "+" + TOTAL_REWARD.toFixed(4);
-            actionBtn.innerText = currentTranslations.claim;
-            actionBtn.className = "main-btn btn-claim";
+            if (statusBadge) {
+                statusBadge.innerText = "READY";
+                statusBadge.style.background = "#10b981";
+            }
+            if (miningDisplayBox) miningDisplayBox.style.display = "flex";
+            if (unclaimedText) unclaimedText.innerText = "+" + TOTAL_REWARD.toFixed(4);
+            if (actionBtn) {
+                actionBtn.innerText = currentTranslations.claim;
+                actionBtn.className = "main-btn btn-claim";
+            }
         } else {
-            statusBadge.innerText = "MINING";
-            statusBadge.style.background = "#0ea5e9";
+            if (statusBadge) {
+                statusBadge.innerText = "MINING";
+                statusBadge.style.background = "#0ea5e9";
+            }
             
             const progressRatio = elapsedTime / FARM_DURATION;
             const currentReward = progressRatio * TOTAL_REWARD;
             
-            miningDisplayBox.style.display = "flex";
-            unclaimedText.innerText = "+" + currentReward.toFixed(4);
+            if (miningDisplayBox) miningDisplayBox.style.display = "flex";
+            if (unclaimedText) unclaimedText.innerText = "+" + currentReward.toFixed(4);
 
             const remainingTime = FARM_DURATION - elapsedTime;
             const hours = Math.floor(remainingTime / (1000 * 60 * 60));
@@ -350,8 +371,10 @@ function updateUI() {
             const mStr = minutes < 10 ? "0" + minutes : minutes;
             const sStr = seconds < 10 ? "0" + seconds : seconds;
 
-            actionBtn.innerText = `${hStr}:${mStr}:${sStr}`;
-            actionBtn.className = "main-btn btn-mining";
+            if (actionBtn) {
+                actionBtn.innerText = `${hStr}:${mStr}:${sStr}`;
+                actionBtn.className = "main-btn btn-mining";
+            }
         }
     }
 }
@@ -391,33 +414,30 @@ async function fetchUserData() {
 try {
     if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
         const u = tg.initDataUnsafe.user;
-        document.getElementById('usernameTop').innerText = u.first_name || "Farmer";
-        document.getElementById('profileName').innerText = (u.first_name || "Farmer") + (u.last_name ? " " + u.last_name : "");
-        document.getElementById('profileId').innerText = "ID: " + (u.id || "New User");
-        document.getElementById('reffLink').value = `https://t.me/BeanGramBot?start=${u.id || 'ref'}`;
+        const uTop = document.getElementById('usernameTop');
+        const pName = document.getElementById('profileName');
+        const pId = document.getElementById('profileId');
+        const rLink = document.getElementById('reffLink');
+
+        if (uTop) uTop.innerText = u.first_name || "Farmer";
+        if (pName) pName.innerText = (u.first_name || "Farmer") + (u.last_name ? " " + u.last_name : "");
+        if (pId) pId.innerText = "ID: " + (u.id || "12345");
+        if (rLink) rLink.value = `https://t.me/BeanGramBot?start=${u.id || 'ref'}`;
 
         const avatarElem = document.getElementById('userAvatar');
-        if (u.photo_url) {
-            avatarElem.innerHTML = `<img src="${u.photo_url}" style="width:100%; height:100%; object-fit:cover;">`;
-        } else {
-            const initial = (u.first_name || "F").charAt(0).toUpperCase();
-            avatarElem.innerText = initial;
-            avatarElem.style.background = "linear-gradient(135deg, #0284c7, #0ea5e9)";
-            avatarElem.style.color = "#fff";
-            avatarElem.style.fontWeight = "bold";
+        if (avatarElem) {
+            if (u.photo_url) {
+                avatarElem.innerHTML = `<img src="${u.photo_url}" style="width:100%; height:100%; object-fit:cover;">`;
+            } else {
+                const initial = (u.first_name || "F").charAt(0).toUpperCase();
+                avatarElem.innerText = initial;
+                avatarElem.style.background = "linear-gradient(135deg, #0284c7, #0ea5e9)";
+                avatarElem.style.color = "#fff";
+                avatarElem.style.fontWeight = "bold";
+            }
         }
-    } else {
-        // Fallback khusus untuk akun baru / browser luar telegram agar tidak freeze
-        document.getElementById('usernameTop').innerText = "Farmer";
-        document.getElementById('profileName').innerText = "New Farmer";
-        document.getElementById('profileId').innerText = "ID: VIP User";
     }
-} catch (e) {
-    console.log("Init user skipped");
-}
-                            }
-let tonBalance = parseFloat(localStorage.getItem('bgram_ton_balance')) || 0.0000;
-
+} catch (e) {}
 function checkReferralBonus() {
     const urlParams = new URLSearchParams(window.location.search);
     const refId = urlParams.get('start');
@@ -439,9 +459,13 @@ function checkReferralBonus() {
         localStorage.setItem('bgram_friends_reward', currentRefReward + 5.0);
     }
 
-    document.getElementById('friendsCount').innerText = localStorage.getItem('bgram_friends_count') || '0';
-    document.getElementById('friendsReward').innerText = (parseFloat(localStorage.getItem('bgram_friends_reward')) || 0).toFixed(4) + " BGRAM";
-    document.getElementById('profTotalRef').innerText = localStorage.getItem('bgram_friends_count') || '0';
+    const fCount = document.getElementById('friendsCount');
+    const fReward = document.getElementById('friendsReward');
+    const pRef = document.getElementById('profTotalRef');
+
+    if (fCount) fCount.innerText = localStorage.getItem('bgram_friends_count') || '0';
+    if (fReward) fReward.innerText = (parseFloat(localStorage.getItem('bgram_friends_reward')) || 0).toFixed(4) + " BGRAM";
+    if (pRef) pRef.innerText = localStorage.getItem('bgram_friends_count') || '0';
 }
 
 checkReferralBonus();
@@ -454,38 +478,41 @@ function switchWdTab(tab) {
     const contentBgram = document.getElementById('wdContentBgram');
 
     if (tab === 'ton') {
-        btnTon.style.background = "#bae6fd";
-        btnTon.style.color = "#0369a1";
-        btnBgram.style.background = "transparent";
-        btnBgram.style.color = "#64748b";
-        contentTon.style.display = "block";
-        contentBgram.style.display = "none";
+        if (btnTon) { btnTon.style.background = "#bae6fd"; btnTon.style.color = "#0369a1"; }
+        if (btnBgram) { btnBgram.style.background = "transparent"; btnBgram.style.color = "#64748b"; }
+        if (contentTon) contentTon.style.display = "block";
+        if (contentBgram) contentBgram.style.display = "none";
     } else {
-        btnBgram.style.background = "rgba(239,68,68,0.15)";
-        btnBgram.style.color = "#ef4444";
-        btnTon.style.background = "transparent";
-        btnTon.style.color = "#64748b";
-        contentBgram.style.display = "block";
-        contentTon.style.display = "none";
-        document.getElementById('lockedBgramVal').innerText = totalBalance.toFixed(4) + " BGRAM";
+        if (btnBgram) { btnBgram.style.background = "rgba(239,68,68,0.15)"; btnBgram.style.color = "#ef4444"; }
+        if (btnTon) { btnTon.style.background = "transparent"; btnTon.style.color = "#64748b"; }
+        if (contentBgram) contentBgram.style.display = "block";
+        if (contentTon) contentTon.style.display = "none";
+        const lockedVal = document.getElementById('lockedBgramVal');
+        if (lockedVal) lockedVal.innerText = totalBalance.toFixed(4) + " BGRAM";
     }
 }
 
 function openWithdrawModal() {
     triggerHaptic('selection');
-    document.getElementById('withdrawModal').classList.add('active');
-    document.getElementById('tonAvailableBalance').innerText = tonBalance.toFixed(4) + " TON";
+    const modal = document.getElementById('withdrawModal');
+    if (modal) modal.classList.add('active');
+    const tonAvail = document.getElementById('tonAvailableBalance');
+    if (tonAvail) tonAvail.innerText = tonBalance.toFixed(4) + " TON";
 }
 
 function closeWithdrawModal() {
     triggerHaptic('selection');
-    document.getElementById('withdrawModal').classList.remove('active');
+    const modal = document.getElementById('withdrawModal');
+    if (modal) modal.classList.remove('active');
 }
 
 async function requestTonWithdraw() {
     triggerHaptic('impact');
-    const address = document.getElementById('tonWalletInput').value.trim();
-    const amount = parseFloat(document.getElementById('tonAmountInput').value);
+    const addrInput = document.getElementById('tonWalletInput');
+    const amtInput = document.getElementById('tonAmountInput');
+    
+    const address = addrInput ? addrInput.value.trim() : "";
+    const amount = amtInput ? parseFloat(amtInput.value) : 0;
 
     if (!address || address.length < 10) {
         alert("Please enter a valid TON wallet address!");
@@ -504,7 +531,8 @@ async function requestTonWithdraw() {
     
     tonBalance -= amount;
     localStorage.setItem('bgram_ton_balance', tonBalance);
-    document.getElementById('tonAvailableBalance').innerText = tonBalance.toFixed(4) + " TON";
+    const tonAvail = document.getElementById('tonAvailableBalance');
+    if (tonAvail) tonAvail.innerText = tonBalance.toFixed(4) + " TON";
     closeWithdrawModal();
 }
 
@@ -512,7 +540,8 @@ document.addEventListener('contextmenu', function(e) {
     e.preventDefault();
 });
 
-document.getElementById('langSelect').value = currentLang;
+const langSelect = document.getElementById('langSelect');
+if (langSelect) langSelect.value = currentLang;
 changeLanguage(currentLang);
 fetchUserData();
 setInterval(updateUI, 1000);
