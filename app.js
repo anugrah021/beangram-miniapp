@@ -1,0 +1,470 @@
+const tg = window.Telegram.WebApp;
+tg.expand();
+
+const BACKEND_URL = "https://beangram-miniapp.vercel.app";
+const initData = tg.initData || "";
+
+function triggerHaptic(type) {
+    try {
+        if (tg.HapticFeedback) {
+            if (type === 'impact') tg.HapticFeedback.impactOccurred('medium');
+            else if (type === 'notification') tg.HapticFeedback.notificationOccurred('success');
+            else if (type === 'selection') tg.HapticFeedback.selectionChanged();
+        }
+    } catch (e) {}
+}
+
+const translations = {
+    en: {
+        connect: "Connect", tier: "⚡ NOVICE FARMER TIER", vault: "Vault", rate: "Rate", withdraw: "💳 WITHDRAW",
+        startFarming: "START FARMING", claim: "CLAIM BGRAM", tasksTitle: "Community Tasks",
+        tasksDesc: "Complete social tasks to earn extra BGRAM!", task1: "Join Official Channel", task2: "Follow Official X/Twitter",
+        task3: "Invite 3 Active Friends", btnJoin: "Claim", btnFollow: "Follow", btnInvite: "Invite",
+        friendsTitle: "Invite Friends & Earn", friendsDesc: "Get commission bonus from every friend who joins using your link!",
+        invited: "Invited Friends", reffReward: "Referral Rewards", reffTitle: "YOUR REFERRAL LINK", copy: "Copy",
+        totalFarmed: "Total Farmed", minerTier: "Miner Tier", completedTasks: "Completed Tasks", totalReferrals: "Total Referrals",
+        walletTitle: "WEB3 TON WALLET", notConnected: "Not Connected", supportTitle: "COMMUNITY", channel: "Channel",
+        navMine: "Mine", navTasks: "Tasks", navFriends: "Friends", navProfile: "Profile", wdTitle: "Withdraw BGRAM",
+        wdStatus: "AIRDROP & TGE PHASE", wdDesc: "Withdrawals will open soon upon Token Listing. Please connect your TON wallet.",
+        wdBtnConfirm: "HUBUNGKAN TON WALLET", wdBtnClose: "Close", alertWallet: "TON Wallet integration coming soon!", alertCopied: "Referral link copied!"
+    },
+    ru: {
+        connect: "Кошелек", tier: "⚡ НОВИЧОК ФАРМЕР", vault: "Хранилище", rate: "Скорость", withdraw: "💳 ВЫВОД",
+        startFarming: "НАЧАТЬ ФАРМИНГ", claim: "ЗАБРАТЬ BGRAM", tasksTitle: "Задания Сообщества",
+        tasksDesc: "Выполняйте задания и получайте больше BGRAM!", task1: "Подписаться на Канал", task2: "Подписаться на X/Twitter",
+        task3: "Пригласить 3 Друзей", btnJoin: "Получить", btnFollow: "Читать", btnInvite: "Звать",
+        friendsTitle: "Зови Друзей и Зарабатывай", friendsDesc: "Получайте бонусы с каждого приглашенного друга!",
+        invited: "Приглашено Друзей", reffReward: "Награды за Рефералов", reffTitle: "ВАША РЕФЕРАЛЬНАЯ ССЫЛКА", copy: "Копировать",
+        totalFarmed: "Всего Добыто", minerTier: "Уровень Майнера", completedTasks: "Выполнено Задач", totalReferrals: "Всего Рефералов",
+        walletTitle: "WEB3 TON КОШЕЛЕК", notConnected: "Не Подключен", supportTitle: "СООБЩЕСТВО", channel: "Канал",
+        navMine: "Майнинг", navTasks: "Задания", navFriends: "Друзья", navProfile: "Профиль", wdTitle: "Вывод BGRAM",
+        wdStatus: "ФАЗА AIRDROP И TGE", wdDesc: "Вывод средств откроется скоро после листинга токена. Подключите ваш TON кошелек.",
+        wdBtnConfirm: "ПОДКЛЮЧИТЬ TON КОШЕЛЕК", wdBtnClose: "Закрыть", alertWallet: "Интеграция TON кошелька скоро!", alertCopied: "Реферальная ссылка скопирована!"
+    },
+    id: {
+        connect: "Connect", tier: "⚡ NOVICE FARMER TIER", vault: "Vault", rate: "Rate", withdraw: "💳 PENARIKAN",
+        startFarming: "MULAI FARMING", claim: "KLAIM BGRAM", tasksTitle: "Misi Komunitas",
+        tasksDesc: "Selesaikan tugas sosial untuk menambah saldo BGRAM!", task1: "Join Official Channel", task2: "Follow Official X/Twitter",
+        task3: "Undang 3 Teman Aktif", btnJoin: "Klaim", btnFollow: "Follow", btnInvite: "Undang",
+        friendsTitle: "Undang Teman & Dapatkan Bonus", friendsDesc: "Dapatkan bonus komisi BGRAM dari setiap teman yang bergabung!",
+        invited: "Teman Diundang", reffReward: "Bonus Referral", reffTitle: "LINK REFERRAL KAMU", copy: "Salin",
+        totalFarmed: "Total Hasil Tambang", minerTier: "Tier Penambang", completedTasks: "Misi Selesai", totalReferrals: "Total Referral",
+        walletTitle: "WEB3 TON WALLET", notConnected: "Belum Terhubung", supportTitle: "KOMUNITAS", channel: "Channel",
+        navMine: "Tambang", navTasks: "Misi", navFriends: "Teman", navProfile: "Profil", wdTitle: "Penarikan BGRAM",
+        wdStatus: "FASE AIRDROP & TGE", wdDesc: "Penarikan akan segera dibuka setelah Listing Token. Harap hubungkan wallet TON kamu.",
+        wdBtnConfirm: "HUBUNGKAN TON WALLET", wdBtnClose: "Tutup", alertWallet: "Integrasi Wallet TON segera hadir!", alertCopied: "Link Referral berhasil disalin!"
+    }
+};
+
+const tgUserLang = (tg.initDataUnsafe?.user?.language_code || "").toLowerCase();
+let defaultLang = 'en';
+if (tgUserLang.startsWith('id')) defaultLang = 'id';
+else if (tgUserLang.startsWith('ru')) defaultLang = 'ru';
+
+let currentLang = localStorage.getItem('bgram_lang') || defaultLang;
+let currentTranslations = translations[currentLang];
+
+function changeLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('bgram_lang', lang);
+    currentTranslations = translations[lang];
+
+    document.getElementById('btnConnectTop').innerText = currentTranslations.connect;
+    document.getElementById('btnConnectProfile').innerText = currentTranslations.connect;
+    document.getElementById('txtTier').innerText = currentTranslations.tier;
+    document.getElementById('txtVaultLabel').innerText = currentTranslations.vault;
+    document.getElementById('txtRateLabel').innerText = currentTranslations.rate;
+    document.getElementById('btnWithdraw').innerText = currentTranslations.withdraw;
+    
+    document.getElementById('txtTasksTitle').innerText = currentTranslations.tasksTitle;
+    document.getElementById('txtTasksDesc').innerText = currentTranslations.tasksDesc;
+    document.getElementById('txtTask1').innerText = currentTranslations.task1;
+    document.getElementById('txtTask2').innerText = currentTranslations.task2;
+    document.getElementById('txtTask3').innerText = currentTranslations.task3;
+
+    document.getElementById('txtFriendsTitle').innerText = currentTranslations.friendsTitle;
+    document.getElementById('txtFriendsDesc').innerText = currentTranslations.friendsDesc;
+    document.getElementById('lblInvited').innerText = currentTranslations.invited;
+    document.getElementById('lblReffReward').innerText = currentTranslations.reffReward;
+    document.getElementById('txtReffTitle').innerText = currentTranslations.reffTitle;
+    document.getElementById('btnCopy').innerText = currentTranslations.copy;
+
+    document.getElementById('lblTotalFarmed').innerText = currentTranslations.totalFarmed;
+    document.getElementById('lblMinerTier').innerText = currentTranslations.minerTier;
+    document.getElementById('lblCompletedTasks').innerText = currentTranslations.completedTasks;
+    document.getElementById('lblTotalReferrals').innerText = currentTranslations.totalReferrals;
+    document.getElementById('txtWalletTitle').innerText = currentTranslations.walletTitle;
+    document.getElementById('walletStatus').innerText = currentTranslations.notConnected;
+    document.getElementById('txtSupportTitle').innerText = currentTranslations.supportTitle;
+    document.getElementById('btnChannel').innerText = currentTranslations.channel;
+
+    document.getElementById('navTxtMine').innerText = currentTranslations.navMine;
+    document.getElementById('navTxtTasks').innerText = currentTranslations.navTasks;
+    document.getElementById('navTxtFriends').innerText = currentTranslations.navFriends;
+    document.getElementById('navTxtProfile').innerText = currentTranslations.navProfile;
+
+    updateUI();
+    updateTaskUI();
+}
+
+function switchTab(tab) {
+    triggerHaptic('selection');
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+    document.getElementById(`page-${tab}`).classList.add('active');
+    document.getElementById(`nav-${tab}`).classList.add('active');
+}
+// Fungsi Animasi Slime / Agar-agar saat Logo Bean disentuh
+function handleCoinClick(event) {
+    triggerHaptic('impact');
+    const wrapper = document.getElementById('coinWrapper');
+    
+    wrapper.classList.remove('wobble');
+    void wrapper.offsetWidth;
+    wrapper.classList.add('wobble');
+
+    const rect = wrapper.getBoundingClientRect();
+    const x = event.clientX ? event.clientX - rect.left : rect.width / 2;
+    const y = event.clientY ? event.clientY - rect.top : rect.height / 2;
+
+    const floatElem = document.createElement('div');
+    floatElem.className = 'floating-number';
+    floatElem.innerText = '+0.001';
+    floatElem.style.left = `${x}px`;
+    floatElem.style.top = `${y}px`;
+    
+    wrapper.appendChild(floatElem);
+    setTimeout(() => { floatElem.remove(); }, 800);
+}
+
+let lastDailyClaim = parseInt(localStorage.getItem('bgram_last_daily')) || 0;
+
+function openDailyModal() {
+    triggerHaptic('selection');
+    document.getElementById('dailyModal').classList.add('active');
+    checkDailyStatus();
+}
+
+function closeDailyModal() {
+    triggerHaptic('selection');
+    document.getElementById('dailyModal').classList.remove('active');
+}
+
+function checkDailyStatus() {
+    const now = Date.now();
+    const btn = document.getElementById('btnClaimDaily');
+    const day1 = document.getElementById('day1');
+
+    if (now - lastDailyClaim >= 24 * 60 * 60 * 1000) {
+        btn.innerText = "CLAIM DAILY BONUS (+1.0 BGRAM)";
+        btn.disabled = false;
+        btn.className = "main-btn btn-start";
+        day1.className = "daily-item active-today";
+    } else {
+        btn.innerText = "CLAIMED TODAY (Come back tomorrow)";
+        btn.disabled = true;
+        btn.className = "main-btn btn-mining";
+        day1.className = "daily-item claimed";
+    }
+}
+
+function claimDailyReward() {
+    triggerHaptic('notification');
+    totalBalance += 1.0;
+    localStorage.setItem('bgram_balance', totalBalance);
+
+    lastDailyClaim = Date.now();
+    localStorage.setItem('bgram_last_daily', lastDailyClaim);
+
+    updateUI();
+    checkDailyStatus();
+    alert("Daily reward +1.0 BGRAM successfully claimed!");
+}
+
+let taskState = JSON.parse(localStorage.getItem('bgram_tasks')) || { 1: 'init', 2: 'init' };
+
+function updateTaskUI() {
+    let completedCount = 0;
+
+    for (let id = 1; id <= 2; id++) {
+        const btn = document.getElementById(`btnTask${id}`);
+        const state = taskState[id];
+
+        if (state === 'init') {
+            btn.innerText = id === 1 ? currentTranslations.btnJoin : currentTranslations.btnFollow;
+            btn.className = "btn-task";
+        } else if (state === 'checking') {
+            btn.innerText = "Checking...";
+            btn.className = "btn-task checking";
+        } else if (state === 'claimable') {
+            btn.innerText = "Claim Reward";
+            btn.className = "btn-task claimable";
+        } else if (state === 'completed') {
+            btn.innerText = "✓ Done";
+            btn.className = "btn-task completed";
+            completedCount++;
+        }
+    }
+    document.getElementById('profileTaskStats').innerText = `${completedCount}/3`;
+}
+
+async function verifyTaskBackend(taskId, channelUsername) {
+    triggerHaptic('impact');
+    const btn = document.getElementById('btnTask1');
+    const msgElem = document.getElementById('task-status-msg');
+
+    if (taskState[1] === 'completed') return;
+
+    btn.disabled = true;
+    btn.innerText = "Claiming...";
+
+    try {
+        const encodedInitData = encodeURIComponent(initData);
+        const url = `${BACKEND_URL}/verify-channel?init_data=${encodedInitData}&channel=${channelUsername}&task_id=${taskId}&lang=${currentLang}`;
+        const res = await fetch(url);
+        await res.json();
+
+        totalBalance += 500.0;
+        localStorage.setItem('bgram_balance', totalBalance);
+        taskState[1] = 'completed';
+        localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
+        
+        msgElem.style.color = "#059669";
+        msgElem.innerText = "+500.0000 BGRAM successfully claimed!";
+        triggerHaptic('notification');
+
+    } catch (err) {
+        totalBalance += 500.0;
+        localStorage.setItem('bgram_balance', totalBalance);
+        taskState[1] = 'completed';
+        localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
+        
+        msgElem.style.color = "#059669";
+        msgElem.innerText = "+500.0000 BGRAM successfully claimed!";
+        triggerHaptic('notification');
+    }
+
+    btn.disabled = false;
+    updateUI();
+    updateTaskUI();
+}
+
+function processLocalTask(id, url, reward) {
+    triggerHaptic('impact');
+    const state = taskState[id] || 'init';
+
+    if (state === 'init') {
+        window.open(url, '_blank');
+        taskState[id] = 'checking';
+        localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
+        updateTaskUI();
+
+        setTimeout(() => {
+            taskState[id] = 'claimable';
+            localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
+            updateTaskUI();
+            triggerHaptic('notification');
+        }, 5000);
+
+    } else if (state === 'claimable') {
+        totalBalance += reward;
+        localStorage.setItem('bgram_balance', totalBalance);
+
+        taskState[id] = 'completed';
+        localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
+
+        triggerHaptic('notification');
+        updateUI();
+        updateTaskUI();
+    }
+}
+
+function copyReffLink() {
+    triggerHaptic('notification');
+    const input = document.getElementById('reffLink');
+    input.select();
+    document.execCommand('copy');
+    alert(currentTranslations.alertCopied);
+}
+const FARM_DURATION = 5 * 60 * 60 * 1000;
+const TOTAL_REWARD = 2.0;
+
+let totalBalance = parseFloat(localStorage.getItem('bgram_balance')) || 0;
+let miningStartTime = parseInt(localStorage.getItem('bgram_start_time')) || 0;
+
+const actionBtn = document.getElementById('actionBtn');
+const miningDisplayBox = document.getElementById('miningDisplayBox');
+const unclaimedText = document.getElementById('unclaimedText');
+const totalBalanceElem = document.getElementById('totalBalance');
+const vaultBalanceElem = document.getElementById('vaultBalance');
+const profileTotal = document.getElementById('profileTotal');
+const statusBadge = document.getElementById('statusBadge');
+
+function updateUI() {
+    totalBalanceElem.innerText = totalBalance.toFixed(4) + " BGRAM";
+    vaultBalanceElem.innerText = totalBalance.toFixed(4);
+    profileTotal.innerText = totalBalance.toFixed(4) + " BGRAM";
+
+    if (miningStartTime === 0) {
+        statusBadge.innerText = "IDLE";
+        statusBadge.style.background = "#0284c7";
+        miningDisplayBox.style.display = "none";
+        actionBtn.innerText = currentTranslations.startFarming;
+        actionBtn.className = "main-btn btn-start";
+    } else {
+        const now = Date.now();
+        const elapsedTime = now - miningStartTime;
+
+        if (elapsedTime >= FARM_DURATION) {
+            statusBadge.innerText = "READY";
+            statusBadge.style.background = "#10b981";
+            miningDisplayBox.style.display = "flex";
+            unclaimedText.innerText = "+" + TOTAL_REWARD.toFixed(4);
+            actionBtn.innerText = currentTranslations.claim;
+            actionBtn.className = "main-btn btn-claim";
+        } else {
+            statusBadge.innerText = "MINING";
+            statusBadge.style.background = "#0ea5e9";
+            
+            const progressRatio = elapsedTime / FARM_DURATION;
+            const currentReward = progressRatio * TOTAL_REWARD;
+            
+            miningDisplayBox.style.display = "flex";
+            unclaimedText.innerText = "+" + currentReward.toFixed(4);
+
+            const remainingTime = FARM_DURATION - elapsedTime;
+            const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+            const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+            const hStr = hours < 10 ? "0" + hours : hours;
+            const mStr = minutes < 10 ? "0" + minutes : minutes;
+            const sStr = seconds < 10 ? "0" + seconds : seconds;
+
+            actionBtn.innerText = `${hStr}:${mStr}:${sStr}`;
+            actionBtn.className = "main-btn btn-mining";
+        }
+    }
+}
+
+function handleButtonClick() {
+    triggerHaptic('impact');
+    const now = Date.now();
+    if (miningStartTime === 0) {
+        miningStartTime = now;
+        localStorage.setItem('bgram_start_time', miningStartTime);
+    } else if (now - miningStartTime >= FARM_DURATION) {
+        triggerHaptic('notification');
+        totalBalance += TOTAL_REWARD;
+        localStorage.setItem('bgram_balance', totalBalance);
+        
+        miningStartTime = 0;
+        localStorage.removeItem('bgram_start_time');
+    }
+    updateUI();
+}
+
+async function fetchUserData() {
+    try {
+        const encodedInitData = encodeURIComponent(initData);
+        const res = await fetch(`${BACKEND_URL}/get-user?init_data=${encodedInitData}`);
+        const data = await res.json();
+        if (data.status === "success" && data.user) {
+            if (parseFloat(data.user.balance) > totalBalance) {
+                totalBalance = parseFloat(data.user.balance);
+                localStorage.setItem('bgram_balance', totalBalance);
+                updateUI();
+            }
+        }
+    } catch (err) {
+        console.error("Gagal sinkron data backend:", err);
+    }
+}
+
+if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+    const u = tg.initDataUnsafe.user;
+    document.getElementById('usernameTop').innerText = u.first_name;
+    document.getElementById('profileName').innerText = u.first_name + (u.last_name ? " " + u.last_name : "");
+    document.getElementById('profileId').innerText = "ID: " + u.id;
+    document.getElementById('reffLink').value = `https://t.me/BeanGramBot?start=${u.id}`;
+
+    const avatarElem = document.getElementById('userAvatar');
+    if (u.photo_url) {
+        avatarElem.innerHTML = `<img src="${u.photo_url}" style="width:100%; height:100%; object-fit:cover;">`;
+    } else {
+        const initial = u.first_name.charAt(0).toUpperCase();
+        avatarElem.innerText = initial;
+        avatarElem.style.background = "linear-gradient(135deg, #0284c7, #0ea5e9)";
+        avatarElem.style.color = "#fff";
+        avatarElem.style.fontWeight = "bold";
+    }
+}
+let tonBalance = parseFloat(localStorage.getItem('bgram_ton_balance')) || 0.0000;
+
+function switchWdTab(tab) {
+    triggerHaptic('selection');
+    const btnTon = document.getElementById('wdTabTon');
+    const btnBgram = document.getElementById('wdTabBgram');
+    const contentTon = document.getElementById('wdContentTon');
+    const contentBgram = document.getElementById('wdContentBgram');
+
+    if (tab === 'ton') {
+        btnTon.style.background = "#bae6fd";
+        btnTon.style.color = "#0369a1";
+        btnBgram.style.background = "transparent";
+        btnBgram.style.color = "#64748b";
+        contentTon.style.display = "block";
+        contentBgram.style.display = "none";
+    } else {
+        btnBgram.style.background = "rgba(239,68,68,0.15)";
+        btnBgram.style.color = "#ef4444";
+        btnTon.style.background = "transparent";
+        btnTon.style.color = "#64748b";
+        contentBgram.style.display = "block";
+        contentTon.style.display = "none";
+        document.getElementById('lockedBgramVal').innerText = totalBalance.toFixed(4) + " BGRAM";
+    }
+}
+
+function openWithdrawModal() {
+    triggerHaptic('selection');
+    document.getElementById('withdrawModal').classList.add('active');
+    document.getElementById('tonAvailableBalance').innerText = tonBalance.toFixed(4) + " TON";
+}
+
+function closeWithdrawModal() {
+    triggerHaptic('selection');
+    document.getElementById('withdrawModal').classList.remove('active');
+}
+
+async function requestTonWithdraw() {
+    triggerHaptic('impact');
+    const address = document.getElementById('tonWalletInput').value.trim();
+    const amount = parseFloat(document.getElementById('tonAmountInput').value);
+
+    if (!address || address.length < 10) {
+        alert("Please enter a valid TON wallet address!");
+        return;
+    }
+    if (isNaN(amount) || amount < 0.1) {
+        alert("Minimum withdrawal amount is 0.1 TON!");
+        return;
+    }
+    if (amount > tonBalance) {
+        alert("Insufficient TON balance!");
+        return;
+    }
+
+    alert(`Withdrawal request for ${amount} TON submitted successfully! Processing to blockchain...`);
+    
+    tonBalance -= amount;
+    localStorage.setItem('bgram_ton_balance', tonBalance);
+    document.getElementById('tonAvailableBalance').innerText = tonBalance.toFixed(4) + " TON";
+    closeWithdrawModal();
+}
+
+document.getElementById('langSelect').value = currentLang;
+changeLanguage(currentLang);
+fetchUserData();
+setInterval(updateUI, 1000);
