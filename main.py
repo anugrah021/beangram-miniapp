@@ -120,7 +120,6 @@ def verify_channel(
     except Exception as e:
         raise HTTPException(status_code=500, detail=get_msg(lang, "telegram_error") + str(e))
 
-    # Jika Telegram API mengembalikan error (misal Bot belum jadi Admin)
     if not res_data.get("ok"):
         error_desc = res_data.get("description", "Unknown Telegram Error")
         return {
@@ -137,15 +136,11 @@ def verify_channel(
             "message": get_msg(lang, "not_joined", status=member_status)
         }
 
-    # 4. Tambah Task & Update Saldo Supabase
-    reward_amount = 500
+    # 4. Tambah Task & Update Saldo Supabase (Urutan Diperbaiki: Buat User dulu baru Simpan Task)
+    reward_amount = 100
     
     try:
-        supabase.table("user_tasks").insert({
-            "telegram_id": telegram_id,
-            "task_id": task_id
-        }).execute()
-
+        # A. Daftarkan / perbarui user di tabel 'users'
         user_check = supabase.table("users").select("*").eq("telegram_id", telegram_id).execute()
         
         if user_check.data:
@@ -159,6 +154,12 @@ def verify_channel(
                 "username": username,
                 "balance": new_balance
             }).execute()
+
+        # B. Catat task di tabel 'user_tasks'
+        supabase.table("user_tasks").insert({
+            "telegram_id": telegram_id,
+            "task_id": task_id
+        }).execute()
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=get_msg(lang, "db_error") + str(e))
