@@ -6,7 +6,7 @@
     <title>BeanGram Game</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        *{box-sizing:border-box;user-select:none;margin:0;padding:0;}
+        *{box-sizing:border-box;user-select:none;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
         body{background:#f8f9fc;color:#1e293b;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;display:flex;flex-direction:column;justify-content:space-between;height:100vh;padding:15px 15px 75px 15px;overflow:hidden;position:relative;}
         .page{display:none;flex-direction:column;flex-grow:1;overflow-y:auto;position:relative;z-index:1;}
         .page.active{display:flex;}
@@ -26,6 +26,7 @@
         .mining-area{display:flex;flex-direction:column;align-items:center;justify-content:center;flex-grow:1;}
         .mining-display-box{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:15px;background:#e0f2fe;padding:8px 16px;border-radius:20px;border:1px solid #bae6fd;box-shadow:0 2px 8px rgba(0,0,0,0.03);}
         .unclaimed-text{font-size:20px;font-weight:700;color:#059669;}
+        
         @keyframes slimeWobble {
             0% { transform: scale(1) rotate(0deg); }
             30% { transform: scale(1.12, 0.88) rotate(-3deg); }
@@ -33,39 +34,23 @@
             75% { transform: scale(1.05, 0.95) rotate(-1deg); }
             100% { transform: scale(1) rotate(0deg); }
         }
-        .coin-wrapper {
-    width: 210px;
-    height: 210px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    position: relative;
-    background: transparent;
-    box-shadow: 0 12px 30px rgba(2, 132, 199, 0.18), 0 4px 10px rgba(0, 0, 0, 0.05);
-    transition: transform 0.1s ease;
-    -webkit-touch-callout: none;
-    -webkit-tap-highlight-color: transparent; /* Menghilangkan kotak biru saat disentuh */
-}
+        .coin-wrapper{
+            width:210px;height:210px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;background:transparent;
+            box-shadow:0 12px 30px rgba(2,132,199,0.18),0 4px 10px rgba(0,0,0,0.05);transition:transform 0.1s ease;
+            -webkit-touch-callout:none;
+        }
+        .coin-wrapper.wobble{animation:slimeWobble 0.5s ease-in-out;}
+        .coin-img{
+            width:100%;height:100%;border-radius:50%;object-fit:cover;
+            -webkit-touch-callout:none;pointer-events:none;
+        }
 
-.coin-wrapper.wobble {
-    animation: slimeWobble 0.5s ease-in-out;
-}
-
-.coin-img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-    -webkit-touch-callout: none;
-    -webkit-tap-highlight-color: transparent; /* Menghilangkan kotak biru pada gambar */
-}
         .action-btn-container{width:100%;max-width:320px;margin-top:25px;}
         .main-btn{width:100%;padding:16px;border-radius:16px;border:none;font-size:15px;font-weight:bold;cursor:pointer;transition:all 0.2s ease;text-transform:uppercase;letter-spacing:1px;}
         .btn-start{background:linear-gradient(90deg,#0284c7,#0ea5e9);color:#fff;box-shadow:0 4px 15px rgba(2,132,199,0.3);}
         .btn-mining{background:#e2e8f0;color:#475569;border:1px solid #cbd5e1;cursor:default;font-size:18px;letter-spacing:2px;}
         .btn-claim{background:linear-gradient(90deg,#10b981,#059669);color:#fff;box-shadow:0 4px 15px rgba(16,185,129,0.3);}
+        
         .card-box{background:#e0f2fe;border:1px solid #bae6fd;border-radius:16px;padding:15px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,0.02);}
         .card-title{font-size:12px;color:#0369a1;margin-bottom:10px;letter-spacing:0.5px;text-transform:uppercase;font-weight:bold;}
         .daily-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
@@ -148,8 +133,9 @@
                 <div class="unclaimed-text" id="unclaimedText">+0.0000</div>
             </div>
 
-            <div class="coin-wrapper" id="coinWrapper" onclick="handleCoinClick(event)" oncontextmenu="return false;">
-    <img src="Bgram.jpeg" alt="BeanGram Coin" class="coin-img" oncontextmenu="return false;">
+            <!-- Logo Bean dengan Animasi Slime & Anti Kotak Biru -->
+            <div class="coin-wrapper" id="coinWrapper" onclick="handleCoinClick(event)">
+                <img src="logo.png" alt="BeanGram Coin" class="coin-img" onerror="this.src='https://telegram.org/img/t_logo.png'">
             </div>
             
             <div class="action-btn-container">
@@ -166,14 +152,14 @@
         </div>
 
         <div class="task-item">
-    <div class="task-info">
-        <div class="task-icon">📢</div>
-        <div class="task-details">
-            <div class="name" id="txtTask1">Join Official Channel</div>
-            <div class="reward">+5.0 BGRAM + 0.05 TON</div>
-        </div>
-    </div>
-    <button class="btn-task" id="btnTask1" onclick="verifyTaskBackend('task_channel_1', 'BeanGram_Official')">Claim</button>
+            <div class="task-info">
+                <div class="task-icon">📢</div>
+                <div class="task-details">
+                    <div class="name" id="txtTask1">Join Official Channel</div>
+                    <div class="reward">+5.0 BGRAM + 0.05 TON</div>
+                </div>
+            </div>
+            <button class="btn-task" id="btnTask1" onclick="verifyTaskBackend('task_channel_1', 'BeanGram_Official')">Claim</button>
         </div>
 
         <div class="task-item">
@@ -272,7 +258,6 @@
             </div>
         </div>
     </div>
-
     <!-- MODAL WITHDRAW -->
     <div class="modal-overlay" id="withdrawModal">
         <div class="modal-card" style="max-width: 360px; text-align: left; padding: 22px;">
@@ -332,6 +317,7 @@
             <button class="modal-btn-close" onclick="closeDailyModal()">Close</button>
         </div>
     </div>
+
     <!-- Bottom Navigation Bar -->
     <div class="bottom-nav">
         <div class="nav-item active" id="nav-mine" onclick="switchTab('mine')">
