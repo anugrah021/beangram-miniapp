@@ -98,7 +98,7 @@
     <!-- Card Task Join Channel -->
     <div class="card">
         <h3 id="lbl-task-title">Telegram Task</h3>
-        <p id="lbl-task-desc">Join our official channel to get 500 BGRAM.</p>
+        <p id="lbl-task-desc">Join our official channel to get 100 BGRAM.</p>
         <button class="btn" id="btn-open-channel" onclick="openChannel()">1. Open Channel</button>
         <button class="btn" id="claim-btn" onclick="verifyTask('task_channel_1', 'BeanGram_Official')">2. Verify & Claim</button>
     </div>
@@ -121,7 +121,7 @@
                 balanceTitle: "Your Balance:",
                 loadingUser: "Loading user info...",
                 taskTitle: "Telegram Task",
-                taskDesc: "Join our official channel to get 500 BGRAM.",
+                taskDesc: "Join our official channel to get 100 BGRAM.",
                 btnOpen: "1. Open Channel",
                 btnClaim: "2. Verify & Claim",
                 checking: "Checking...",
@@ -132,7 +132,7 @@
                 balanceTitle: "Saldo Kamu:",
                 loadingUser: "Memuat data user...",
                 taskTitle: "Tugas Telegram",
-                taskDesc: "Bergabunglah ke Channel resmi kami untuk mendapatkan 500 BGRAM.",
+                taskDesc: "Bergabunglah ke Channel resmi kami untuk mendapatkan 100 BGRAM.",
                 btnOpen: "1. Buka Channel",
                 btnClaim: "2. Verifikasi & Klaim",
                 checking: "Memeriksa...",
@@ -143,7 +143,7 @@
                 balanceTitle: "Ваш баланс:",
                 loadingUser: "Загрузка данных...",
                 taskTitle: "Задание Telegram",
-                taskDesc: "Присоединяйтесь к нашему официальному каналу, чтобы получить 500 BGRAM.",
+                taskDesc: "Присоединяйтесь к нашему официальному каналу, чтобы получить 100 BGRAM.",
                 btnOpen: "1. Открыть канал",
                 btnClaim: "2. Проверить и получить",
                 checking: "Проверка...",
@@ -223,7 +223,6 @@
                     claimBtn.setAttribute("data-state", "claimed");
                 } else {
                     statusMsg.style.color = "#F44336";
-                    // TAMPILKAN PESAN TERPERINCI DARI BACKEND
                     statusMsg.innerText = data.message || data.detail || t.connError;
                     claimBtn.disabled = false;
                     claimBtn.innerText = t.btnClaim;
