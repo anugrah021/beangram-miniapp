@@ -73,6 +73,7 @@
         #status-msg {
             margin-top: 15px;
             font-size: 14px;
+            word-break: break-word;
         }
     </style>
 </head>
@@ -109,7 +110,7 @@
         tg.expand();
 
         const BACKEND_URL = "https://beangram-miniapp.vercel.app"; 
-        const initData = tg.initData || ""; // Mengambil initData asli Telegram
+        const initData = tg.initData || ""; 
 
         const user = tg.initDataUnsafe?.user || { id: 12345678, username: "DemoUser", language_code: "en" };
         const telegramId = user.id;
@@ -182,7 +183,7 @@
                 const encodedInitData = encodeURIComponent(initData);
                 const res = await fetch(`${BACKEND_URL}/get-user?init_data=${encodedInitData}`);
                 const data = await res.json();
-                if (data.status === "success") {
+                if (data.status === "success" && data.user) {
                     document.getElementById("user-balance").innerText = `${data.user.balance} BGRAM`;
                 }
             } catch (err) {
@@ -209,7 +210,7 @@
                 const res = await fetch(url);
                 const data = await res.json();
 
-                if (data.status === "success") {
+                if (res.ok && data.status === "success") {
                     statusMsg.style.color = "#4CAF50";
                     statusMsg.innerText = data.message;
                     document.getElementById("user-balance").innerText = `${data.balance} BGRAM`;
@@ -222,7 +223,8 @@
                     claimBtn.setAttribute("data-state", "claimed");
                 } else {
                     statusMsg.style.color = "#F44336";
-                    statusMsg.innerText = data.message;
+                    // TAMPILKAN PESAN TERPERINCI DARI BACKEND
+                    statusMsg.innerText = data.message || data.detail || t.connError;
                     claimBtn.disabled = false;
                     claimBtn.innerText = t.btnClaim;
                 }
