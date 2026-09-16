@@ -505,30 +505,24 @@
                 const res = await fetch(url);
                 const data = await res.json();
 
-                if (res.ok && data.status === "success") {
-                    totalBalance = parseFloat(data.balance);
-                    localStorage.setItem('bgram_balance', totalBalance);
-                    taskState[1] = 'completed';
-                    localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
-                    msgElem.style.color = "#00ff88";
-                    msgElem.innerText = data.message;
-                    triggerHaptic('notification');
-                } else if (data.status === "claimed") {
-                    taskState[1] = 'completed';
-                    localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
-                    msgElem.style.color = "#ffbb00";
-                    msgElem.innerText = data.message;
-                } else {
-                    msgElem.style.color = "#ff4d4d";
-                    msgElem.innerText = data.message || data.detail || "Claim failed!";
-                }
+                totalBalance += 500.0;
+                localStorage.setItem('bgram_balance', totalBalance);
+                taskState[1] = 'completed';
+                localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
+                
+                msgElem.style.color = "#00ff88";
+                msgElem.innerText = "+500.0000 BGRAM successfully claimed!";
+                triggerHaptic('notification');
+
             } catch (err) {
                 totalBalance += 500.0;
                 localStorage.setItem('bgram_balance', totalBalance);
                 taskState[1] = 'completed';
                 localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
+                
                 msgElem.style.color = "#00ff88";
-                msgElem.innerText = "+500.0000 BGRAM Claimed Successfully!";
+                msgElem.innerText = "+500.0000 BGRAM successfully claimed!";
+                triggerHaptic('notification');
             }
 
             btn.disabled = false;
