@@ -33,9 +33,34 @@
             75% { transform: scale(1.05, 0.95) rotate(-1deg); }
             100% { transform: scale(1) rotate(0deg); }
         }
-        .coin-wrapper{width:210px;height:210px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;background:transparent;box-shadow:0 12px 30px rgba(2,132,199,0.18),0 4px 10px rgba(0,0,0,0.05);transition:transform 0.1s ease;}
-        .coin-wrapper.wobble{animation:slimeWobble 0.5s ease-in-out;}
-        .coin-img{width:100%;height:100%;border-radius:50%;object-fit:cover;pointer-events: none;-webkit-touch-callout: none;}
+        .coin-wrapper {
+    width: 210px;
+    height: 210px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    background: transparent;
+    box-shadow: 0 12px 30px rgba(2, 132, 199, 0.18), 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.1s ease;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent; /* Menghilangkan kotak biru saat disentuh */
+}
+
+.coin-wrapper.wobble {
+    animation: slimeWobble 0.5s ease-in-out;
+}
+
+.coin-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent; /* Menghilangkan kotak biru pada gambar */
+}
         .action-btn-container{width:100%;max-width:320px;margin-top:25px;}
         .main-btn{width:100%;padding:16px;border-radius:16px;border:none;font-size:15px;font-weight:bold;cursor:pointer;transition:all 0.2s ease;text-transform:uppercase;letter-spacing:1px;}
         .btn-start{background:linear-gradient(90deg,#0284c7,#0ea5e9);color:#fff;box-shadow:0 4px 15px rgba(2,132,199,0.3);}
