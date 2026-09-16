@@ -37,6 +37,14 @@
             border-radius: 20px;
             font-size: 13px;
         }
+        .status-badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+            background: #ffaa00;
+            color: #000;
+        }
         .btn-connect {
             background: #0088cc;
             color: #fff;
@@ -47,30 +55,30 @@
             font-weight: bold;
             cursor: pointer;
         }
-        /* Balance Container */
+        /* Balance Section */
         .balance-container {
             text-align: center;
             margin-top: 15px;
         }
         .balance-label {
-            font-size: 12px;
+            font-size: 11px;
             color: #8a8d93;
             letter-spacing: 1px;
         }
         .balance-value {
-            font-size: 38px;
+            font-size: 36px;
             font-weight: 800;
             color: #ffbb00;
-            margin: 5px 0;
+            margin: 4px 0;
         }
         .sub-balance {
             display: flex;
             justify-content: center;
             gap: 15px;
-            font-size: 11px;
-            color: #6c7079;
+            font-size: 12px;
+            color: #aaa;
         }
-        /* Mining Area */
+        /* Mining Area & Coin */
         .mining-area {
             display: flex;
             flex-direction: column;
@@ -78,49 +86,63 @@
             justify-content: center;
             flex-grow: 1;
         }
-        .bean-btn {
-            width: 200px;
-            height: 200px;
+        .unclaimed-text {
+            font-size: 26px;
+            font-weight: 700;
+            color: #00ff88;
+            margin-bottom: 25px;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+        .coin-wrapper {
+            width: 190px;
+            height: 190px;
             border-radius: 50%;
-            background: radial-gradient(circle, #ffaa00 0%, #996600 100%);
-            border: 6px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 30px rgba(255, 170, 0, 0.3);
+            padding: 8px;
+            background: linear-gradient(145deg, #ffbb00, #996600);
+            box-shadow: 0 0 35px rgba(255, 187, 0, 0.25);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.05s ease;
         }
-        .bean-btn:active {
-            transform: scale(0.93);
-        }
-        /* Energy & Controls */
-        .energy-bar-container {
-            width: 100%;
-            max-width: 280px;
-            margin-top: 20px;
-        }
-        .energy-text {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            margin-bottom: 5px;
-            color: #aaa;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .progress-fill {
+        .coin-img {
             width: 100%;
             height: 100%;
-            background: #ffbb00;
-            transition: width 0.2s;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        /* Action Button */
+        .action-btn-container {
+            width: 100%;
+            max-width: 320px;
+            margin-top: 30px;
+        }
+        .main-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-start {
+            background: linear-gradient(90deg, #ffbb00, #ff8800);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(255, 187, 0, 0.4);
+        }
+        .btn-mining {
+            background: rgba(255, 255, 255, 0.08);
+            color: #8a8d93;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: default;
+        }
+        .btn-claim {
+            background: linear-gradient(90deg, #00ff88, #00b359);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.4);
         }
         /* Bottom Nav */
         .bottom-nav {
@@ -142,7 +164,6 @@
             gap: 4px;
             color: #6c7079;
             font-size: 11px;
-            text-decoration: none;
             cursor: pointer;
         }
         .nav-item.active {
@@ -159,45 +180,45 @@
     <div class="top-bar">
         <div class="user-profile">
             <span id="username">Farmer</span>
+            <span class="status-badge" id="statusBadge">IDLE</span>
         </div>
         <button class="btn-connect" onclick="alert('Fitur Wallet segera hadir!')">Connect Wallet</button>
     </div>
 
-    <!-- Balance Display -->
+    <!-- Balance Section -->
     <div class="balance-container">
         <div class="balance-label">TOTAL ASSETS</div>
-        <div class="balance-value" id="balance">0.0000</div>
+        <div class="balance-value" id="totalBalance">0.0000 BGRAM</div>
         <div class="sub-balance">
-            <span>Vault: <b id="vault">0.0000</b></span>
-            <span>Staked: <b>0.0000</b></span>
+            <span>Vault: <b id="vaultBalance">0.0000</b></span>
+            <span>Rate: <b>+2.0 BGRAM/5h</b></span>
         </div>
     </div>
 
-    <!-- Mining Area -->
+    <!-- Mining Display -->
     <div class="mining-area">
-        <div class="bean-btn" id="tapBtn" onclick="tapBean()">$BGRAM</div>
-        <div class="energy-bar-container">
-            <div class="energy-text">
-                <span>⚡ Energy</span>
-                <span id="energyText">1000 / 1000</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="energyFill"></div>
-            </div>
+        <div class="unclaimed-text" id="unclaimedText">+0.0000</div>
+        
+        <div class="coin-wrapper">
+            <img src="Bgram.jpeg" alt="BeanGram Coin" class="coin-img" onerror="this.src='https://via.placeholder.com/200/0088cc/ffffff?text=BGRAM'">
+        </div>
+
+        <div class="action-btn-container">
+            <button class="main-btn btn-start" id="actionBtn" onclick="handleButtonClick()">START FARMING</button>
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
+    <!-- Bottom Nav -->
     <div class="bottom-nav">
         <div class="nav-item active">
-            <div class="nav-icon">⛏️</div>
-            <div>Farm</div>
+            <div class="nav-icon">⚡</div>
+            <div>Mine</div>
         </div>
         <div class="nav-item" onclick="alert('Fitur Tasks segera hadir!')">
             <div class="nav-icon">📋</div>
             <div>Tasks</div>
         </div>
-        <div class="nav-item" onclick="alert('Fitur Referral segera hadir!')">
+        <div class="nav-item" onclick="alert('Fitur Friends segera hadir!')">
             <div class="nav-icon">👥</div>
             <div>Friends</div>
         </div>
@@ -215,34 +236,84 @@
             document.getElementById('username').innerText = tg.initDataUnsafe.user.first_name;
         }
 
-        let balance = 0.0000;
-        let energy = 1000;
-        const maxEnergy = 1000;
+        const FARM_DURATION = 5 * 60 * 60 * 1000; // 5 Jam (ms)
+        const TOTAL_REWARD = 2.0; // Total 2 BGRAM per 5 jam
 
-        function tapBean() {
-            if (energy >= 1) {
-                balance += 0.0010;
-                energy -= 1;
-                
-                document.getElementById('balance').innerText = balance.toFixed(4);
-                document.getElementById('vault').innerText = balance.toFixed(4);
-                document.getElementById('energyText').innerText = energy + " / " + maxEnergy;
-                document.getElementById('energyFill').style.width = (energy / maxEnergy * 100) + "%";
+        let totalBalance = parseFloat(localStorage.getItem('bgram_balance')) || 0;
+        let miningStartTime = parseInt(localStorage.getItem('bgram_start_time')) || 0;
 
-                if (tg.HapticFeedback) {
-                    tg.HapticFeedback.impactOccurred('light');
+        const actionBtn = document.getElementById('actionBtn');
+        const unclaimedText = document.getElementById('unclaimedText');
+        const totalBalanceElem = document.getElementById('totalBalance');
+        const vaultBalanceElem = document.getElementById('vaultBalance');
+        const statusBadge = document.getElementById('statusBadge');
+
+        function updateUI() {
+            totalBalanceElem.innerText = totalBalance.toFixed(4) + " BGRAM";
+            vaultBalanceElem.innerText = totalBalance.toFixed(4);
+
+            if (miningStartTime === 0) {
+                // Status IDLE
+                statusBadge.innerText = "IDLE";
+                statusBadge.style.background = "#ffaa00";
+                unclaimedText.innerText = "+0.0000";
+                actionBtn.innerText = "START FARMING";
+                actionBtn.className = "main-btn btn-start";
+            } else {
+                const now = Date.now();
+                const elapsedTime = now - miningStartTime;
+
+                if (elapsedTime >= FARM_DURATION) {
+                    // Selesai Mining -> Siap CLAIM
+                    statusBadge.innerText = "READY";
+                    statusBadge.style.background = "#00ff88";
+                    unclaimedText.innerText = "+" + TOTAL_REWARD.toFixed(4);
+                    actionBtn.innerText = "CLAIM BGRAM";
+                    actionBtn.className = "main-btn btn-claim";
+                } else {
+                    // Sedang Mining
+                    statusBadge.innerText = "MINING";
+                    statusBadge.style.background = "#0088cc";
+                    
+                    const progressRatio = elapsedTime / FARM_DURATION;
+                    const currentReward = progressRatio * TOTAL_REWARD;
+                    unclaimedText.innerText = "+" + currentReward.toFixed(4);
+
+                    const remainingTime = FARM_DURATION - elapsedTime;
+                    const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+                    const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+                    const hStr = hours < 10 ? "0" + hours : hours;
+                    const mStr = minutes < 10 ? "0" + minutes : minutes;
+                    const sStr = seconds < 10 ? "0" + seconds : seconds;
+
+                    actionBtn.innerText = `FARMING (${hStr}:${mStr}:${sStr})`;
+                    actionBtn.className = "main-btn btn-mining";
                 }
             }
         }
 
-        // Auto Regen Energy Setiap Detik
-        setInterval(() => {
-            if (energy < maxEnergy) {
-                energy += 1;
-                document.getElementById('energyText').innerText = energy + " / " + maxEnergy;
-                document.getElementById('energyFill').style.width = (energy / maxEnergy * 100) + "%";
+        function handleButtonClick() {
+            const now = Date.now();
+            if (miningStartTime === 0) {
+                // Mulai Mining
+                miningStartTime = now;
+                localStorage.setItem('bgram_start_time', miningStartTime);
+            } else if (now - miningStartTime >= FARM_DURATION) {
+                // Klaim Reward
+                totalBalance += TOTAL_REWARD;
+                localStorage.setItem('bgram_balance', totalBalance);
+                
+                miningStartTime = 0;
+                localStorage.removeItem('bgram_start_time');
             }
-        }, 1000);
+            updateUI();
+        }
+
+        // Loop per detik
+        setInterval(updateUI, 1000);
+        updateUI();
     </script>
 </body>
 </html>
