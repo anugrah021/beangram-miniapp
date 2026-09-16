@@ -230,20 +230,52 @@
             <div class="card-title" id="txtSupportTitle">COMMUNITY</div>
             <div style="display: flex; gap: 10px;">
                 <button class="btn-connect" style="background: rgba(255,255,255,0.08); flex: 1;" id="btnChannel" onclick="triggerHaptic('selection'); window.open('https://t.me/BeanGram_Official', '_blank')">Channel</button>
-                <button class="btn-connect" style="background: rgba(255,255,255,0.08); flex: 1;" id="btnXSocial" onclick="triggerHaptic('selection'); window.open('https://x.com', '_blank')">X (Twitter)</button>
-            </div>
-        </div>
-    </div>
+                <button class="btn-connect" style="background: rgba(255,255,255,0.08); flex: 1;" id="btnXSocial" onclick="triggerHaptic('selection'); window.open('https://x.com', '_blank')">X (Twitter)
 
     <!-- MODAL WITHDRAW -->
     <div class="modal-overlay" id="withdrawModal">
-        <div class="modal-card">
-            <div class="modal-title" id="wdTitle">Withdraw BGRAM</div>
-            <div class="modal-status" id="wdStatus">AIRDROP & TGE PHASE</div>
-            <p style="font-size: 12px; color: #aaa; margin-bottom: 15px;" id="wdDesc">Withdrawals will open soon upon Token Listing. Please connect your TON wallet.</p>
-            <input type="text" class="modal-input" placeholder="Enter TON Wallet Address (EQ...)" readonly>
-            <button class="main-btn btn-start" style="padding: 12px; font-size: 13px;" onclick="triggerHaptic('impact'); alert(currentTranslations.alertWallet)" id="wdBtnConfirm">CONNECT TON WALLET</button>
-            <button class="modal-btn-close" onclick="closeWithdrawModal()" id="wdBtnClose">Close</button>
+        <div class="modal-card" style="max-width: 360px; text-align: left; padding: 22px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div style="font-size: 16px; font-weight: 800; color: #ffbb00;" id="wdModalTitle">Token Withdrawal</div>
+                <div onclick="closeWithdrawModal()" style="font-size: 18px; color: #8a8d93; cursor: pointer; padding: 2px 8px;">✕</div>
+            </div>
+
+            <!-- Tab Pemilihan Token -->
+            <div style="display: flex; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.06);">
+                <button onclick="switchWdTab('ton')" id="wdTabTon" style="flex: 1; background: rgba(255,187,0,0.15); color: #ffbb00; border: none; padding: 8px; border-radius: 9px; font-size: 11px; font-weight: bold; cursor: pointer; transition: all 0.2s;">💎 TON (Gram)</button>
+                <button onclick="switchWdTab('bgram')" id="wdTabBgram" style="flex: 1; background: transparent; color: #8a8d93; border: none; padding: 8px; border-radius: 9px; font-size: 11px; font-weight: bold; cursor: pointer; transition: all 0.2s;">🪙 BGRAM</button>
+            </div>
+
+            <!-- Konten Tab TON (Gram) -->
+            <div id="wdContentTon">
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #8a8d93; margin-bottom: 6px;">
+                    <span>Available Balance:</span>
+                    <span style="color: #00ff88; font-weight: bold;" id="tonAvailableBalance">0.0000 TON</span>
+                </div>
+                <input type="text" class="modal-input" id="tonWalletInput" placeholder="Enter TON Wallet Address (EQ... / UQ...)">
+                <input type="number" class="modal-input" id="tonAmountInput" placeholder="Amount (Min. 0.1 TON)" step="0.01">
+                
+                <div style="font-size: 10px; color: #8a8d93; margin-bottom: 15px; display: flex; justify-content: space-between;">
+                    <span>Fee: ~0.005 TON</span>
+                    <span style="color: #ffbb00;">Instant Payout Engine</span>
+                </div>
+
+                <button class="main-btn btn-start" style="padding: 13px; font-size: 12px;" onclick="requestTonWithdraw()">WITHDRAW TON</button>
+            </div>
+
+            <!-- Konten Tab BGRAM (Locked / Coming Soon) -->
+            <div id="wdContentBgram" style="display: none; text-align: center; padding: 15px 0;">
+                <div style="font-size: 36px; margin-bottom: 8px;">🔒</div>
+                <div style="font-size: 14px; font-weight: bold; color: #ff4d4d; margin-bottom: 5px;">LOCKED / TGE PHASE</div>
+                <p style="font-size: 11px; color: #aaa; line-height: 1.4; margin-bottom: 20px;">
+                    BGRAM token distribution and withdrawals will unlock officially after the Token Generation Event (TGE) & CEX/DEX Listing. HODL your mining power!
+                </p>
+                <div style="background: rgba(255,255,255,0.04); border: 1px dashed rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; font-size: 11px; color: #8a8d93;">
+                    Total BGRAM Locked: <b style="color: #ffbb00;" id="lockedBgramVal">0.0000</b>
+                </div>
+            </div>
+
+            <button class="modal-btn-close" onclick="closeWithdrawModal()" style="margin-top: 12px;">Close</button>
         </div>
     </div>
 
@@ -682,6 +714,73 @@
         changeLanguage(currentLang);
         fetchUserData();
         setInterval(updateUI, 1000);
-    </script>
+      <script>
+        // Variabel saldo TON / Gram user
+        let tonBalance = parseFloat(localStorage.getItem('bgram_ton_balance')) || 0.0000;
+
+        function switchWdTab(tab) {
+            triggerHaptic('selection');
+            const btnTon = document.getElementById('wdTabTon');
+            const btnBgram = document.getElementById('wdTabBgram');
+            const contentTon = document.getElementById('wdContentTon');
+            const contentBgram = document.getElementById('wdContentBgram');
+
+            if (tab === 'ton') {
+                btnTon.style.background = "rgba(255,187,0,0.15)";
+                btnTon.style.color = "#ffbb00";
+                btnBgram.style.background = "transparent";
+                btnBgram.style.color = "#8a8d93";
+                contentTon.style.display = "block";
+                contentBgram.style.display = "none";
+            } else {
+                btnBgram.style.background = "rgba(255,77,77,0.15)";
+                btnBgram.style.color = "#ff4d4d";
+                btnTon.style.background = "transparent";
+                btnTon.style.color = "#8a8d93";
+                contentBgram.style.display = "block";
+                contentTon.style.display = "none";
+                document.getElementById('lockedBgramVal').innerText = totalBalance.toFixed(4) + " BGRAM";
+            }
+        }
+
+        function openWithdrawModal() {
+            triggerHaptic('selection');
+            document.getElementById('withdrawModal').classList.add('active');
+            document.getElementById('tonAvailableBalance').innerText = tonBalance.toFixed(4) + " TON";
+        }
+
+        function closeWithdrawModal() {
+            triggerHaptic('selection');
+            document.getElementById('withdrawModal').classList.remove('active');
+        }
+
+        async function requestTonWithdraw() {
+            triggerHaptic('impact');
+            const address = document.getElementById('tonWalletInput').value.trim();
+            const amount = parseFloat(document.getElementById('tonAmountInput').value);
+
+            if (!address || address.length < 10) {
+                alert("Please enter a valid TON wallet address!");
+                return;
+            }
+            if (isNaN(amount) || amount < 0.1) {
+                alert("Minimum withdrawal amount is 0.1 TON!");
+                return;
+            }
+            if (amount > tonBalance) {
+                alert("Insufficient TON balance!");
+                return;
+            }
+
+            alert(`Withdrawal request for ${amount} TON submitted successfully! Processing to blockchain...`);
+            
+            tonBalance -= amount;
+            localStorage.setItem('bgram_ton_balance', tonBalance);
+            document.getElementById('tonAvailableBalance').innerText = tonBalance.toFixed(4) + " TON";
+            closeWithdrawModal();
+        }
+</script>
+    
+                
 </body>
 </html>
