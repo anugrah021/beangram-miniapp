@@ -25,7 +25,6 @@
             position: relative;
         }
 
-        /* Hiasan Visual Grid Background */
         body::before {
             content: "";
             position: absolute;
@@ -505,7 +504,7 @@
             <p style="font-size:12px; color:#aaa; margin-top:4px;" id="txtTasksDesc">Complete social tasks to earn extra BGRAM!</p>
         </div>
 
-        <!-- Task 1 -->
+        <!-- Task 1: Channel -->
         <div class="task-item">
             <div class="task-info">
                 <div class="task-icon">📢</div>
@@ -517,7 +516,7 @@
             <button class="btn-task" id="btnTask1" onclick="processTask(1, 'https://t.me/BeanGram_Official', 0.5)">Join</button>
         </div>
 
-        <!-- Task 2 -->
+        <!-- Task 2: X (Twitter) -->
         <div class="task-item">
             <div class="task-info">
                 <div class="task-icon">🐦</div>
@@ -526,10 +525,10 @@
                     <div class="reward">+0.5000 BGRAM</div>
                 </div>
             </div>
-            <button class="btn-task" id="btnTask2" onclick="processTask(2, 'https://x.com', 0.5)">Follow</button>
+            <button class="btn-task" id="btnTask2" onclick="processTask(2, 'https://x.com/BeanGram_', 0.5)">Follow</button>
         </div>
 
-        <!-- Task 3 -->
+        <!-- Task 3: Invite -->
         <div class="task-item">
             <div class="task-info">
                 <div class="task-icon">👥</div>
@@ -607,11 +606,12 @@
             </div>
         </div>
 
+        <!-- Community Section Tanpa Support -->
         <div class="card-box">
-            <div class="card-title" id="txtSupportTitle">COMMUNITY & SUPPORT</div>
+            <div class="card-title" id="txtSupportTitle">COMMUNITY</div>
             <div style="display: flex; gap: 10px;">
                 <button class="btn-connect" style="background: rgba(255,255,255,0.08); flex: 1;" id="btnChannel" onclick="triggerHaptic('selection'); window.open('https://t.me/BeanGram_Official', '_blank')">Channel</button>
-                <button class="btn-connect" style="background: rgba(255,255,255,0.08); flex: 1;" id="btnSupport" onclick="triggerHaptic('impact'); alert(currentTranslations.alertSupport)">Support</button>
+                <button class="btn-connect" style="background: rgba(255,255,255,0.08); flex: 1;" id="btnXSocial" onclick="triggerHaptic('selection'); window.open('https://x.com/BeanGram_', '_blank')">X (Twitter)</button>
             </div>
         </div>
     </div>
@@ -706,9 +706,8 @@
                 totalReferrals: "Total Referrals",
                 walletTitle: "WEB3 TON WALLET",
                 notConnected: "Not Connected",
-                supportTitle: "COMMUNITY & SUPPORT",
+                supportTitle: "COMMUNITY",
                 channel: "Channel",
-                support: "Support",
                 navMine: "Mine",
                 navTasks: "Tasks",
                 navFriends: "Friends",
@@ -719,8 +718,6 @@
                 wdBtnConfirm: "CONNECT TON WALLET",
                 wdBtnClose: "Close",
                 alertWallet: "TON Wallet integration coming soon!",
-                alertTwitter: "X link not configured yet!",
-                alertSupport: "Support feature coming soon!",
                 alertCopied: "Referral link copied!"
             },
             ru: {
@@ -752,9 +749,8 @@
                 totalReferrals: "Всего Рефералов",
                 walletTitle: "WEB3 TON КОШЕЛЕК",
                 notConnected: "Не Подключен",
-                supportTitle: "СООБЩЕСТВО И ПОДДЕРЖКА",
+                supportTitle: "СООБЩЕСТВО",
                 channel: "Канал",
-                support: "Помощь",
                 navMine: "Майнинг",
                 navTasks: "Задания",
                 navFriends: "Друзья",
@@ -765,8 +761,6 @@
                 wdBtnConfirm: "ПОДКЛЮЧИТЬ TON КОШЕЛЕК",
                 wdBtnClose: "Закрыть",
                 alertWallet: "Интеграция TON кошелька скоро!",
-                alertTwitter: "Ссылка на X еще не настроена!",
-                alertSupport: "Служба поддержки скоро!",
                 alertCopied: "Реферальная ссылка скопирована!"
             },
             id: {
@@ -798,9 +792,8 @@
                 totalReferrals: "Total Referral",
                 walletTitle: "WEB3 TON WALLET",
                 notConnected: "Belum Terhubung",
-                supportTitle: "KOMUNITAS & BANTUAN",
+                supportTitle: "KOMUNITAS",
                 channel: "Channel",
-                support: "Bantuan",
                 navMine: "Tambang",
                 navTasks: "Misi",
                 navFriends: "Teman",
@@ -811,8 +804,6 @@
                 wdBtnConfirm: "HUBUNGKAN TON WALLET",
                 wdBtnClose: "Tutup",
                 alertWallet: "Integrasi Wallet TON segera hadir!",
-                alertTwitter: "Link X belum dikonfigurasi!",
-                alertSupport: "Fitur Support segera hadir!",
                 alertCopied: "Link Referral berhasil disalin!"
             }
         };
@@ -853,7 +844,6 @@
             document.getElementById('walletStatus').innerText = currentTranslations.notConnected;
             document.getElementById('txtSupportTitle').innerText = currentTranslations.supportTitle;
             document.getElementById('btnChannel').innerText = currentTranslations.channel;
-            document.getElementById('btnSupport').innerText = currentTranslations.support;
 
             document.getElementById('navTxtMine').innerText = currentTranslations.navMine;
             document.getElementById('navTxtTasks').innerText = currentTranslations.navTasks;
@@ -870,7 +860,7 @@
             updateTaskUI();
         }
 
-        /* LOGIKA SYSTEM TASKS */
+        /* SYSTEM TASKS */
         let taskState = JSON.parse(localStorage.getItem('bgram_tasks')) || { 1: 'init', 2: 'init' };
 
         function updateTaskUI() {
@@ -928,7 +918,7 @@
             }
         }
 
-        /* LOGIKA DAILY REWARD */
+        /* DAILY REWARD */
         let lastDailyClaim = parseInt(localStorage.getItem('bgram_last_daily')) || 0;
 
         function openDailyModal() {
@@ -973,7 +963,7 @@
             alert("Daily reward +0.1 BGRAM successfully claimed!");
         }
 
-        /* LOGIKA WITHDRAW MODAL */
+        /* WITHDRAW MODAL */
         function openWithdrawModal() {
             triggerHaptic('selection');
             document.getElementById('withdrawModal').classList.add('active');
@@ -984,7 +974,7 @@
             document.getElementById('withdrawModal').classList.remove('active');
         }
 
-        /* LOGIKA TRAMP PROFILE & TELEGRAM USER */
+        /* TELEGRAM USER DATA */
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             const u = tg.initDataUnsafe.user;
             document.getElementById('usernameTop').innerText = u.first_name;
@@ -1004,7 +994,7 @@
             }
         }
 
-        /* LOGIKA MINING ENGINE */
+        /* MINING ENGINE */
         const FARM_DURATION = 5 * 60 * 60 * 1000;
         const TOTAL_REWARD = 2.0;
 
