@@ -20,6 +20,45 @@ SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY) if SUPABASE_URL and SUPABASE_KEY else None
 
+# Kamus Pesan Server 3 Bahasa (EN, ID, RU)
+MESSAGES = {
+    "en": {
+        "claimed": "You have already claimed this task!",
+        "bot_token_missing": "BOT_TOKEN is not configured on the server",
+        "db_missing": "Supabase database is not configured",
+        "telegram_error": "Failed to connect to Telegram API: ",
+        "not_joined": "You have not joined the channel yet.",
+        "failed": "Make sure you have joined the channel!",
+        "db_error": "Failed to update database: ",
+        "success": "Verification successful! Reward +{reward} BGRAM"
+    },
+    "id": {
+        "claimed": "Tugas ini sudah kamu klaim sebelumnya!",
+        "bot_token_missing": "BOT_TOKEN belum dikonfigurasi di Server",
+        "db_missing": "Database Supabase belum dikonfigurasi",
+        "telegram_error": "Gagal menghubungi Telegram API: ",
+        "not_joined": "Kamu belum menjadi anggota channel.",
+        "failed": "Pastikan kamu sudah bergabung ke channel!",
+        "db_error": "Gagal memperbarui database: ",
+        "success": "Verifikasi berhasil! Saldo bertambah +{reward} BGRAM"
+    },
+    "ru": {
+        "claimed": "Вы уже получили награду за das задание!",
+        "bot_token_missing": "BOT_TOKEN не настроен на сервере",
+        "db_missing": "База данных Supabase не настроена",
+        "telegram_error": "Не удалось связаться с Telegram API: ",
+        "not_joined": "Вы еще не вступили в канал.",
+        "failed": "Убедитесь, что вы вступили в канал!",
+        "db_error": "Ошибка обновления базы данных: ",
+        "success": "Проверка прошла успешно! Награда +{reward} BGRAM"
+    }
+}
+
+def get_msg(lang: str, key: str, **kwargs):
+    lang_code = lang.lower() if lang and lang.lower() in MESSAGES else "en"
+    msg = MESSAGES[lang_code].get(key, MESSAGES["en"].get(key, ""))
+    return msg.format(**kwargs) if kwargs else msg
+
 @app.get("/")
 def home():
     return {"status": "online", "message": "BeanGram Backend Service Running"}
@@ -29,18 +68,21 @@ def verify_channel(
     telegram_id: int = Query(...), 
     username: str = Query(None), 
     channel: str = Query(...),
-    task_id: str = Query(...)
+    task_id: str = Query(...),
+    lang: str = Query("en")
 ):
     if not BOT_TOKEN:
-        raise HTTPException(status_code=500, detail="BOT_TOKEN belum dikonfigurasi di Server")
+        raise HTTPException(status_code=500, detail=get_msg(lang, "bot_token_missing"))
     
     if not supabase:
-        raise HTTPException(status_code=500, detail="Database Supabase belum dikonfigurasi")
+        raise HTTPException(status_code=500, detail=get_msg(lang, "db_missing"))
 
+    # 1. Cek Anti Double Claim
     task_check = supabase.table("user_tasks").select("*").eq("telegram_id", telegram_id).eq("task_id", task_id).execute()
     if task_check.data:
-        return {"status": "claimed", "message": "Tugas ini sudah kamu klaim sebelumnya!"}
+        return {"status": "claimed", "message": get_msg(lang, "claimed")}
 
+    # 2. Cek Keanggotaan Telegram
     channel_username = channel if channel.startswith("@") else f"@{channel}"
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/getChatMember"
     params = {"chat_id": channel_username, "user_id": telegram_id}
@@ -49,17 +91,18 @@ def verify_channel(
         response = requests.get(url, params=params, timeout=10)
         res_data = response.json()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Gagal menghubungi Telegram API: {str(e)}")
+        raise HTTPException(status_code=500, detail=get_msg(lang, "telegram_error") + str(e))
 
     if not res_data.get("ok"):
-        return {"status": "failed", "message": "Pastikan kamu sudah bergabung ke channel!"}
+        return {"status": "failed", "message": get_msg(lang, "failed")}
 
     member_status = res_data.get("result", {}).get("status")
     valid_statuses = ["creator", "administrator", "member"]
 
     if member_status not in valid_statuses:
-        return {"status": "not_joined", "message": "Kamu belum menjadi anggota channel."}
+        return {"status": "not_joined", "message": get_msg(lang, "not_joined")}
 
+    # 3. Simpan Task & Update Saldo
     reward_amount = 500
     
     try:
@@ -83,11 +126,11 @@ def verify_channel(
             }).execute()
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Gagal memperbarui database: {str(e)}")
+        raise HTTPException(status_code=500, detail=get_msg(lang, "db_error") + str(e))
 
     return {
         "status": "success",
-        "message": f"Verifikasi berhasil! Saldo bertambah +{reward_amount} BGRAM",
+        "message": get_msg(lang, "success", reward=reward_amount),
         "balance": new_balance
     }
 
