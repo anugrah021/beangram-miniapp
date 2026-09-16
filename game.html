@@ -160,7 +160,6 @@
         </div>
         <div id="task-status-msg" style="margin-top: 10px; font-size: 12px; text-align: center;"></div>
     </div>
-
     <!-- PAGE 3: FRIENDS -->
     <div id="page-friends" class="page">
         <div class="reff-banner">
@@ -230,9 +229,12 @@
             <div class="card-title" id="txtSupportTitle">COMMUNITY</div>
             <div style="display: flex; gap: 10px;">
                 <button class="btn-connect" style="background: rgba(255,255,255,0.08); flex: 1;" id="btnChannel" onclick="triggerHaptic('selection'); window.open('https://t.me/BeanGram_Official', '_blank')">Channel</button>
-                <button class="btn-connect" style="background: rgba(255,255,255,0.08); flex: 1;" id="btnXSocial" onclick="triggerHaptic('selection'); window.open('https://x.com', '_blank')">X (Twitter)
+                <button class="btn-connect" style="background: rgba(255,255,255,0.08); flex: 1;" id="btnXSocial" onclick="triggerHaptic('selection'); window.open('https://x.com', '_blank')">X (Twitter)</button>
+            </div>
+        </div>
+    </div>
 
-    <!-- MODAL WITHDRAW -->
+    <!-- MODAL WITHDRAW (TON/Gram & BGRAM Locked Tabs) -->
     <div class="modal-overlay" id="withdrawModal">
         <div class="modal-card" style="max-width: 360px; text-align: left; padding: 22px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -314,7 +316,6 @@
             <div id="navTxtProfile">Profile</div>
         </div>
     </div>
-
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
@@ -482,16 +483,6 @@
             updateUI();
             checkDailyStatus();
             alert("Daily reward +1.0 BGRAM successfully claimed!");
-        }
-
-        function openWithdrawModal() {
-            triggerHaptic('selection');
-            document.getElementById('withdrawModal').classList.add('active');
-        }
-
-        function closeWithdrawModal() {
-            triggerHaptic('selection');
-            document.getElementById('withdrawModal').classList.remove('active');
         }
 
         let taskState = JSON.parse(localStorage.getItem('bgram_tasks')) || { 1: 'init', 2: 'init' };
@@ -710,12 +701,7 @@
             }
         }
 
-        document.getElementById('langSelect').value = currentLang;
-        changeLanguage(currentLang);
-        fetchUserData();
-        setInterval(updateUI, 1000);
-      <script>
-        // Variabel saldo TON / Gram user
+        // Logika Tab & Withdraw TON (Gram) Baru
         let tonBalance = parseFloat(localStorage.getItem('bgram_ton_balance')) || 0.0000;
 
         function switchWdTab(tab) {
@@ -779,8 +765,11 @@
             document.getElementById('tonAvailableBalance').innerText = tonBalance.toFixed(4) + " TON";
             closeWithdrawModal();
         }
-</script>
-    
-                
+
+        document.getElementById('langSelect').value = currentLang;
+        changeLanguage(currentLang);
+        fetchUserData();
+        setInterval(updateUI, 1000);
+    </script>
 </body>
 </html>
