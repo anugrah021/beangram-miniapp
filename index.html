@@ -188,11 +188,13 @@
         .coin-wrapper:active {
             transform: scale(0.93);
         }
-        .coin-img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
+        .coin-shape {
+            width: 75px;
+            height: 75px;
+            background: #ffffff;
+            border-radius: 65% 35% 45% 55% / 55% 45% 55% 45%;
+            transform: rotate(-30deg);
+            box-shadow: inset -4px -4px 10px rgba(0,0,0,0.15);
         }
         .action-btn-container {
             width: 100%;
@@ -380,7 +382,7 @@
             justify-content: space-around;
             align-items: center;
             border-top: 1px solid rgba(255, 255, 255, 0.06);
-            z-index: 10;
+            z-index: 100;
         }
         .nav-item {
             display: flex;
@@ -402,7 +404,7 @@
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(8px);
-            z-index: 100;
+            z-index: 200;
             align-items: center;
             justify-content: center;
             padding: 20px;
@@ -489,7 +491,7 @@
         <div class="mining-area">
             <div class="unclaimed-text" id="unclaimedText">+0.0000</div>
             <div class="coin-wrapper" onclick="triggerHaptic('impact')">
-                <img src="https://t.me/i/userpic/320/BeanGram_Official.jpg" alt="BeanGram Coin" class="coin-img" onerror="this.src='https://telegram.org/img/t_logo.png'">
+                <div class="coin-shape"></div>
             </div>
             <div class="action-btn-container">
                 <button class="main-btn btn-start" id="actionBtn" onclick="handleButtonClick()">START FARMING</button>
@@ -504,7 +506,6 @@
             <p style="font-size:12px; color:#aaa; margin-top:4px;" id="txtTasksDesc">Complete social tasks to earn extra BGRAM!</p>
         </div>
 
-        <!-- Task 1: Channel Resmi (Verifikasi API Backend Vercel) -->
         <div class="task-item">
             <div class="task-info">
                 <div class="task-icon">📢</div>
@@ -516,7 +517,6 @@
             <button class="btn-task" id="btnTask1" onclick="verifyTaskBackend('task_channel_1', 'BeanGram_Official')">Join</button>
         </div>
 
-        <!-- Task 2: X (Twitter) -->
         <div class="task-item">
             <div class="task-info">
                 <div class="task-icon">🐦</div>
@@ -528,7 +528,6 @@
             <button class="btn-task" id="btnTask2" onclick="processLocalTask(2, 'https://x.com', 5.0)">Follow</button>
         </div>
 
-        <!-- Task 3: Invite -->
         <div class="task-item">
             <div class="task-info">
                 <div class="task-icon">👥</div>
@@ -574,4 +573,9 @@
         <div class="profile-header">
             <div class="profile-avatar" id="userAvatar">👤</div>
             <div class="profile-name" id="profileName">Farmer Name</div>
-            <div class="profile-id" id="pro
+            <div class="profile-id" id="profileId">ID: 12345678</div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+               
