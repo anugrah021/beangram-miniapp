@@ -6,81 +6,223 @@
     <title>BeanGram Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1c1d22;
+            background-color: #0b101b;
             color: #ffffff;
             text-align: center;
-            padding: 20px;
-            margin: 0;
+            padding-bottom: 70px;
         }
         .header-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            padding: 15px 20px;
+            background: #121826;
+        }
+        .user-tag {
+            font-size: 14px;
+            background: #1e293b;
+            padding: 5px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .badge-mining {
+            background: #0088cc;
+            color: #fff;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 6px;
         }
         .lang-switcher {
             display: flex;
-            gap: 5px;
-            background: #28292e;
+            gap: 4px;
+            background: #1e293b;
             padding: 4px;
-            border-radius: 20px;
+            border-radius: 16px;
         }
         .lang-btn {
             background: transparent;
             border: none;
-            color: #aaa;
+            color: #94a3b8;
             padding: 4px 8px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
         }
         .lang-btn.active {
             background: #0088cc;
             color: white;
         }
-        .card {
-            background-color: #28292e;
-            border-radius: 12px;
+
+        /* Navigasi Tab Content */
+        .tab-content {
+            display: none;
             padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        .balance {
-            font-size: 32px;
+        .tab-content.active {
+            display: block;
+        }
+
+        /* TAB TAMBANG (MINING) */
+        .tier-title {
+            color: #f59e0b;
+            font-size: 12px;
             font-weight: bold;
-            color: #0088cc;
-            margin: 10px 0;
+            letter-spacing: 1px;
+            margin-top: 10px;
         }
-        .btn {
+        .main-balance {
+            font-size: 38px;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 5px 0;
+        }
+        .rate-info {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 25px;
+        }
+        .bean-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 30px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .bean-circle {
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, #38bdf8 0%, #0284c7 100%);
+            border-radius: 50%;
+            border: 4px solid #f59e0b;
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .bean-circle:active {
+            transform: scale(0.95);
+        }
+        .bean-icon {
+            width: 70px;
+            height: 70px;
+            background: white;
+            border-radius: 40% 60% 60% 40% / 40% 50% 50% 60%;
+            transform: rotate(-20deg);
+        }
+        .btn-farm {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 12px;
+            width: 85%;
+            margin: 0 auto;
+            cursor: pointer;
+        }
+        .btn-farm.active {
+            background: #0284c7;
+            color: white;
+            border-color: #38bdf8;
+        }
+
+        /* TAB MISI (TASKS) */
+        .card {
+            background-color: #1e293b;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 15px;
+            text-align: left;
+            border: 1px solid #334155;
+        }
+        .card h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+        .card p {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+        .btn-action {
             background-color: #0088cc;
             color: white;
             border: none;
-            padding: 12px 20px;
-            font-size: 16px;
+            padding: 12px;
+            font-size: 14px;
             border-radius: 8px;
             cursor: pointer;
             width: 100%;
-            margin-top: 10px;
             font-weight: bold;
+            margin-bottom: 8px;
         }
-        .btn:disabled {
-            background-color: #555;
+        .btn-action:disabled {
+            background-color: #475569;
             cursor: not-allowed;
         }
+
+        /* BOTTOM NAVBAR */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 65px;
+            background: #121826;
+            border-top: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #64748b;
+            font-size: 11px;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+        .nav-item.active {
+            color: #f59e0b;
+        }
+        .nav-icon {
+            font-size: 18px;
+            margin-bottom: 3px;
+        }
         #status-msg {
-            margin-top: 15px;
-            font-size: 14px;
-            word-break: break-word;
+            margin-top: 10px;
+            font-size: 13px;
         }
     </style>
 </head>
 <body>
 
+    <!-- Header App -->
     <div class="header-bar">
-        <h3 style="margin:0;">BeanGram</h3>
+        <div class="user-tag">
+            <span id="header-username">@User</span>
+            <span class="badge-mining">MINING</span>
+        </div>
         <div class="lang-switcher">
             <button class="lang-btn" id="lang-en" onclick="setLanguage('en')">EN</button>
             <button class="lang-btn" id="lang-id" onclick="setLanguage('id')">ID</button>
@@ -88,22 +230,68 @@
         </div>
     </div>
 
-    <!-- Card Informasi User & Saldo -->
-    <div class="card">
-        <div id="lbl-balance-title">Your Balance:</div>
-        <div class="balance" id="user-balance">0 BGRAM</div>
-        <div id="user-info">Loading user info...</div>
+    <!-- TAB 1: TAMBANG (MINING) -->
+    <div id="tab-mining" class="tab-content active">
+        <div class="tier-title">⚡ NOVICE FARMER TIER</div>
+        <div class="main-balance" id="user-balance">0.0000 BGRAM</div>
+        <div class="rate-info">Vault: 0.0000 | Rate: +2.0 BGRAM/5h</div>
+
+        <div class="bean-container">
+            <div class="bean-circle" onclick="clickBeanAnimation()">
+                <div class="bean-icon"></div>
+            </div>
+        </div>
+
+        <button class="btn-farm" id="btn-farm-action" onclick="startFarming()">FARMING (05:00:00)</button>
     </div>
 
-    <!-- Card Task Join Channel -->
-    <div class="card">
-        <h3 id="lbl-task-title">Telegram Task</h3>
-        <p id="lbl-task-desc">Join our official channel to get 100 BGRAM.</p>
-        <button class="btn" id="btn-open-channel" onclick="openChannel()">1. Open Channel</button>
-        <button class="btn" id="claim-btn" onclick="verifyTask('task_channel_1', 'BeanGram_Official')">2. Verify & Claim</button>
+    <!-- TAB 2: MISI (TASKS) -->
+    <div id="tab-tasks" class="tab-content">
+        <div class="card">
+            <h3 id="lbl-task-title">Telegram Task</h3>
+            <p id="lbl-task-desc">Join our official channel to get 100 BGRAM.</p>
+            <button class="btn-action" id="btn-open-channel" onclick="openChannel()">1. Open Channel</button>
+            <button class="btn-action" id="claim-btn" onclick="verifyTask('task_channel_1', 'BeanGram_Official')">2. Verify & Claim</button>
+            <div id="status-msg"></div>
+        </div>
     </div>
 
-    <div id="status-msg"></div>
+    <!-- TAB 3: TEMAN (REFERRAL) -->
+    <div id="tab-friends" class="tab-content">
+        <div class="card">
+            <h3>Invite Friends</h3>
+            <p>Ajak temanmu bergabung untuk mendapatkan bonus +50 BGRAM dari setiap rujukan.</p>
+            <button class="btn-action" onclick="copyRefLink()">Salin Link Referral</button>
+        </div>
+    </div>
+
+    <!-- TAB 4: PROFIL (PROFILE) -->
+    <div id="tab-profile" class="tab-content">
+        <div class="card">
+            <h3>Profil Pengguna</h3>
+            <p id="profile-details">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+        <button class="nav-item active" id="nav-mining" onclick="switchTab('mining')">
+            <span class="nav-icon">⚡</span>
+            <span id="nav-lbl-tambang">Tambang</span>
+        </button>
+        <button class="nav-item" id="nav-tasks" onclick="switchTab('tasks')">
+            <span class="nav-icon">📋</span>
+            <span id="nav-lbl-misi">Misi</span>
+        </button>
+        <button class="nav-item" id="nav-friends" onclick="switchTab('friends')">
+            <span class="nav-icon">👥</span>
+            <span id="nav-lbl-teman">Teman</span>
+        </button>
+        <button class="nav-item" id="nav-profile" onclick="switchTab('profile')">
+            <span class="nav-icon">👤</span>
+            <span id="nav-lbl-profil">Profil</span>
+        </button>
+    </div>
 
     <script>
         const tg = window.Telegram.WebApp;
@@ -116,46 +304,52 @@
         const telegramId = user.id;
         const username = user.username || "NoUsername";
 
+        let currentLang = "en";
+        const tgLang = (user.language_code || "").toLowerCase();
+        if (tgLang.startsWith("id")) currentLang = "id";
+        else if (tgLang.startsWith("ru")) currentLang = "ru";
+
         const i18n = {
             en: {
-                balanceTitle: "Your Balance:",
-                loadingUser: "Loading user info...",
                 taskTitle: "Telegram Task",
                 taskDesc: "Join our official channel to get 100 BGRAM.",
                 btnOpen: "1. Open Channel",
                 btnClaim: "2. Verify & Claim",
                 checking: "Checking...",
                 claimed: "Already Claimed",
-                connError: "Connection error to server."
+                connError: "Connection error to server.",
+                navTambang: "Mining",
+                navMisi: "Tasks",
+                navTeman: "Friends",
+                navProfil: "Profile"
             },
             id: {
-                balanceTitle: "Saldo Kamu:",
-                loadingUser: "Memuat data user...",
                 taskTitle: "Tugas Telegram",
                 taskDesc: "Bergabunglah ke Channel resmi kami untuk mendapatkan 100 BGRAM.",
                 btnOpen: "1. Buka Channel",
                 btnClaim: "2. Verifikasi & Klaim",
                 checking: "Memeriksa...",
                 claimed: "Sudah Diklaim",
-                connError: "Terjadi kesalahan koneksi ke server."
+                connError: "Terjadi kesalahan koneksi ke server.",
+                navTambang: "Tambang",
+                navMisi: "Misi",
+                navTeman: "Teman",
+                navProfil: "Profil"
             },
             ru: {
-                balanceTitle: "Ваш баланс:",
-                loadingUser: "Загрузка данных...",
                 taskTitle: "Задание Telegram",
-                taskDesc: "Присоединяйтесь к нашему официальному каналу, чтобы получить 100 BGRAM.",
+                taskDesc: "Присоединяйтесь к нашему каналу, чтобы получить 100 BGRAM.",
                 btnOpen: "1. Открыть канал",
                 btnClaim: "2. Проверить и получить",
                 checking: "Проверка...",
                 claimed: "Уже получено",
-                connError: "Ошибка подключения к серверу."
+                connError: "Ошибка подключения к серверу.",
+                navTambang: "Майнинг",
+                navMisi: "Задания",
+                navTeman: "Друзья",
+                navProfil: "Профиль"
             }
         };
-
-        let currentLang = "en";
-        const tgLang = (user.language_code || "").toLowerCase();
-        if (tgLang.startsWith("id")) currentLang = "id";
-        else if (tgLang.startsWith("ru")) currentLang = "ru";
 
         function setLanguage(lang) {
             currentLang = lang;
@@ -163,10 +357,14 @@
             document.getElementById(`lang-${lang}`).classList.add('active');
 
             const t = i18n[lang];
-            document.getElementById("lbl-balance-title").innerText = t.balanceTitle;
             document.getElementById("lbl-task-title").innerText = t.taskTitle;
             document.getElementById("lbl-task-desc").innerText = t.taskDesc;
             document.getElementById("btn-open-channel").innerText = t.btnOpen;
+            
+            document.getElementById("nav-lbl-tambang").innerText = t.navTambang;
+            document.getElementById("nav-lbl-misi").innerText = t.navMisi;
+            document.getElementById("nav-lbl-teman").innerText = t.navTeman;
+            document.getElementById("nav-lbl-profil").innerText = t.navProfil;
 
             const claimBtn = document.getElementById("claim-btn");
             if (!claimBtn.disabled || claimBtn.getAttribute("data-state") !== "claimed") {
@@ -176,15 +374,27 @@
             }
         }
 
-        document.getElementById("user-info").innerText = `@${username} (ID: ${telegramId})`;
+        // Navigasi Antar Tab
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
 
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            document.getElementById(`nav-${tabName}`).classList.add('active');
+        }
+
+        // Tampilan User Info
+        document.getElementById("header-username").innerText = `@${username}`;
+        document.getElementById("profile-details").innerText = `Username: @${username}\nID Telegram: ${telegramId}`;
+
+        // Mengambil Data Saldo User
         async function fetchUserData() {
             try {
                 const encodedInitData = encodeURIComponent(initData);
                 const res = await fetch(`${BACKEND_URL}/get-user?init_data=${encodedInitData}`);
                 const data = await res.json();
                 if (data.status === "success" && data.user) {
-                    document.getElementById("user-balance").innerText = `${data.user.balance} BGRAM`;
+                    document.getElementById("user-balance").innerText = `${data.user.balance}.0000 BGRAM`;
                 }
             } catch (err) {
                 console.error("Gagal mengambil data user:", err);
@@ -213,7 +423,7 @@
                 if (res.ok && data.status === "success") {
                     statusMsg.style.color = "#4CAF50";
                     statusMsg.innerText = data.message;
-                    document.getElementById("user-balance").innerText = `${data.balance} BGRAM`;
+                    document.getElementById("user-balance").innerText = `${data.balance}.0000 BGRAM`;
                     claimBtn.innerText = t.claimed;
                     claimBtn.setAttribute("data-state", "claimed");
                 } else if (data.status === "claimed") {
@@ -233,6 +443,16 @@
                 claimBtn.disabled = false;
                 claimBtn.innerText = t.btnClaim;
             }
+        }
+
+        function clickBeanAnimation() {
+            tg.HapticFeedback?.impactOccurred('medium');
+        }
+
+        function copyRefLink() {
+            const refUrl = `https://t.me/BeanGramBot?start=${telegramId}`;
+            navigator.clipboard.writeText(refUrl);
+            alert("Link Referral tersalin: " + refUrl);
         }
 
         setLanguage(currentLang);
