@@ -109,12 +109,12 @@
         tg.expand();
 
         const BACKEND_URL = "https://beangram-miniapp.vercel.app"; 
+        const initData = tg.initData || ""; // Mengambil initData asli Telegram
 
         const user = tg.initDataUnsafe?.user || { id: 12345678, username: "DemoUser", language_code: "en" };
         const telegramId = user.id;
         const username = user.username || "NoUsername";
 
-        // Teks Kamus Terjemahan Frontend
         const i18n = {
             en: {
                 balanceTitle: "Your Balance:",
@@ -151,7 +151,6 @@
             }
         };
 
-        // Penentuan Bahasa Awal (Otomatis dari Telegram / Default 'en')
         let currentLang = "en";
         const tgLang = (user.language_code || "").toLowerCase();
         if (tgLang.startsWith("id")) currentLang = "id";
@@ -180,7 +179,8 @@
 
         async function fetchUserData() {
             try {
-                const res = await fetch(`${BACKEND_URL}/get-user?telegram_id=${telegramId}`);
+                const encodedInitData = encodeURIComponent(initData);
+                const res = await fetch(`${BACKEND_URL}/get-user?init_data=${encodedInitData}`);
                 const data = await res.json();
                 if (data.status === "success") {
                     document.getElementById("user-balance").innerText = `${data.user.balance} BGRAM`;
@@ -204,7 +204,8 @@
             statusMsg.innerText = "";
 
             try {
-                const url = `${BACKEND_URL}/verify-channel?telegram_id=${telegramId}&username=${username}&channel=${channelUsername}&task_id=${taskId}&lang=${currentLang}`;
+                const encodedInitData = encodeURIComponent(initData);
+                const url = `${BACKEND_URL}/verify-channel?init_data=${encodedInitData}&channel=${channelUsername}&task_id=${taskId}&lang=${currentLang}`;
                 const res = await fetch(url);
                 const data = await res.json();
 
@@ -233,7 +234,6 @@
             }
         }
 
-        // Inisialisasi Tampilan & Bahasa
         setLanguage(currentLang);
         fetchUserData();
     </script>
