@@ -22,13 +22,21 @@
             height: 100vh;
             padding: 15px 15px 80px 15px;
         }
+        .page {
+            display: none;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .page.active {
+            display: flex;
+        }
         /* Top Bar */
         .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .user-profile {
+        .user-profile-top {
             display: flex;
             align-items: center;
             gap: 8px;
@@ -78,7 +86,7 @@
             font-size: 12px;
             color: #aaa;
         }
-        /* Mining Area & Coin */
+        /* Mining Area */
         .mining-area {
             display: flex;
             flex-direction: column;
@@ -110,7 +118,6 @@
             border-radius: 50%;
             object-fit: cover;
         }
-        /* Action Button */
         .action-btn-container {
             width: 100%;
             max-width: 320px;
@@ -144,6 +151,80 @@
             color: #000;
             box-shadow: 0 4px 15px rgba(0, 255, 136, 0.4);
         }
+
+        /* Profile Page Styling */
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #1e2530;
+            border: 2px solid #ffbb00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .profile-name {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .profile-id {
+            font-size: 12px;
+            color: #6c7079;
+            margin-top: 2px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 14px;
+            text-align: center;
+        }
+        .stat-card .val {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffbb00;
+            margin-top: 4px;
+        }
+        .stat-card .lbl {
+            font-size: 11px;
+            color: #8a8d93;
+        }
+        .section-box {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .section-title {
+            font-size: 12px;
+            color: #8a8d93;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+        .wallet-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .wallet-info {
+            font-size: 13px;
+        }
+
         /* Bottom Nav */
         .bottom-nav {
             position: fixed;
@@ -176,53 +257,98 @@
 </head>
 <body>
 
-    <!-- Top Bar -->
-    <div class="top-bar">
-        <div class="user-profile">
-            <span id="username">Farmer</span>
-            <span class="status-badge" id="statusBadge">IDLE</span>
+    <!-- PAGE 1: MINE -->
+    <div id="page-mine" class="page active">
+        <div class="top-bar">
+            <div class="user-profile-top">
+                <span id="usernameTop">Farmer</span>
+                <span class="status-badge" id="statusBadge">IDLE</span>
+            </div>
+            <button class="btn-connect" onclick="alert('Fitur Wallet segera hadir!')">Connect Wallet</button>
         </div>
-        <button class="btn-connect" onclick="alert('Fitur Wallet segera hadir!')">Connect Wallet</button>
+
+        <div class="balance-container">
+            <div class="balance-label">TOTAL ASSETS</div>
+            <div class="balance-value" id="totalBalance">0.0000 BGRAM</div>
+            <div class="sub-balance">
+                <span>Vault: <b id="vaultBalance">0.0000</b></span>
+                <span>Rate: <b>+2.0 BGRAM/5h</b></span>
+            </div>
+        </div>
+
+        <div class="mining-area">
+            <div class="unclaimed-text" id="unclaimedText">+0.0000</div>
+            <div class="coin-wrapper">
+                <img src="Bgram.jpeg" alt="BeanGram Coin" class="coin-img" onerror="this.src='https://via.placeholder.com/200/0088cc/ffffff?text=BGRAM'">
+            </div>
+            <div class="action-btn-container">
+                <button class="main-btn btn-start" id="actionBtn" onclick="handleButtonClick()">START FARMING</button>
+            </div>
+        </div>
     </div>
 
-    <!-- Balance Section -->
-    <div class="balance-container">
-        <div class="balance-label">TOTAL ASSETS</div>
-        <div class="balance-value" id="totalBalance">0.0000 BGRAM</div>
-        <div class="sub-balance">
-            <span>Vault: <b id="vaultBalance">0.0000</b></span>
-            <span>Rate: <b>+2.0 BGRAM/5h</b></span>
-        </div>
-    </div>
-
-    <!-- Mining Display -->
-    <div class="mining-area">
-        <div class="unclaimed-text" id="unclaimedText">+0.0000</div>
-        
-        <div class="coin-wrapper">
-            <img src="Bgram.jpeg" alt="BeanGram Coin" class="coin-img" onerror="this.src='https://via.placeholder.com/200/0088cc/ffffff?text=BGRAM'">
+    <!-- PAGE 2: PROFILE -->
+    <div id="page-profile" class="page">
+        <div class="profile-header">
+            <div class="profile-avatar">👤</div>
+            <div class="profile-name" id="profileName">Farmer Name</div>
+            <div class="profile-id" id="profileId">ID: 12345678</div>
         </div>
 
-        <div class="action-btn-container">
-            <button class="main-btn btn-start" id="actionBtn" onclick="handleButtonClick()">START FARMING</button>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="lbl">Total Farmed</div>
+                <div class="val" id="profileTotal">0.0000</div>
+            </div>
+            <div class="stat-card">
+                <div class="lbl">Miner Level</div>
+                <div class="val">Lvl 1</div>
+            </div>
+            <div class="stat-card">
+                <div class="lbl">Completed Tasks</div>
+                <div class="val">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="lbl">Friends Invites</div>
+                <div class="val">0</div>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">WEB3 WALLET</div>
+            <div class="wallet-row">
+                <div class="wallet-info">
+                    <div style="font-weight: bold;">TON Wallet</div>
+                    <div style="font-size: 11px; color: #8a8d93;" id="walletStatus">Not Connected</div>
+                </div>
+                <button class="btn-connect" onclick="alert('Integrasi Wallet TON segera hadir!')">Connect</button>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">COMMUNITY & SUPPORT</div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-connect" style="background: rgba(255,255,255,0.08); flex: 1;" onclick="window.open('https://t.me/BeanGram_Official', '_blank')">Channel</button>
+                <button class="btn-connect" style="background: rgba(255,255,255,0.08); flex: 1;" onclick="alert('Fitur Support segera hadir!')">Support</button>
+            </div>
         </div>
     </div>
 
     <!-- Bottom Nav -->
     <div class="bottom-nav">
-        <div class="nav-item active">
+        <div class="nav-item active" id="nav-mine" onclick="switchTab('mine')">
             <div class="nav-icon">⚡</div>
             <div>Mine</div>
         </div>
-        <div class="nav-item" onclick="alert('Fitur Tasks segera hadir!')">
+        <div class="nav-item" id="nav-tasks" onclick="alert('Fitur Tasks segera hadir!')">
             <div class="nav-icon">📋</div>
             <div>Tasks</div>
         </div>
-        <div class="nav-item" onclick="alert('Fitur Friends segera hadir!')">
+        <div class="nav-item" id="nav-friends" onclick="alert('Fitur Friends segera hadir!')">
             <div class="nav-icon">👥</div>
             <div>Friends</div>
         </div>
-        <div class="nav-item" onclick="alert('Fitur Profile segera hadir!')">
+        <div class="nav-item" id="nav-profile" onclick="switchTab('profile')">
             <div class="nav-icon">👤</div>
             <div>Profile</div>
         </div>
@@ -233,11 +359,14 @@
         tg.expand();
 
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            document.getElementById('username').innerText = tg.initDataUnsafe.user.first_name;
+            const u = tg.initDataUnsafe.user;
+            document.getElementById('usernameTop').innerText = u.first_name;
+            document.getElementById('profileName').innerText = u.first_name + (u.last_name ? " " + u.last_name : "");
+            document.getElementById('profileId').innerText = "ID: " + u.id;
         }
 
-        const FARM_DURATION = 5 * 60 * 60 * 1000; // 5 Jam (ms)
-        const TOTAL_REWARD = 2.0; // Total 2 BGRAM per 5 jam
+        const FARM_DURATION = 5 * 60 * 60 * 1000;
+        const TOTAL_REWARD = 2.0;
 
         let totalBalance = parseFloat(localStorage.getItem('bgram_balance')) || 0;
         let miningStartTime = parseInt(localStorage.getItem('bgram_start_time')) || 0;
@@ -246,14 +375,28 @@
         const unclaimedText = document.getElementById('unclaimedText');
         const totalBalanceElem = document.getElementById('totalBalance');
         const vaultBalanceElem = document.getElementById('vaultBalance');
+        const profileTotal = document.getElementById('profileTotal');
         const statusBadge = document.getElementById('statusBadge');
+
+        function switchTab(tab) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            if (tab === 'mine') {
+                document.getElementById('page-mine').classList.add('active');
+                document.getElementById('nav-mine').classList.add('active');
+            } else if (tab === 'profile') {
+                document.getElementById('page-profile').classList.add('active');
+                document.getElementById('nav-profile').classList.add('active');
+            }
+        }
 
         function updateUI() {
             totalBalanceElem.innerText = totalBalance.toFixed(4) + " BGRAM";
             vaultBalanceElem.innerText = totalBalance.toFixed(4);
+            profileTotal.innerText = totalBalance.toFixed(4) + " BGRAM";
 
             if (miningStartTime === 0) {
-                // Status IDLE
                 statusBadge.innerText = "IDLE";
                 statusBadge.style.background = "#ffaa00";
                 unclaimedText.innerText = "+0.0000";
@@ -264,14 +407,12 @@
                 const elapsedTime = now - miningStartTime;
 
                 if (elapsedTime >= FARM_DURATION) {
-                    // Selesai Mining -> Siap CLAIM
                     statusBadge.innerText = "READY";
                     statusBadge.style.background = "#00ff88";
                     unclaimedText.innerText = "+" + TOTAL_REWARD.toFixed(4);
                     actionBtn.innerText = "CLAIM BGRAM";
                     actionBtn.className = "main-btn btn-claim";
                 } else {
-                    // Sedang Mining
                     statusBadge.innerText = "MINING";
                     statusBadge.style.background = "#0088cc";
                     
@@ -297,11 +438,9 @@
         function handleButtonClick() {
             const now = Date.now();
             if (miningStartTime === 0) {
-                // Mulai Mining
                 miningStartTime = now;
                 localStorage.setItem('bgram_start_time', miningStartTime);
             } else if (now - miningStartTime >= FARM_DURATION) {
-                // Klaim Reward
                 totalBalance += TOTAL_REWARD;
                 localStorage.setItem('bgram_balance', totalBalance);
                 
@@ -311,7 +450,6 @@
             updateUI();
         }
 
-        // Loop per detik
         setInterval(updateUI, 1000);
         updateUI();
     </script>
