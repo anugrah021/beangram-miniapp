@@ -145,7 +145,7 @@
             background: rgba(255, 187, 0, 0.15);
             color: #ffbb00;
             border: 1px solid rgba(255, 187, 0, 0.4);
-            padding: 5px 16px;
+            padding: 5px 14px;
             border-radius: 12px;
             font-size: 11px;
             font-weight: bold;
@@ -178,15 +178,16 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.2s;
+            transition: transform 0.1s;
             animation: pulseGlow 3s infinite alternate;
+            cursor: pointer;
         }
         @keyframes pulseGlow {
             0% { box-shadow: 0 0 25px rgba(255, 170, 0, 0.2); }
             100% { box-shadow: 0 0 55px rgba(255, 170, 0, 0.5); }
         }
         .coin-wrapper:active {
-            transform: scale(0.95);
+            transform: scale(0.93);
         }
         .coin-img {
             width: 100%;
@@ -245,6 +246,32 @@
             text-transform: uppercase;
         }
 
+        /* Daily Reward Grid */
+        .daily-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .daily-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 10px 4px;
+            text-align: center;
+        }
+        .daily-item.active-today {
+            border-color: #ffbb00;
+            background: rgba(255, 187, 0, 0.15);
+            box-shadow: 0 0 10px rgba(255, 187, 0, 0.2);
+        }
+        .daily-item.claimed {
+            border-color: #00ff88;
+            opacity: 0.6;
+        }
+        .daily-day { font-size: 10px; color: #8a8d93; }
+        .daily-val { font-size: 11px; font-weight: bold; color: #ffbb00; margin-top: 2px; }
+
         /* Tasks Page */
         .task-item {
             display: flex;
@@ -268,11 +295,28 @@
             background: rgba(255, 255, 255, 0.08);
             color: #fff;
             border: none;
-            padding: 6px 14px;
+            padding: 7px 14px;
             border-radius: 12px;
             font-size: 11px;
             font-weight: bold;
             cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-task.checking {
+            background: rgba(255, 170, 0, 0.2);
+            color: #ffaa00;
+            border: 1px solid rgba(255, 170, 0, 0.4);
+        }
+        .btn-task.claimable {
+            background: linear-gradient(90deg, #00ff88, #00b359);
+            color: #000;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+        .btn-task.completed {
+            background: rgba(0, 255, 136, 0.1);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            cursor: default;
         }
 
         /* Friends Page */
@@ -352,7 +396,7 @@
         .nav-item.active { color: #ffbb00; }
         .nav-icon { font-size: 18px; }
 
-        /* Modal Pop-up Withdraw */
+        /* Modal Pop-up */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -426,7 +470,7 @@
                     <option value="ru">🌐 RU</option>
                     <option value="id">🌐 ID</option>
                 </select>
-                <button class="btn-connect" id="btnConnectTop" onclick="alert(currentTranslations.alertWallet)">Connect</button>
+                <button class="btn-connect" id="btnConnectTop" onclick="triggerHaptic('impact'); alert(currentTranslations.alertWallet)">Connect</button>
             </div>
         </div>
 
@@ -438,13 +482,14 @@
                 <span><span id="txtRateLabel">Rate</span>: <b style="color:#ffbb00;">+2.0 BGRAM/5h</b></span>
             </div>
             <div class="withdraw-action-bar">
+                <button class="btn-withdraw-small" id="btnDailyReward" onclick="openDailyModal()">🎁 DAILY REWARD</button>
                 <button class="btn-withdraw-small" id="btnWithdraw" onclick="openWithdrawModal()">💳 WITHDRAW</button>
             </div>
         </div>
 
         <div class="mining-area">
             <div class="unclaimed-text" id="unclaimedText">+0.0000</div>
-            <div class="coin-wrapper">
+            <div class="coin-wrapper" onclick="triggerHaptic('impact')">
                 <img src="Bgram.jpeg" alt="BeanGram Coin" class="coin-img" onerror="this.src='https://via.placeholder.com/200/0088cc/ffffff?text=BGRAM'">
             </div>
             <div class="action-btn-container">
@@ -460,6 +505,7 @@
             <p style="font-size:12px; color:#aaa; margin-top:4px;" id="txtTasksDesc">Complete social tasks to earn extra BGRAM!</p>
         </div>
 
+        <!-- Task 1 -->
         <div class="task-item">
             <div class="task-info">
                 <div class="task-icon">📢</div>
@@ -468,9 +514,10 @@
                     <div class="reward">+0.5000 BGRAM</div>
                 </div>
             </div>
-            <button class="btn-task" id="btnTask1" onclick="window.open('https://t.me/BeanGram_Official', '_blank')">Join</button>
+            <button class="btn-task" id="btnTask1" onclick="processTask(1, 'https://t.me/BeanGram_Official', 0.5)">Join</button>
         </div>
 
+        <!-- Task 2 -->
         <div class="task-item">
             <div class="task-info">
                 <div class="task-icon">🐦</div>
@@ -479,9 +526,10 @@
                     <div class="reward">+0.5000 BGRAM</div>
                 </div>
             </div>
-            <button class="btn-task" id="btnTask2" onclick="alert(currentTranslations.alertTwitter)">Follow</button>
+            <button class="btn-task" id="btnTask2" onclick="processTask(2, 'https://x.com', 0.5)">Follow</button>
         </div>
 
+        <!-- Task 3 -->
         <div class="task-item">
             <div class="task-info">
                 <div class="task-icon">👥</div>
@@ -540,7 +588,7 @@
             </div>
             <div class="stat-card">
                 <div class="lbl" id="lblCompletedTasks">Completed Tasks</div>
-                <div class="val">0/3</div>
+                <div class="val" id="profileTaskStats">0/3</div>
             </div>
             <div class="stat-card">
                 <div class="lbl" id="lblTotalReferrals">Total Referrals</div>
@@ -555,15 +603,15 @@
                     <div style="font-weight: bold; font-size: 13px;">TON Keeper / Wallet</div>
                     <div style="font-size: 11px; color: #8a8d93;" id="walletStatus">Not Connected</div>
                 </div>
-                <button class="btn-connect" id="btnConnectProfile" onclick="alert(currentTranslations.alertWallet)">Connect</button>
+                <button class="btn-connect" id="btnConnectProfile" onclick="triggerHaptic('impact'); alert(currentTranslations.alertWallet)">Connect</button>
             </div>
         </div>
 
         <div class="card-box">
             <div class="card-title" id="txtSupportTitle">COMMUNITY & SUPPORT</div>
             <div style="display: flex; gap: 10px;">
-                <button class="btn-connect" style="background: rgba(255,255,255,0.08); flex: 1;" id="btnChannel" onclick="window.open('https://t.me/BeanGram_Official', '_blank')">Channel</button>
-                <button class="btn-connect" style="background: rgba(255,255,255,0.08); flex: 1;" id="btnSupport" onclick="alert(currentTranslations.alertSupport)">Support</button>
+                <button class="btn-connect" style="background: rgba(255,255,255,0.08); flex: 1;" id="btnChannel" onclick="triggerHaptic('selection'); window.open('https://t.me/BeanGram_Official', '_blank')">Channel</button>
+                <button class="btn-connect" style="background: rgba(255,255,255,0.08); flex: 1;" id="btnSupport" onclick="triggerHaptic('impact'); alert(currentTranslations.alertSupport)">Support</button>
             </div>
         </div>
     </div>
@@ -575,8 +623,24 @@
             <div class="modal-status" id="wdStatus">AIRDROP & TGE PHASE</div>
             <p style="font-size: 12px; color: #aaa; margin-bottom: 15px;" id="wdDesc">Withdrawals will open soon upon Token Listing. Please connect your TON wallet.</p>
             <input type="text" class="modal-input" placeholder="Enter TON Wallet Address (EQ...)" readonly>
-            <button class="main-btn btn-start" style="padding: 12px; font-size: 13px;" onclick="alert(currentTranslations.alertWallet)" id="wdBtnConfirm">CONNECT TON WALLET</button>
+            <button class="main-btn btn-start" style="padding: 12px; font-size: 13px;" onclick="triggerHaptic('impact'); alert(currentTranslations.alertWallet)" id="wdBtnConfirm">CONNECT TON WALLET</button>
             <button class="modal-btn-close" onclick="closeWithdrawModal()" id="wdBtnClose">Close</button>
+        </div>
+    </div>
+
+    <!-- MODAL DAILY REWARD -->
+    <div class="modal-overlay" id="dailyModal">
+        <div class="modal-card">
+            <div class="modal-title">🎁 Daily Streak Reward</div>
+            <p style="font-size: 11px; color: #aaa; margin-bottom: 10px;">Log in daily to claim free BGRAM bonus!</p>
+            <div class="daily-grid">
+                <div class="daily-item" id="day1"><div class="daily-day">Day 1</div><div class="daily-val">+0.1</div></div>
+                <div class="daily-item" id="day2"><div class="daily-day">Day 2</div><div class="daily-val">+0.2</div></div>
+                <div class="daily-item" id="day3"><div class="daily-day">Day 3</div><div class="daily-val">+0.3</div></div>
+                <div class="daily-item" id="day4"><div class="daily-day">Day 4</div><div class="daily-val">+0.5</div></div>
+            </div>
+            <button class="main-btn btn-start" style="padding: 12px; font-size: 13px; margin-top: 15px;" id="btnClaimDaily" onclick="claimDailyReward()">CLAIM DAILY BONUS</button>
+            <button class="modal-btn-close" onclick="closeDailyModal()">Close</button>
         </div>
     </div>
 
@@ -601,6 +665,17 @@
     </div>
 
     <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        function triggerHaptic(type) {
+            if (tg.HapticFeedback) {
+                if (type === 'impact') tg.HapticFeedback.impactOccurred('medium');
+                else if (type === 'notification') tg.HapticFeedback.notificationOccurred('success');
+                else if (type === 'selection') tg.HapticFeedback.selectionChanged();
+            }
+        }
+
         const translations = {
             en: {
                 connect: "Connect",
@@ -762,9 +837,6 @@
             document.getElementById('txtTask1').innerText = currentTranslations.task1;
             document.getElementById('txtTask2').innerText = currentTranslations.task2;
             document.getElementById('txtTask3').innerText = currentTranslations.task3;
-            document.getElementById('btnTask1').innerText = currentTranslations.btnJoin;
-            document.getElementById('btnTask2').innerText = currentTranslations.btnFollow;
-            document.getElementById('btnTask3').innerText = currentTranslations.btnInvite;
 
             document.getElementById('txtFriendsTitle').innerText = currentTranslations.friendsTitle;
             document.getElementById('txtFriendsDesc').innerText = currentTranslations.friendsDesc;
@@ -795,19 +867,124 @@
             document.getElementById('wdBtnClose').innerText = currentTranslations.wdBtnClose;
 
             updateUI();
+            updateTaskUI();
         }
 
+        /* LOGIKA SYSTEM TASKS */
+        let taskState = JSON.parse(localStorage.getItem('bgram_tasks')) || { 1: 'init', 2: 'init' };
+
+        function updateTaskUI() {
+            let completedCount = 0;
+
+            for (let id = 1; id <= 2; id++) {
+                const btn = document.getElementById(`btnTask${id}`);
+                const state = taskState[id];
+
+                if (state === 'init') {
+                    btn.innerText = id === 1 ? currentTranslations.btnJoin : currentTranslations.btnFollow;
+                    btn.className = "btn-task";
+                } else if (state === 'checking') {
+                    btn.innerText = "Checking...";
+                    btn.className = "btn-task checking";
+                } else if (state === 'claimable') {
+                    btn.innerText = "Claim Reward";
+                    btn.className = "btn-task claimable";
+                } else if (state === 'completed') {
+                    btn.innerText = "✓ Done";
+                    btn.className = "btn-task completed";
+                    completedCount++;
+                }
+            }
+            document.getElementById('profileTaskStats').innerText = `${completedCount}/3`;
+        }
+
+        function processTask(id, url, reward) {
+            triggerHaptic('impact');
+            const state = taskState[id] || 'init';
+
+            if (state === 'init') {
+                window.open(url, '_blank');
+                taskState[id] = 'checking';
+                localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
+                updateTaskUI();
+
+                setTimeout(() => {
+                    taskState[id] = 'claimable';
+                    localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
+                    updateTaskUI();
+                    triggerHaptic('notification');
+                }, 8000);
+
+            } else if (state === 'claimable') {
+                totalBalance += reward;
+                localStorage.setItem('bgram_balance', totalBalance);
+
+                taskState[id] = 'completed';
+                localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
+
+                triggerHaptic('notification');
+                updateUI();
+                updateTaskUI();
+            }
+        }
+
+        /* LOGIKA DAILY REWARD */
+        let lastDailyClaim = parseInt(localStorage.getItem('bgram_last_daily')) || 0;
+
+        function openDailyModal() {
+            triggerHaptic('selection');
+            document.getElementById('dailyModal').classList.add('active');
+            checkDailyStatus();
+        }
+
+        function closeDailyModal() {
+            triggerHaptic('selection');
+            document.getElementById('dailyModal').classList.remove('active');
+        }
+
+        function checkDailyStatus() {
+            const now = Date.now();
+            const btn = document.getElementById('btnClaimDaily');
+            const day1 = document.getElementById('day1');
+
+            if (now - lastDailyClaim >= 24 * 60 * 60 * 1000) {
+                btn.innerText = "CLAIM DAILY BONUS (+0.1 BGRAM)";
+                btn.disabled = false;
+                btn.className = "main-btn btn-start";
+                day1.className = "daily-item active-today";
+            } else {
+                btn.innerText = "CLAIMED TODAY (Come back tomorrow)";
+                btn.disabled = true;
+                btn.className = "main-btn btn-mining";
+                day1.className = "daily-item claimed";
+            }
+        }
+
+        function claimDailyReward() {
+            triggerHaptic('notification');
+            totalBalance += 0.1;
+            localStorage.setItem('bgram_balance', totalBalance);
+
+            lastDailyClaim = Date.now();
+            localStorage.setItem('bgram_last_daily', lastDailyClaim);
+
+            updateUI();
+            checkDailyStatus();
+            alert("Daily reward +0.1 BGRAM successfully claimed!");
+        }
+
+        /* LOGIKA WITHDRAW MODAL */
         function openWithdrawModal() {
+            triggerHaptic('selection');
             document.getElementById('withdrawModal').classList.add('active');
         }
 
         function closeWithdrawModal() {
+            triggerHaptic('selection');
             document.getElementById('withdrawModal').classList.remove('active');
         }
 
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-
+        /* LOGIKA TRAMP PROFILE & TELEGRAM USER */
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             const u = tg.initDataUnsafe.user;
             document.getElementById('usernameTop').innerText = u.first_name;
@@ -827,6 +1004,7 @@
             }
         }
 
+        /* LOGIKA MINING ENGINE */
         const FARM_DURATION = 5 * 60 * 60 * 1000;
         const TOTAL_REWARD = 2.0;
 
@@ -841,6 +1019,7 @@
         const statusBadge = document.getElementById('statusBadge');
 
         function switchTab(tab) {
+            triggerHaptic('selection');
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
@@ -849,6 +1028,7 @@
         }
 
         function copyReffLink() {
+            triggerHaptic('notification');
             const input = document.getElementById('reffLink');
             input.select();
             document.execCommand('copy');
@@ -900,11 +1080,13 @@
         }
 
         function handleButtonClick() {
+            triggerHaptic('impact');
             const now = Date.now();
             if (miningStartTime === 0) {
                 miningStartTime = now;
                 localStorage.setItem('bgram_start_time', miningStartTime);
             } else if (now - miningStartTime >= FARM_DURATION) {
+                triggerHaptic('notification');
                 totalBalance += TOTAL_REWARD;
                 localStorage.setItem('bgram_balance', totalBalance);
                 
