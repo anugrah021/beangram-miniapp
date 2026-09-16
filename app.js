@@ -388,23 +388,33 @@ async function fetchUserData() {
     } catch (err) {}
 }
 
-if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-    const u = tg.initDataUnsafe.user;
-    document.getElementById('usernameTop').innerText = u.first_name;
-    document.getElementById('profileName').innerText = u.first_name + (u.last_name ? " " + u.last_name : "");
-    document.getElementById('profileId').innerText = "ID: " + u.id;
-    document.getElementById('reffLink').value = `https://t.me/BeanGramBot?start=${u.id}`;
+try {
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        const u = tg.initDataUnsafe.user;
+        document.getElementById('usernameTop').innerText = u.first_name || "Farmer";
+        document.getElementById('profileName').innerText = (u.first_name || "Farmer") + (u.last_name ? " " + u.last_name : "");
+        document.getElementById('profileId').innerText = "ID: " + (u.id || "New User");
+        document.getElementById('reffLink').value = `https://t.me/BeanGramBot?start=${u.id || 'ref'}`;
 
-    const avatarElem = document.getElementById('userAvatar');
-    if (u.photo_url) {
-        avatarElem.innerHTML = `<img src="${u.photo_url}" style="width:100%; height:100%; object-fit:cover;">`;
+        const avatarElem = document.getElementById('userAvatar');
+        if (u.photo_url) {
+            avatarElem.innerHTML = `<img src="${u.photo_url}" style="width:100%; height:100%; object-fit:cover;">`;
+        } else {
+            const initial = (u.first_name || "F").charAt(0).toUpperCase();
+            avatarElem.innerText = initial;
+            avatarElem.style.background = "linear-gradient(135deg, #0284c7, #0ea5e9)";
+            avatarElem.style.color = "#fff";
+            avatarElem.style.fontWeight = "bold";
+        }
     } else {
-        const initial = u.first_name.charAt(0).toUpperCase();
-        avatarElem.innerText = initial;
-        avatarElem.style.background = "linear-gradient(135deg, #0284c7, #0ea5e9)";
-        avatarElem.style.color = "#fff";
-        avatarElem.style.fontWeight = "bold";
+        // Fallback khusus untuk akun baru / browser luar telegram agar tidak freeze
+        document.getElementById('usernameTop').innerText = "Farmer";
+        document.getElementById('profileName').innerText = "New Farmer";
+        document.getElementById('profileId').innerText = "ID: VIP User";
     }
+} catch (e) {
+    console.log("Init user skipped");
+}
                             }
 let tonBalance = parseFloat(localStorage.getItem('bgram_ton_balance')) || 0.0000;
 
