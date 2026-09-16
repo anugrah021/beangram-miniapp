@@ -24,38 +24,31 @@ SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY) if SUPABASE_URL and SUPABASE_KEY else None
 
-# Kamus Pesan Server 3 Bahasa
 MESSAGES = {
     "en": {
-        "invalid_init_data": "Security check failed! Invalid Telegram data.",
         "claimed": "You have already claimed this task!",
-        "bot_token_missing": "BOT_TOKEN is not configured on the server",
+        "bot_token_missing": "BOT_TOKEN is not configured on Vercel Server",
         "db_missing": "Supabase database is not configured",
-        "telegram_error": "Failed to connect to Telegram API: ",
-        "not_joined": "You have not joined the channel yet.",
-        "failed": "Make sure you have joined the channel!",
+        "telegram_error": "Telegram API Error: ",
+        "not_joined": "Status: {status}. Please make sure you have joined the channel!",
         "db_error": "Failed to update database: ",
         "success": "Verification successful! Reward +{reward} BGRAM"
     },
     "id": {
-        "invalid_init_data": "Verifikasi keamanan gagal! Data Telegram tidak valid.",
         "claimed": "Tugas ini sudah kamu klaim sebelumnya!",
-        "bot_token_missing": "BOT_TOKEN belum dikonfigurasi di Server",
+        "bot_token_missing": "BOT_TOKEN belum dikonfigurasi di Server Vercel",
         "db_missing": "Database Supabase belum dikonfigurasi",
-        "telegram_error": "Gagal menghubungi Telegram API: ",
-        "not_joined": "Kamu belum menjadi anggota channel.",
-        "failed": "Pastikan kamu sudah bergabung ke channel!",
+        "telegram_error": "Error dari Telegram API: ",
+        "not_joined": "Status akun kamu di channel: '{status}'. Kamu belum resmi bergabung!",
         "db_error": "Gagal memperbarui database: ",
         "success": "Verifikasi berhasil! Saldo bertambah +{reward} BGRAM"
     },
     "ru": {
-        "invalid_init_data": "Проверка безопасности не пройдена! Неверные данные Telegram.",
         "claimed": "Вы уже получили награду за это задание!",
-        "bot_token_missing": "BOT_TOKEN не настроен на сервере",
+        "bot_token_missing": "BOT_TOKEN не настроен на сервере Vercel",
         "db_missing": "База данных Supabase не настроена",
-        "telegram_error": "Не удалось связаться с Telegram API: ",
-        "not_joined": "Вы еще не вступили в канал.",
-        "failed": "Убедитесь, что вы вступили в канал!",
+        "telegram_error": "Ошибка Telegram API: ",
+        "not_joined": "Статус в канале: '{status}'. Пожалуйста, подпишитесь на канал!",
         "db_error": "Ошибка обновления базы данных: ",
         "success": "Проверка прошла успешно! Награда +{reward} BGRAM"
     }
@@ -67,7 +60,6 @@ def get_msg(lang: str, key: str, **kwargs):
     return msg.format(**kwargs) if kwargs else msg
 
 def verify_telegram_data(init_data: str) -> dict:
-    """Memverifikasi Tanda Tangan Enkripsi (Hash) dari Telegram"""
     if not BOT_TOKEN:
         return None
     try:
@@ -89,7 +81,7 @@ def verify_telegram_data(init_data: str) -> dict:
 
 @app.get("/")
 def home():
-    return {"status": "online", "message": "BeanGram Secured Backend Running"}
+    return {"status": "online", "message": "BeanGram Backend Service Active"}
 
 @app.get("/verify-channel")
 def verify_channel(
@@ -98,10 +90,13 @@ def verify_channel(
     task_id: str = Query(...),
     lang: str = Query("en")
 ):
-    # 1. Verifikasi Keamanan initData Telegram (HMAC-SHA256)
+    # 1. Verifikasi Keamanan initData
     user_data = verify_telegram_data(init_data)
     if not user_data:
-        raise HTTPException(status_code=401, detail=get_msg(lang, "invalid_init_data"))
+        raise HTTPException(
+            status_code=401, 
+            detail="Pemeriksaan keamanan gagal! BOT_TOKEN di Vercel tidak cocok dengan Bot Telegram yang digunakan."
+        )
 
     telegram_id = user_data.get("id")
     username = user_data.get("username", "NoUsername")
@@ -109,12 +104,12 @@ def verify_channel(
     if not supabase:
         raise HTTPException(status_code=500, detail=get_msg(lang, "db_missing"))
 
-    # 2. Cek Anti Double Claim
+    # 2. Cek Anti-Double Claim
     task_check = supabase.table("user_tasks").select("*").eq("telegram_id", telegram_id).eq("task_id", task_id).execute()
     if task_check.data:
         return {"status": "claimed", "message": get_msg(lang, "claimed")}
 
-    # 3. Cek Keanggotaan Channel via Telegram API
+    # 3. Pengecekan Keanggotaan via Telegram API
     channel_username = channel if channel.startswith("@") else f"@{channel}"
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/getChatMember"
     params = {"chat_id": channel_username, "user_id": telegram_id}
@@ -125,16 +120,24 @@ def verify_channel(
     except Exception as e:
         raise HTTPException(status_code=500, detail=get_msg(lang, "telegram_error") + str(e))
 
+    # Jika Telegram API mengembalikan error (misal Bot belum jadi Admin)
     if not res_data.get("ok"):
-        return {"status": "failed", "message": get_msg(lang, "failed")}
+        error_desc = res_data.get("description", "Unknown Telegram Error")
+        return {
+            "status": "failed", 
+            "message": f"{get_msg(lang, 'telegram_error')} {error_desc}"
+        }
 
     member_status = res_data.get("result", {}).get("status")
     valid_statuses = ["creator", "administrator", "member"]
 
     if member_status not in valid_statuses:
-        return {"status": "not_joined", "message": get_msg(lang, "not_joined")}
+        return {
+            "status": "not_joined", 
+            "message": get_msg(lang, "not_joined", status=member_status)
+        }
 
-    # 4. Tambah Task & Saldo ke Supabase
+    # 4. Tambah Task & Update Saldo Supabase
     reward_amount = 500
     
     try:
@@ -170,7 +173,7 @@ def verify_channel(
 def get_user(init_data: str = Query(...)):
     user_data = verify_telegram_data(init_data)
     if not user_data:
-        raise HTTPException(status_code=401, detail="Unauthorized Telegram Data")
+        return {"status": "unauthorized", "user": {"balance": 0}}
 
     telegram_id = user_data.get("id")
 
