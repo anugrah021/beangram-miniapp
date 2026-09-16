@@ -1,4 +1,8 @@
 import os
+import hmac
+import hashlib
+import urllib.parse
+import json
 import requests
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -20,9 +24,10 @@ SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY) if SUPABASE_URL and SUPABASE_KEY else None
 
-# Kamus Pesan Server 3 Bahasa (EN, ID, RU)
+# Kamus Pesan Server 3 Bahasa
 MESSAGES = {
     "en": {
+        "invalid_init_data": "Security check failed! Invalid Telegram data.",
         "claimed": "You have already claimed this task!",
         "bot_token_missing": "BOT_TOKEN is not configured on the server",
         "db_missing": "Supabase database is not configured",
@@ -33,6 +38,7 @@ MESSAGES = {
         "success": "Verification successful! Reward +{reward} BGRAM"
     },
     "id": {
+        "invalid_init_data": "Verifikasi keamanan gagal! Data Telegram tidak valid.",
         "claimed": "Tugas ini sudah kamu klaim sebelumnya!",
         "bot_token_missing": "BOT_TOKEN belum dikonfigurasi di Server",
         "db_missing": "Database Supabase belum dikonfigurasi",
@@ -43,7 +49,8 @@ MESSAGES = {
         "success": "Verifikasi berhasil! Saldo bertambah +{reward} BGRAM"
     },
     "ru": {
-        "claimed": "Вы уже получили награду за das задание!",
+        "invalid_init_data": "Проверка безопасности не пройдена! Неверные данные Telegram.",
+        "claimed": "Вы уже получили награду за это задание!",
         "bot_token_missing": "BOT_TOKEN не настроен на сервере",
         "db_missing": "База данных Supabase не настроена",
         "telegram_error": "Не удалось связаться с Telegram API: ",
@@ -59,30 +66,55 @@ def get_msg(lang: str, key: str, **kwargs):
     msg = MESSAGES[lang_code].get(key, MESSAGES["en"].get(key, ""))
     return msg.format(**kwargs) if kwargs else msg
 
+def verify_telegram_data(init_data: str) -> dict:
+    """Memverifikasi Tanda Tangan Enkripsi (Hash) dari Telegram"""
+    if not BOT_TOKEN:
+        return None
+    try:
+        parsed_data = dict(urllib.parse.parse_qsl(init_data))
+        if "hash" not in parsed_data:
+            return None
+
+        received_hash = parsed_data.pop("hash")
+        data_check_string = "\n".join(f"{k}={v}" for k, v in sorted(parsed_data.items()))
+
+        secret_key = hmac.new(b"WebAppData", BOT_TOKEN.encode(), hashlib.sha256).digest()
+        calculated_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
+
+        if calculated_hash == received_hash:
+            return json.loads(parsed_data.get("user", "{}"))
+        return None
+    except Exception:
+        return None
+
 @app.get("/")
 def home():
-    return {"status": "online", "message": "BeanGram Backend Service Running"}
+    return {"status": "online", "message": "BeanGram Secured Backend Running"}
 
 @app.get("/verify-channel")
 def verify_channel(
-    telegram_id: int = Query(...), 
-    username: str = Query(None), 
+    init_data: str = Query(...), 
     channel: str = Query(...),
     task_id: str = Query(...),
     lang: str = Query("en")
 ):
-    if not BOT_TOKEN:
-        raise HTTPException(status_code=500, detail=get_msg(lang, "bot_token_missing"))
-    
+    # 1. Verifikasi Keamanan initData Telegram (HMAC-SHA256)
+    user_data = verify_telegram_data(init_data)
+    if not user_data:
+        raise HTTPException(status_code=401, detail=get_msg(lang, "invalid_init_data"))
+
+    telegram_id = user_data.get("id")
+    username = user_data.get("username", "NoUsername")
+
     if not supabase:
         raise HTTPException(status_code=500, detail=get_msg(lang, "db_missing"))
 
-    # 1. Cek Anti Double Claim
+    # 2. Cek Anti Double Claim
     task_check = supabase.table("user_tasks").select("*").eq("telegram_id", telegram_id).eq("task_id", task_id).execute()
     if task_check.data:
         return {"status": "claimed", "message": get_msg(lang, "claimed")}
 
-    # 2. Cek Keanggotaan Telegram
+    # 3. Cek Keanggotaan Channel via Telegram API
     channel_username = channel if channel.startswith("@") else f"@{channel}"
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/getChatMember"
     params = {"chat_id": channel_username, "user_id": telegram_id}
@@ -102,7 +134,7 @@ def verify_channel(
     if member_status not in valid_statuses:
         return {"status": "not_joined", "message": get_msg(lang, "not_joined")}
 
-    # 3. Simpan Task & Update Saldo
+    # 4. Tambah Task & Saldo ke Supabase
     reward_amount = 500
     
     try:
@@ -135,7 +167,13 @@ def verify_channel(
     }
 
 @app.get("/get-user")
-def get_user(telegram_id: int = Query(...)):
+def get_user(init_data: str = Query(...)):
+    user_data = verify_telegram_data(init_data)
+    if not user_data:
+        raise HTTPException(status_code=401, detail="Unauthorized Telegram Data")
+
+    telegram_id = user_data.get("id")
+
     if not supabase:
         raise HTTPException(status_code=500, detail="Database Supabase belum terhubung")
 
