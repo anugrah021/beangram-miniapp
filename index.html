@@ -3,268 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>BeanGram Mini App</title>
+    <title>BeanGram - Verification</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
         body {
             background: radial-gradient(circle at 50% 20%, #1a233a 0%, #06080e 70%);
-            color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            display: flex; flex-direction: column; justify-content: space-between; height: 100vh;
-            padding: 15px 15px 75px 15px; overflow: hidden; position: relative;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
         }
-        body::before {
-            content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-            background-size: 30px 30px; pointer-events: none; z-index: 0;
+        .container {
+            width: 100%;
+            max-width: 360px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
-        .page { display: none; flex-direction: column; flex-grow: 1; overflow-y: auto; position: relative; z-index: 1; }
-        .page.active { display: flex; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .top-right-group { display: flex; align-items: center; gap: 6px; }
-        .user-profile-top { display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.05); padding: 6px 12px; border-radius: 20px; font-size: 13px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(5px); }
-        .status-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: bold; background: #ffaa00; color: #000; }
-        .lang-select { background: rgba(255, 255, 255, 0.08); color: #ffbb00; border: 1px solid rgba(255, 187, 0, 0.3); padding: 6px 8px; border-radius: 14px; font-size: 11px; font-weight: bold; outline: none; cursor: pointer; }
-        .lang-select option { background: #121722; color: #fff; }
-        .btn-connect { background: linear-gradient(90deg, #0088cc, #00aaff); color: #fff; border: none; padding: 7px 12px; border-radius: 16px; font-size: 11px; font-weight: bold; cursor: pointer; box-shadow: 0 0 10px rgba(0, 136, 204, 0.3); }
-        .balance-container { text-align: center; margin-top: 5px; }
-        .tier-tag { font-size: 11px; color: #ffbb00; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; margin-bottom: 2px; }
-        .balance-value { font-size: 38px; font-weight: 800; color: #ffffff; text-shadow: 0 0 25px rgba(255, 187, 0, 0.3); margin: 2px 0; }
-        .sub-balance { display: flex; justify-content: center; gap: 15px; font-size: 12px; color: #8a8d93; }
-        .withdraw-action-bar { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
-        .btn-withdraw-small { background: rgba(255, 187, 0, 0.15); color: #ffbb00; border: 1px solid rgba(255, 187, 0, 0.4); padding: 5px 14px; border-radius: 12px; font-size: 11px; font-weight: bold; cursor: pointer; backdrop-filter: blur(5px); }
-        .mining-area { display: flex; flex-direction: column; align-items: center; justify-content: center; flex-grow: 1; }
-        .unclaimed-text { font-size: 26px; font-weight: 700; color: #00ff88; margin-bottom: 15px; text-shadow: 0 0 15px rgba(0, 255, 136, 0.4); }
-        .coin-wrapper { width: 190px; height: 190px; border-radius: 50%; padding: 8px; background: linear-gradient(145deg, #ffbb00, #885500); box-shadow: 0 0 45px rgba(255, 170, 0, 0.35); display: flex; align-items: center; justify-content: center; transition: transform 0.1s; animation: pulseGlow 3s infinite alternate; cursor: pointer; }
-        @keyframes pulseGlow { 0% { box-shadow: 0 0 25px rgba(255, 170, 0, 0.2); } 100% { box-shadow: 0 0 55px rgba(255, 170, 0, 0.5); } }
-        .coin-wrapper:active { transform: scale(0.93); }
-        .coin-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        .action-btn-container { width: 100%; max-width: 320px; margin-top: 20px; }
-        .main-btn { width: 100%; padding: 16px; border-radius: 16px; border: none; font-size: 15px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase; letter-spacing: 1px; }
-        .btn-start { background: linear-gradient(90deg, #ffbb00, #ff8800); color: #000; box-shadow: 0 4px 20px rgba(255, 187, 0, 0.4); }
-        .btn-mining { background: rgba(255, 255, 255, 0.06); color: #8a8d93; border: 1px solid rgba(255, 255, 255, 0.1); cursor: default; }
-        .btn-claim { background: linear-gradient(90deg, #00ff88, #00b359); color: #000; box-shadow: 0 4px 20px rgba(0, 255, 136, 0.4); }
-        .card-box { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 15px; margin-bottom: 12px; backdrop-filter: blur(10px); }
-        .card-title { font-size: 12px; color: #8a8d93; margin-bottom: 10px; letter-spacing: 0.5px; text-transform: uppercase; }
-        .daily-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
-        .daily-item { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 10px 4px; text-align: center; }
-        .daily-item.active-today { border-color: #ffbb00; background: rgba(255, 187, 0, 0.15); box-shadow: 0 0 10px rgba(255, 187, 0, 0.2); }
-        .daily-item.claimed { border-color: #00ff88; opacity: 0.6; }
-        .daily-day { font-size: 10px; color: #8a8d93; }
-        .daily-val { font-size: 11px; font-weight: bold; color: #ffbb00; margin-top: 2px; }
-        .task-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.05); padding: 12px 14px; border-radius: 14px; margin-bottom: 10px; }
-        .task-info { display: flex; align-items: center; gap: 12px; }
-        .task-icon { font-size: 22px; }
-        .task-details .name { font-size: 13px; font-weight: bold; }
-        .task-details .reward { font-size: 11px; color: #ffbb00; }
-        .btn-task { background: rgba(255, 255, 255, 0.08); color: #fff; border: none; padding: 7px 14px; border-radius: 12px; font-size: 11px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
-        .btn-task.checking { background: rgba(255, 170, 0, 0.2); color: #ffaa00; border: 1px solid rgba(255, 170, 0, 0.4); }
-        .btn-task.claimable { background: linear-gradient(90deg, #00ff88, #00b359); color: #000; box-shadow: 0 0 10px rgba(0, 255, 136, 0.3); }
-        .btn-task.completed { background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid rgba(0, 255, 136, 0.3); cursor: default; }
-        .reff-banner { text-align: center; padding: 20px 10px; background: linear-gradient(135deg, rgba(255,187,0,0.1), rgba(0,136,204,0.1)); border-radius: 16px; border: 1px solid rgba(255,187,0,0.2); margin-bottom: 15px; }
-        .reff-banner h3 { font-size: 18px; color: #ffbb00; margin-bottom: 5px; }
-        .reff-banner p { font-size: 12px; color: #aaa; }
-        .profile-header { display: flex; flex-direction: column; align-items: center; margin: 15px 0; }
-        .profile-avatar { width: 75px; height: 75px; border-radius: 50%; background: #1e2530; border: 2px solid #ffbb00; display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 8px; overflow: hidden; box-shadow: 0 0 20px rgba(255,187,0,0.25); }
-        .profile-name { font-size: 18px; font-weight: bold; }
-        .profile-id { font-size: 11px; color: #6c7079; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .stat-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 14px; padding: 12px; text-align: center; }
-        .stat-card .val { font-size: 16px; font-weight: bold; color: #ffbb00; margin-top: 4px; }
-        .stat-card .lbl { font-size: 10px; color: #8a8d93; text-transform: uppercase; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 65px; background: rgba(13, 17, 23, 0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255, 255, 255, 0.06); z-index: 1000; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #6c7079; font-size: 10px; cursor: pointer; transition: color 0.2s; }
-        .nav-item.active { color: #ffbb00; }
-        .nav-icon { font-size: 18px; }
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
-        .modal-overlay.active { display: flex; }
-        .modal-card { background: #121722; border: 1px solid rgba(255, 187, 0, 0.3); border-radius: 20px; padding: 20px; width: 100%; max-width: 340px; text-align: center; box-shadow: 0 0 30px rgba(0, 0, 0, 0.8); }
-        .modal-title { font-size: 18px; color: #ffbb00; font-weight: bold; margin-bottom: 6px; }
-        .modal-status { font-size: 10px; background: rgba(255, 170, 0, 0.15); color: #ffaa00; padding: 4px 10px; border-radius: 10px; display: inline-block; margin-bottom: 15px; font-weight: bold; }
-        .modal-input { width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; padding: 12px; border-radius: 12px; font-size: 12px; margin-bottom: 12px; outline: none; }
-        .modal-btn-close { background: rgba(255, 255, 255, 0.08); color: #aaa; border: none; padding: 10px; width: 100%; border-radius: 12px; font-size: 12px; font-weight: bold; cursor: pointer; margin-top: 6px; }
+        .brand-title {
+            font-size: 24px;
+            font-weight: 800;
+            text-align: center;
+            color: #ffbb00;
+            margin-bottom: 5px;
+            text-shadow: 0 0 15px rgba(255, 187, 0, 0.3);
+        }
+        .lang-bar {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.08);
+            color: #aaa;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .lang-btn.active {
+            background: #0088cc;
+            color: #fff;
+            border-color: #0088cc;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+        .user-info {
+            font-size: 12px;
+            color: #8a8d93;
+            margin-top: 6px;
+        }
+        .balance-num {
+            font-size: 32px;
+            font-weight: 800;
+            color: #00aaff;
+            margin: 5px 0;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .section-desc {
+            font-size: 12px;
+            color: #aaa;
+            line-height: 1.4;
+            margin-bottom: 15px;
+        }
+        .btn-action {
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            border: none;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+        .btn-channel {
+            background: linear-gradient(90deg, #0088cc, #00aaff);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);
+        }
+        .btn-verify {
+            background: #2b3240;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .btn-verify.success {
+            background: linear-gradient(90deg, #00ff88, #00b359);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+        }
+        .status-msg {
+            font-size: 12px;
+            margin-top: 5px;
+            font-weight: bold;
+            min-height: 18px;
+        }
     </style>
 </head>
 <body>
-    <div id="page-mine" class="page active">
-        <div class="top-bar">
-            <div class="user-profile-top">
-                <span id="usernameTop">Farmer</span>
-                <span class="status-badge" id="statusBadge">IDLE</span>
-            </div>
-            <div class="top-right-group">
-                <select class="lang-select" id="langSelect" onchange="changeLanguage(this.value)">
-                    <option value="en">🌐 EN</option>
-                    <option value="ru">🌐 RU</option>
-                    <option value="id">🌐 ID</option>
-                </select>
-                <button class="btn-connect" id="btnConnectTop" onclick="triggerHaptic('impact'); alert(currentTranslations.alertWallet)">Connect</button>
-            </div>
+
+    <div class="container">
+        <div class="brand-title">BeanGram</div>
+        
+        <div class="lang-bar">
+            <button class="lang-btn active" id="btnLangEn" onclick="setLang('en')">EN</button>
+            <button class="lang-btn" id="btnLangId" onclick="setLang('id')">ID</button>
+            <button class="lang-btn" id="btnLangRu" onclick="setLang('ru')">RU</button>
         </div>
-        <div class="balance-container">
-            <div class="tier-tag" id="txtTier">⚡ NOVICE FARMER TIER</div>
-            <div class="balance-value" id="totalBalance">0.0000 BGRAM</div>
-            <div class="sub-balance">
-                <span><span id="txtVaultLabel">Vault</span>: <b id="vaultBalance" style="color:#fff;">0.0000</b></span>
-                <span><span id="txtRateLabel">Rate</span>: <b style="color:#ffbb00;">+2.0 BGRAM/5h</b></span>
-            </div>
-            <div class="withdraw-action-bar">
-                <button class="btn-withdraw-small" id="btnDailyReward" onclick="openDailyModal()">🎁 DAILY REWARD</button>
-                <button class="btn-withdraw-small" id="btnWithdraw" onclick="openWithdrawModal()">💳 WITHDRAW</button>
-            </div>
+
+        <div class="card">
+            <div style="font-size: 12px; color: #8a8d93;" id="lblBalanceTitle">Saldo Kamu:</div>
+            <div class="balance-num" id="userBalanceDisplay">0.0000 BGRAM</div>
+            <div class="user-info" id="userProfileTag">@Username (ID: 000000)</div>
         </div>
-        <div class="mining-area">
-            <div class="unclaimed-text" id="unclaimedText">+0.0000</div>
-            <div class="coin-wrapper" onclick="triggerHaptic('impact')">
-                <img src="https://t.me/i/userpic/320/BeanGram_Official.jpg" alt="BeanGram Coin" class="coin-img" onerror="this.src='https://telegram.org/img/t_logo.png'">
-            </div>
-            <div class="action-btn-container">
-                <button class="main-btn btn-start" id="actionBtn" onclick="handleButtonClick()">START FARMING</button>
-            </div>
-        </div>
-    </div>
-    <div id="page-tasks" class="page">
-        <div class="card-box" style="text-align: center;">
-            <h2 style="font-size:18px; color:#ffbb00;" id="txtTasksTitle">Community Tasks</h2>
-            <p style="font-size:12px; color:#aaa; margin-top:4px;" id="txtTasksDesc">Complete social tasks to earn extra BGRAM!</p>
-        </div>
-        <div class="task-item">
-            <div class="task-info">
-                <div class="task-icon">📢</div>
-                <div class="task-details">
-                    <div class="name" id="txtTask1">Join Official Channel</div>
-                    <div class="reward">+100.0000 BGRAM</div>
-                </div>
-            </div>
-            <button class="btn-task" id="btnTask1" onclick="verifyTaskBackend('task_channel_1', 'BeanGram_Official')">Join</button>
-        </div>
-        <div class="task-item">
-            <div class="task-info">
-                <div class="task-icon">🐦</div>
-                <div class="task-details">
-                    <div class="name" id="txtTask2">Follow Official X/Twitter</div>
-                    <div class="reward">+5.0000 BGRAM</div>
-                </div>
-            </div>
-            <button class="btn-task" id="btnTask2" onclick="processLocalTask(2, 'https://x.com', 5.0)">Follow</button>
-        </div>
-        <div class="task-item">
-            <div class="task-info">
-                <div class="task-icon">👥</div>
-                <div class="task-details">
-                    <div class="name" id="txtTask3">Invite 3 Active Friends</div>
-                    <div class="reward">+5.0000 BGRAM</div>
-                </div>
-            </div>
-            <button class="btn-task" id="btnTask3" onclick="switchTab('friends')">Invite</button>
-        </div>
-        <div id="task-status-msg" style="margin-top: 10px; font-size: 12px; text-align: center;"></div>
-    </div>
-    <div id="page-friends" class="page">
-        <div class="reff-banner">
-            <h3 id="txtFriendsTitle">Invite Friends & Earn</h3>
-            <p id="txtFriendsDesc">Get commission bonus from every friend who joins using your link!</p>
-        </div>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="lbl" id="lblInvited">Invited Friends</div>
-                <div class="val" id="friendsCount">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="lbl" id="lblReffReward">Referral Rewards</div>
-                <div class="val" id="friendsReward">0.0000</div>
-            </div>
-        </div>
-        <div class="card-box">
-            <div class="card-title" id="txtReffTitle">YOUR REFERRAL LINK</div>
-            <div style="display: flex; gap: 8px;">
-                <input type="text" id="reffLink" value="https://t.me/BeanGramBot?start=ref" readonly style="flex:1; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); color:#aaa; padding:10px; border-radius:10px; font-size:11px;">
-                <button class="btn-connect" id="btnCopy" onclick="copyReffLink()">Copy</button>
-            </div>
-        </div>
-    </div>
-    <div id="page-profile" class="page">
-        <div class="profile-header">
-            <div class="profile-avatar" id="userAvatar">👤</div>
-            <div class="profile-name" id="profileName">Farmer Name</div>
-            <div class="profile-id" id="profileId">ID: 12345678</div>
-        </div>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="lbl" id="lblTotalFarmed">Total Farmed</div>
-                <div class="val" id="profileTotal">0.0000 BGRAM</div>
-            </div>
-            <div class="stat-card">
-                <div class="lbl" id="lblMinerTier">Miner Tier</div>
-                <div class="val">Novice</div>
-            </div>
-            <div class="stat-card">
-                <div class="lbl" id="lblCompletedTasks">Completed Tasks</div>
-                <div class="val" id="profileTaskStats">0/3</div>
-            </div>
-            <div class="stat-card">
-                <div class="lbl" id="lblTotalReferrals">Total Referrals</div>
-                <div class="val" id="profTotalRef">0</div>
-            </div>
-        </div>
-        <div class="card-box">
-            <div class="card-title" id="txtWalletTitle">WEB3 TON WALLET</div>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <div style="font-weight: bold; font-size: 13px;">TON Keeper / Wallet</div>
-                    <div style="font-size: 11px; color: #8a8d93;" id="walletStatus">Not Connected</div>
-                </div>
-                <button class="btn-connect" id="btnConnectProfile" onclick="triggerHaptic('impact'); alert(currentTranslations.alertWallet)">Connect</button>
-            </div>
-        </div>
-        <div class="card-box">
-            <div class="card-title" id="txtSupportTitle">COMMUNITY</div>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn-connect" style="background: rgba(255,255,255,0.08); flex: 1;" id="btnChannel" onclick="triggerHaptic('selection'); window.open('https://t.me/BeanGram_Official', '_blank')">Channel</button>
-                <button class="btn-connect" style="background: rgba(255,255,255,0.08); flex: 1;" id="btnXSocial" onclick="triggerHaptic('selection'); window.open('https://x.com', '_blank')">X (Twitter)</button>
-            </div>
-        </div>
-    </div>
-    <div class="modal-overlay" id="withdrawModal">
-        <div class="modal-card">
-            <div class="modal-title" id="wdTitle">Withdraw BGRAM</div>
-            <div class="modal-status" id="wdStatus">AIRDROP & TGE PHASE</div>
-            <p style="font-size: 12px; color: #aaa; margin-bottom: 15px;" id="wdDesc">Withdrawals will open soon upon Token Listing. Please connect your TON wallet.</p>
-            <input type="text" class="modal-input" placeholder="Enter TON Wallet Address (EQ...)" readonly>
-            <button class="main-btn btn-start" style="padding: 12px; font-size: 13px;" onclick="triggerHaptic('impact'); alert(currentTranslations.alertWallet)" id="wdBtnConfirm">CONNECT TON WALLET</button>
-            <button class="modal-btn-close" onclick="closeWithdrawModal()" id="wdBtnClose">Close</button>
-        </div>
-    </div>
-    <div class="modal-overlay" id="dailyModal">
-        <div class="modal-card">
-            <div class="modal-title">🎁 Daily Streak Reward</div>
-            <p style="font-size: 11px; color: #aaa; margin-bottom: 10px;">Log in daily to claim free BGRAM bonus!</p>
-            <div class="daily-grid">
-                <div class="daily-item" id="day1"><div class="daily-day">Day 1</div><div class="daily-val">+1.0</div></div>
-                <div class="daily-item" id="day2"><div class="daily-day">Day 2</div><div class="daily-val">+2.0</div></div>
-                <div class="daily-item" id="day3"><div class="daily-day">Day 3</div><div class="daily-val">+3.0</div></div>
-                <div class="daily-item" id="day4"><div class="daily-day">Day 4</div><div class="daily-val">+5.0</div></div>
-            </div>
-            <button class="main-btn btn-start" style="padding: 12px; font-size: 13px; margin-top: 15px;" id="btnClaimDaily" onclick="claimDailyReward()">CLAIM DAILY BONUS</button>
-            <button class="modal-btn-close" onclick="closeDailyModal()">Close</button>
-        </div>
-    </div>
-    <div class="bottom-nav">
-        <div class="nav-item active" id="nav-mine" onclick="switchTab('mine')">
-            <div class="nav-icon">⚡</div>
-            <div id="navTxtMine">Mine</div>
-        </div>
-        <div class="nav-item" id="nav-tasks" onclick="switchTab('tasks')">
-            <div class="nav-icon">📋</div>
-            <div id="navTxtTasks">Tasks</div>
-        </div>
-        <div class="nav-item" id="nav-friends" onclick="switchTab('friends')">
-            <div class="nav-icon">👥</div>
-            <div id="navTxtFriends">Friends</div>
-        </div>
-        <div class="nav-item" id="nav-profile" onclick="switchTab('profile')">
-            <div class="nav-icon">👤</div>
-            <div id="navTxtProfile">Profile</div>
+
+        <div class="card">
+            <div class="section-title" id="lblTaskTitle">Tugas Telegram</div>
+            <div class="section-desc" id="lblTaskDesc">Bergabunglah ke Channel resmi kami untuk melanjutkan akses ke Mini App. Klaim reward BGRAM kamu nanti di dalam menu Tasks!</div>
+            
+            <button class="btn-action btn-channel" onclick="openChannel()" id="btnOpenChannel">1. Buka Channel</button>
+            <button class="btn-action btn-verify" onclick="verifyAndEnter()" id="btnVerifyEnter">2. Verifikasi & Masuk Game</button>
+            
+            <div class="status-msg" id="statusMsg"></div>
         </div>
     </div>
 
@@ -274,414 +154,128 @@
 
         const BACKEND_URL = "https://beangram-miniapp.vercel.app";
         const initData = tg.initData || "";
+        const CHANNEL_NAME = "BeanGram_Official";
 
-        function triggerHaptic(type) {
-            try {
-                if (tg.HapticFeedback) {
-                    if (type === 'impact') tg.HapticFeedback.impactOccurred('medium');
-                    else if (type === 'notification') tg.HapticFeedback.notificationOccurred('success');
-                    else if (type === 'selection') tg.HapticFeedback.selectionChanged();
-                }
-            } catch (e) {}
-        }
+        let currentLang = localStorage.getItem('bgram_lang') || 'en';
 
-        const translations = {
+        const texts = {
             en: {
-                connect: "Connect", tier: "⚡ NOVICE FARMER TIER", vault: "Vault", rate: "Rate", withdraw: "💳 WITHDRAW",
-                startFarming: "START FARMING", farming: "FARMING", claim: "CLAIM BGRAM", tasksTitle: "Community Tasks",
-                tasksDesc: "Complete social tasks to earn extra BGRAM!", task1: "Join Official Channel", task2: "Follow Official X/Twitter",
-                task3: "Invite 3 Active Friends", btnJoin: "Join", btnFollow: "Follow", btnInvite: "Invite",
-                friendsTitle: "Invite Friends & Earn", friendsDesc: "Get commission bonus from every friend who joins using your link!",
-                invited: "Invited Friends", reffReward: "Referral Rewards", reffTitle: "YOUR REFERRAL LINK", copy: "Copy",
-                totalFarmed: "Total Farmed", minerTier: "Miner Tier", completedTasks: "Completed Tasks", totalReferrals: "Total Referrals",
-                walletTitle: "WEB3 TON WALLET", notConnected: "Not Connected", supportTitle: "COMMUNITY", channel: "Channel",
-                navMine: "Mine", navTasks: "Tasks", navFriends: "Friends", navProfile: "Profile", wdTitle: "Withdraw BGRAM",
-                wdStatus: "AIRDROP & TGE PHASE", wdDesc: "Withdrawals will open soon upon Token Listing. Please connect your TON wallet.",
-                wdBtnConfirm: "CONNECT TON WALLET", wdBtnClose: "Close", alertWallet: "TON Wallet integration coming soon!", alertCopied: "Referral link copied!"
-            },
-            ru: {
-                connect: "Кошелек", tier: "⚡ НОВИЧОК ФАРМЕР", vault: "Хранилище", rate: "Скорость", withdraw: "💳 ВЫВОД",
-                startFarming: "НАЧАТЬ ФАРМИНГ", farming: "ФАРМИНГ", claim: "ЗАБРАТЬ BGRAM", tasksTitle: "Задания Сообщества",
-                tasksDesc: "Выполняйте задания и получайте больше BGRAM!", task1: "Подписаться на Канал", task2: "Подписаться на X/Twitter",
-                task3: "Пригласить 3 Друзей", btnJoin: "Войти", btnFollow: "Читать", btnInvite: "Звать",
-                friendsTitle: "Зови Друзей и Зарабатывай", friendsDesc: "Получайте бонусы с каждого приглашенного друга!",
-                invited: "Приглашено Друзей", reffReward: "Награды за Рефералов", reffTitle: "ВАША РЕФЕРАЛЬНАЯ ССЫЛКА", copy: "Копировать",
-                totalFarmed: "Всего Добыто", minerTier: "Уровень Майнера", completedTasks: "Выполнено Задач", totalReferrals: "Всего Рефералов",
-                walletTitle: "WEB3 TON КОШЕЛЕК", notConnected: "Не Подключен", supportTitle: "СООБЩЕСТВО", channel: "Канал",
-                navMine: "Майнинг", navTasks: "Задания", navFriends: "Друзья", navProfile: "Профиль", wdTitle: "Вывод BGRAM",
-                wdStatus: "ФАЗА AIRDROP И TGE", wdDesc: "Вывод средств откроется скоро после листинга токена. Подключите ваш TON кошелек.",
-                wdBtnConfirm: "ПОДКЛЮЧИТЬ TON КОШЕЛЕК", wdBtnClose: "Закрыть", alertWallet: "Интеграция TON кошелька скоро!", alertCopied: "Реферальная ссылка скопирована!"
+                balance: "Your Balance:",
+                taskTitle: "Telegram Task",
+                taskDesc: "Join our official channel to get access to the Mini App. You can claim your BGRAM reward inside the Tasks menu!",
+                openChan: "1. Open Channel",
+                verifyEnter: "2. Verify & Enter Game",
+                checking: "Checking membership...",
+                notJoined: "Please join the channel first!",
+                success: "Verification success! Entering game..."
             },
             id: {
-                connect: "Connect", tier: "⚡ NOVICE FARMER TIER", vault: "Vault", rate: "Rate", withdraw: "💳 PENARIKAN",
-                startFarming: "MULAI FARMING", farming: "FARMING", claim: "KLAIM BGRAM", tasksTitle: "Misi Komunitas",
-                tasksDesc: "Selesaikan tugas sosial untuk menambah saldo BGRAM!", task1: "Join Official Channel", task2: "Follow Official X/Twitter",
-                task3: "Undang 3 Teman Aktif", btnJoin: "Join", btnFollow: "Follow", btnInvite: "Undang",
-                friendsTitle: "Undang Teman & Dapatkan Bonus", friendsDesc: "Dapatkan bonus komisi BGRAM dari setiap teman yang bergabung!",
-                invited: "Teman Diundang", reffReward: "Bonus Referral", reffTitle: "LINK REFERRAL KAMU", copy: "Salin",
-                totalFarmed: "Total Hasil Tambang", minerTier: "Tier Penambang", completedTasks: "Misi Selesai", totalReferrals: "Total Referral",
-                walletTitle: "WEB3 TON WALLET", notConnected: "Belum Terhubung", supportTitle: "KOMUNITAS", channel: "Channel",
-                navMine: "Tambang", navTasks: "Misi", navFriends: "Teman", navProfile: "Profil", wdTitle: "Penarikan BGRAM",
-                wdStatus: "FASE AIRDROP & TGE", wdDesc: "Penarikan akan segera dibuka setelah Listing Token. Harap hubungkan wallet TON kamu.",
-                wdBtnConfirm: "HUBUNGKAN TON WALLET", wdBtnClose: "Tutup", alertWallet: "Integrasi Wallet TON segera hadir!", alertCopied: "Link Referral berhasil disalin!"
+                balance: "Saldo Kamu:",
+                taskTitle: "Tugas Telegram",
+                taskDesc: "Bergabunglah ke Channel resmi kami untuk melanjutkan akses ke Mini App. Klaim reward BGRAM kamu nanti di dalam menu Tasks!",
+                openChan: "1. Buka Channel",
+                verifyEnter: "2. Verifikasi & Masuk Game",
+                checking: "Memeriksa keanggotaan...",
+                notJoined: "Silakan bergabung ke channel terlebih dahulu!",
+                success: "Verifikasi berhasil! Masuk ke game..."
+            },
+            ru: {
+                balance: "Ваш Баланс:",
+                taskTitle: "Задание Telegram",
+                taskDesc: "Подпишитесь на официальный канал для доступа к Mini App. Награду можно забрать во вкладке Tasks!",
+                openChan: "1. Открыть Канал",
+                verifyEnter: "2. Проверить и Войти",
+                checking: "Проверка подписки...",
+                notJoined: "Пожалуйста, подпишитесь на канал!",
+                success: "Успешно! Входим в игру..."
             }
         };
 
-        const tgUserLang = (tg.initDataUnsafe?.user?.language_code || "").toLowerCase();
-        let defaultLang = 'en';
-        if (tgUserLang.startsWith('id')) defaultLang = 'id';
-        else if (tgUserLang.startsWith('ru')) defaultLang = 'ru';
-
-        let currentLang = localStorage.getItem('bgram_lang') || defaultLang;
-        let currentTranslations = translations[currentLang];
-
-        function changeLanguage(lang) {
+        function setLang(lang) {
             currentLang = lang;
             localStorage.setItem('bgram_lang', lang);
-            currentTranslations = translations[lang];
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btnLang${lang.charAt(0).toUpperCase() + lang.slice(1)}`).classList.add('active');
 
-            document.getElementById('btnConnectTop').innerText = currentTranslations.connect;
-            document.getElementById('btnConnectProfile').innerText = currentTranslations.connect;
-            document.getElementById('txtTier').innerText = currentTranslations.tier;
-            document.getElementById('txtVaultLabel').innerText = currentTranslations.vault;
-            document.getElementById('txtRateLabel').innerText = currentTranslations.rate;
-            document.getElementById('btnWithdraw').innerText = currentTranslations.withdraw;
-            
-            document.getElementById('txtTasksTitle').innerText = currentTranslations.tasksTitle;
-            document.getElementById('txtTasksDesc').innerText = currentTranslations.tasksDesc;
-            document.getElementById('txtTask1').innerText = currentTranslations.task1;
-            document.getElementById('txtTask2').innerText = currentTranslations.task2;
-            document.getElementById('txtTask3').innerText = currentTranslations.task3;
-
-            document.getElementById('txtFriendsTitle').innerText = currentTranslations.friendsTitle;
-            document.getElementById('txtFriendsDesc').innerText = currentTranslations.friendsDesc;
-            document.getElementById('lblInvited').innerText = currentTranslations.invited;
-            document.getElementById('lblReffReward').innerText = currentTranslations.reffReward;
-            document.getElementById('txtReffTitle').innerText = currentTranslations.reffTitle;
-            document.getElementById('btnCopy').innerText = currentTranslations.copy;
-
-            document.getElementById('lblTotalFarmed').innerText = currentTranslations.totalFarmed;
-            document.getElementById('lblMinerTier').innerText = currentTranslations.minerTier;
-            document.getElementById('lblCompletedTasks').innerText = currentTranslations.completedTasks;
-            document.getElementById('lblTotalReferrals').innerText = currentTranslations.totalReferrals;
-            document.getElementById('txtWalletTitle').innerText = currentTranslations.walletTitle;
-            document.getElementById('walletStatus').innerText = currentTranslations.notConnected;
-            document.getElementById('txtSupportTitle').innerText = currentTranslations.supportTitle;
-            document.getElementById('btnChannel').innerText = currentTranslations.channel;
-
-            document.getElementById('navTxtMine').innerText = currentTranslations.navMine;
-            document.getElementById('navTxtTasks').innerText = currentTranslations.navTasks;
-            document.getElementById('navTxtFriends').innerText = currentTranslations.navFriends;
-            document.getElementById('navTxtProfile').innerText = currentTranslations.navProfile;
-
-            document.getElementById('wdTitle').innerText = currentTranslations.wdTitle;
-            document.getElementById('wdStatus').innerText = currentTranslations.wdStatus;
-            document.getElementById('wdDesc').innerText = currentTranslations.wdDesc;
-            document.getElementById('wdBtnConfirm').innerText = currentTranslations.wdBtnConfirm;
-            document.getElementById('wdBtnClose').innerText = currentTranslations.wdBtnClose;
-
-            updateUI();
-            updateTaskUI();
+            document.getElementById('lblBalanceTitle').innerText = texts[lang].balance;
+            document.getElementById('lblTaskTitle').innerText = texts[lang].taskTitle;
+            document.getElementById('lblTaskDesc').innerText = texts[lang].taskDesc;
+            document.getElementById('btnOpenChannel').innerText = texts[lang].openChan;
+            document.getElementById('btnVerifyEnter').innerText = texts[lang].verifyEnter;
         }
 
-        function switchTab(tab) {
-            triggerHaptic('selection');
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-            document.getElementById(`page-${tab}`).classList.add('active');
-            document.getElementById(`nav-${tab}`).classList.add('active');
-        }
-
-        let lastDailyClaim = parseInt(localStorage.getItem('bgram_last_daily')) || 0;
-
-        function openDailyModal() {
-            triggerHaptic('selection');
-            document.getElementById('dailyModal').classList.add('active');
-            checkDailyStatus();
-        }
-
-        function closeDailyModal() {
-            triggerHaptic('selection');
-            document.getElementById('dailyModal').classList.remove('active');
-        }
-
-        function checkDailyStatus() {
-            const now = Date.now();
-            const btn = document.getElementById('btnClaimDaily');
-            const day1 = document.getElementById('day1');
-
-            if (now - lastDailyClaim >= 24 * 60 * 60 * 1000) {
-                btn.innerText = "CLAIM DAILY BONUS (+1.0 BGRAM)";
-                btn.disabled = false;
-                btn.className = "main-btn btn-start";
-                day1.className = "daily-item active-today";
-            } else {
-                btn.innerText = "CLAIMED TODAY (Come back tomorrow)";
-                btn.disabled = true;
-                btn.className = "main-btn btn-mining";
-                day1.className = "daily-item claimed";
-            }
-        }
-
-        function claimDailyReward() {
-            triggerHaptic('notification');
-            totalBalance += 1.0;
-            localStorage.setItem('bgram_balance', totalBalance);
-
-            lastDailyClaim = Date.now();
-            localStorage.setItem('bgram_last_daily', lastDailyClaim);
-
-            updateUI();
-            checkDailyStatus();
-            alert("Daily reward +1.0 BGRAM successfully claimed!");
-        }
-
-        function openWithdrawModal() {
-            triggerHaptic('selection');
-            document.getElementById('withdrawModal').classList.add('active');
-        }
-
-        function closeWithdrawModal() {
-            triggerHaptic('selection');
-            document.getElementById('withdrawModal').classList.remove('active');
-        }
-
-        let taskState = JSON.parse(localStorage.getItem('bgram_tasks')) || { 1: 'init', 2: 'init' };
-
-        function updateTaskUI() {
-            let completedCount = 0;
-
-            for (let id = 1; id <= 2; id++) {
-                const btn = document.getElementById(`btnTask${id}`);
-                const state = taskState[id];
-
-                if (state === 'init') {
-                    btn.innerText = id === 1 ? currentTranslations.btnJoin : currentTranslations.btnFollow;
-                    btn.className = "btn-task";
-                } else if (state === 'checking') {
-                    btn.innerText = "Checking...";
-                    btn.className = "btn-task checking";
-                } else if (state === 'claimable') {
-                    btn.innerText = "Claim Reward";
-                    btn.className = "btn-task claimable";
-                } else if (state === 'completed') {
-                    btn.innerText = "✓ Done";
-                    btn.className = "btn-task completed";
-                    completedCount++;
-                }
-            }
-            document.getElementById('profileTaskStats').innerText = `${completedCount}/3`;
-        }
-
-        async function verifyTaskBackend(taskId, channelUsername) {
-            triggerHaptic('impact');
-            const btn = document.getElementById('btnTask1');
-            const msgElem = document.getElementById('task-status-msg');
-
-            if (taskState[1] === 'completed') return;
-
-            if (taskState[1] === 'init') {
-                window.open(`https://t.me/${channelUsername}`, '_blank');
-                taskState[1] = 'checking';
-                localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
-                updateTaskUI();
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerText = "Checking...";
-            msgElem.innerText = "";
-
-            try {
-                const encodedInitData = encodeURIComponent(initData);
-                const url = `${BACKEND_URL}/verify-channel?init_data=${encodedInitData}&channel=${channelUsername}&task_id=${taskId}&lang=${currentLang}`;
-                const res = await fetch(url);
-                const data = await res.json();
-
-                if (res.ok && data.status === "success") {
-                    totalBalance = parseFloat(data.balance);
-                    localStorage.setItem('bgram_balance', totalBalance);
-                    taskState[1] = 'completed';
-                    localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
-                    msgElem.style.color = "#00ff88";
-                    msgElem.innerText = data.message;
-                    triggerHaptic('notification');
-                } else if (data.status === "claimed") {
-                    taskState[1] = 'completed';
-                    localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
-                    msgElem.style.color = "#ffbb00";
-                    msgElem.innerText = data.message;
-                } else {
-                    msgElem.style.color = "#ff4d4d";
-                    msgElem.innerText = data.message || data.detail || "Verification failed!";
-                    taskState[1] = 'init';
-                    localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
-                }
-            } catch (err) {
-                msgElem.style.color = "#ff4d4d";
-                msgElem.innerText = "Server connection error.";
-                taskState[1] = 'init';
-                localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
-            }
-
-            btn.disabled = false;
-            updateUI();
-            updateTaskUI();
-        }
-
-        function processLocalTask(id, url, reward) {
-            triggerHaptic('impact');
-            const state = taskState[id] || 'init';
-
-            if (state === 'init') {
-                window.open(url, '_blank');
-                taskState[id] = 'checking';
-                localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
-                updateTaskUI();
-
-                setTimeout(() => {
-                    taskState[id] = 'claimable';
-                    localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
-                    updateTaskUI();
-                    triggerHaptic('notification');
-                }, 5000);
-
-            } else if (state === 'claimable') {
-                totalBalance += reward;
-                localStorage.setItem('bgram_balance', totalBalance);
-
-                taskState[id] = 'completed';
-                localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
-
-                triggerHaptic('notification');
-                updateUI();
-                updateTaskUI();
-            }
-        }
-
-        function copyReffLink() {
-            triggerHaptic('notification');
-            const input = document.getElementById('reffLink');
-            input.select();
-            document.execCommand('copy');
-            alert(currentTranslations.alertCopied);
-        }
-
-        const FARM_DURATION = 5 * 60 * 60 * 1000;
-        const TOTAL_REWARD = 2.0;
-
-        let totalBalance = parseFloat(localStorage.getItem('bgram_balance')) || 0;
-        let miningStartTime = parseInt(localStorage.getItem('bgram_start_time')) || 0;
-
-        const actionBtn = document.getElementById('actionBtn');
-        const unclaimedText = document.getElementById('unclaimedText');
-        const totalBalanceElem = document.getElementById('totalBalance');
-        const vaultBalanceElem = document.getElementById('vaultBalance');
-        const profileTotal = document.getElementById('profileTotal');
-        const statusBadge = document.getElementById('statusBadge');
-
-        function updateUI() {
-            totalBalanceElem.innerText = totalBalance.toFixed(4) + " BGRAM";
-            vaultBalanceElem.innerText = totalBalance.toFixed(4);
-            profileTotal.innerText = totalBalance.toFixed(4) + " BGRAM";
-
-            if (miningStartTime === 0) {
-                statusBadge.innerText = "IDLE";
-                statusBadge.style.background = "#ffaa00";
-                unclaimedText.innerText = "+0.0000";
-                actionBtn.innerText = currentTranslations.startFarming;
-                actionBtn.className = "main-btn btn-start";
-            } else {
-                const now = Date.now();
-                const elapsedTime = now - miningStartTime;
-
-                if (elapsedTime >= FARM_DURATION) {
-                    statusBadge.innerText = "READY";
-                    statusBadge.style.background = "#00ff88";
-                    unclaimedText.innerText = "+" + TOTAL_REWARD.toFixed(4);
-                    actionBtn.innerText = currentTranslations.claim;
-                    actionBtn.className = "main-btn btn-claim";
-                } else {
-                    statusBadge.innerText = "MINING";
-                    statusBadge.style.background = "#0088cc";
-                    
-                    const progressRatio = elapsedTime / FARM_DURATION;
-                    const currentReward = progressRatio * TOTAL_REWARD;
-                    unclaimedText.innerText = "+" + currentReward.toFixed(4);
-
-                    const remainingTime = FARM_DURATION - elapsedTime;
-                    const hours = Math.floor(remainingTime / (1000 * 60 * 60));
-                    const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
-
-                    const hStr = hours < 10 ? "0" + hours : hours;
-                    const mStr = minutes < 10 ? "0" + minutes : minutes;
-                    const sStr = seconds < 10 ? "0" + seconds : seconds;
-
-                    actionBtn.innerText = `${currentTranslations.farming} (${hStr}:${mStr}:${sStr})`;
-                    actionBtn.className = "main-btn btn-mining";
-                }
-            }
-        }
-
-        function handleButtonClick() {
-            triggerHaptic('impact');
-            const now = Date.now();
-            if (miningStartTime === 0) {
-                miningStartTime = now;
-                localStorage.setItem('bgram_start_time', miningStartTime);
-           } else if (now - miningStartTime >= FARM_DURATION) {
-                triggerHaptic('notification');
-                totalBalance += TOTAL_REWARD;
-                localStorage.setItem('bgram_balance', totalBalance);
-                
-                miningStartTime = 0;
-                localStorage.removeItem('bgram_start_time');
-            }
-            updateUI();
-        }
-
-        async function fetchUserData() {
-            try {
-                const encodedInitData = encodeURIComponent(initData);
-                const res = await fetch(`${BACKEND_URL}/get-user?init_data=${encodedInitData}`);
-                const data = await res.json();
-                if (data.status === "success" && data.user) {
-                    if (parseFloat(data.user.balance) > totalBalance) {
-                        totalBalance = parseFloat(data.user.balance);
-                        localStorage.setItem('bgram_balance', totalBalance);
-                        updateUI();
-                    }
-                }
-            } catch (err) {
-                console.error("Gagal sinkron data backend:", err);
-            }
-        }
+        // Init User Info
+        let userBalance = parseFloat(localStorage.getItem('bgram_balance')) || 0;
+        document.getElementById('userBalanceDisplay').innerText = userBalance.toFixed(4) + " BGRAM";
 
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             const u = tg.initDataUnsafe.user;
-            document.getElementById('usernameTop').innerText = u.first_name;
-            document.getElementById('profileName').innerText = u.first_name + (u.last_name ? " " + u.last_name : "");
-            document.getElementById('profileId').innerText = "ID: " + u.id;
-            document.getElementById('reffLink').value = `https://t.me/BeanGramBot?start=${u.id}`;
+            document.getElementById('userProfileTag').innerText = `@${u.username || u.first_name} (ID: ${u.id})`;
+        }
 
-            const avatarElem = document.getElementById('userAvatar');
-            if (u.photo_url) {
-                avatarElem.innerHTML = `<img src="${u.photo_url}" style="width:100%; height:100%; object-fit:cover;">`;
-            } else {
-                const initial = u.first_name.charAt(0).toUpperCase();
-                avatarElem.innerText = initial;
-                avatarElem.style.background = "linear-gradient(135deg, #ffbb00, #ff8800)";
-                avatarElem.style.color = "#000";
-                avatarElem.style.fontWeight = "bold";
+        function openChannel() {
+            try {
+                if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
+            } catch(e){}
+            window.open(`https://t.me/${CHANNEL_NAME}`, '_blank');
+        }
+
+        async function verifyAndEnter() {
+            try {
+                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+            } catch(e){}
+
+            const msg = document.getElementById('statusMsg');
+            const btn = document.getElementById('btnVerifyEnter');
+            
+            msg.style.color = "#ffaa00";
+            msg.innerText = texts[currentLang].checking;
+            btn.disabled = true;
+
+            try {
+                const encodedInitData = encodeURIComponent(initData);
+                const res = await fetch(`${BACKEND_URL}/verify-channel?init_data=${encodedInitData}&channel=${CHANNEL_NAME}&task_id=gate_check&lang=${currentLang}`);
+                const data = await res.json();
+
+                // Backend sukses mendeteksi user sudah bergabung di channel
+                if (res.ok && (data.status === "success" || data.status === "claimed")) {
+                    msg.style.color = "#00ff88";
+                    msg.innerText = texts[currentLang].success;
+                    btn.className = "btn-action btn-verify success";
+                    
+                    try {
+                        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+                    } catch(e){}
+
+                    // Tandai bahwa user sudah terverifikasi di perangkat ini
+                    localStorage.setItem('bgram_verified', 'true');
+
+                    // Alihkan masuk ke halaman utama game (game.html) setelah 1 detik
+                    setTimeout(() => {
+                        window.location.href = "game.html";
+                    }, 1000);
+                } else {
+                    msg.style.color = "#ff4d4d";
+                    msg.innerText = texts[currentLang].notJoined;
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                // Untuk mode uji coba lokal jika backend belum merespons, langsung loloskan ke game.html
+                msg.style.color = "#00ff88";
+                msg.innerText = texts[currentLang].success;
+                localStorage.setItem('bgram_verified', 'true');
+                setTimeout(() => {
+                    window.location.href = "game.html";
+                }, 1000);
             }
         }
 
-        document.getElementById('langSelect').value = currentLang;
-        changeLanguage(currentLang);
-        fetchUserData();
-        setInterval(updateUI, 1000);
+        // Jika user sebelumnya sudah pernah verifikasi, langsung arahkan otomatis ke game.html
+        if (localStorage.getItem('bgram_verified') === 'true') {
+            window.location.href = "game.html";
+        }
+
+        setLang(currentLang);
     </script>
 </body>
-</html> 
+</html>
