@@ -298,6 +298,7 @@ const FARM_DURATION = 5 * 60 * 60 * 1000;
 const TOTAL_REWARD = 2.0;
 
 let totalBalance = parseFloat(localStorage.getItem('bgram_balance')) || 0;
+let tonBalance = parseFloat(localStorage.getItem('bgram_ton_balance')) || 0;
 let miningStartTime = parseInt(localStorage.getItem('bgram_start_time')) || 0;
 
 const actionBtn = document.getElementById('actionBtn');
