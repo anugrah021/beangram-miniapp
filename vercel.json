@@ -1,7 +1,4 @@
 {
-  "functions": {
-    "main.py": {
-      "maxDuration": 30
-    }
-  }
+  "buildCommand": "",
+  "outputDirectory": ""
 }
