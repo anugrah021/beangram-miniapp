@@ -627,3 +627,34 @@ if (langSelect) langSelect.value = currentLang;
 changeLanguage(currentLang);
 fetchUserData();
 setInterval(updateUI, 1000);
+// --- FUNGSI UNIVERSAL CLOUD SYNC KE BACKEND ---
+async function syncDataToServer(actionType, extraData = {}) {
+    try {
+        const payload = {
+            telegram_id: String(tg.initDataUnsafe?.user?.id || "unknown"),
+            username: tg.initDataUnsafe?.user?.username || "unknown",
+            bgram_balance: parseFloat(localStorage.getItem('bgram_balance')) || 0,
+            ton_balance: parseFloat(localStorage.getItem('bgram_ton_balance')) || 0,
+            friends_count: parseInt(localStorage.getItem('bgram_friends_count')) || 0,
+            friends_reward: parseFloat(localStorage.getItem('bgram_friends_reward')) || 0,
+            action: actionType,
+            details: extraData,
+            timestamp: new Date().toISOString()
+        };
+
+        const response = await fetch('https://domain-backend-kamu.com/api/sync', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            console.log("Cloud Sync Berhasil untuk aksi:", actionType);
+        }
+    } catch (error) {
+        console.warn("Cloud Sync tertunda (Mode Offline/Koneksi):", error);
+    }
+}
