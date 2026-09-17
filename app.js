@@ -271,7 +271,7 @@ function processLocalTask(id, url, reward) {
     const state = taskState[id] || 'init';
 
     if (state === 'init') {
-        // Menggunakan fungsi resmi Telegram WebApp agar mulus tanpa pop-up aneh
+        // 1. Membuka link task secara mulus menggunakan fungsi resmi Telegram WebApp
         if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
             window.Telegram.WebApp.openTelegramLink(url);
         } else if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
@@ -280,18 +280,21 @@ function processLocalTask(id, url, reward) {
             window.open(url, '_blank');
         }
 
+        // 2. Ubah status menjadi checking
         taskState[id] = 'checking';
         localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
         updateTaskUI();
 
+        // 3. Jeda waktu sebelum tombol berubah menjadi siap klaim
         setTimeout(() => {
             taskState[id] = 'claimable';
             localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
             updateTaskUI();
             triggerHaptic('notification');
-        }, 5000);
+        }, 4000);
 
     } else if (state === 'claimable') {
+        // 4. Proses penambahan saldo & reward
         totalBalance += reward;
         localStorage.setItem('bgram_balance', totalBalance);
 
@@ -301,6 +304,15 @@ function processLocalTask(id, url, reward) {
         triggerHaptic('notification');
         updateUI();
         updateTaskUI();
+
+        // 5. Pop-up multi-bahasa otomatis berdasarkan bahasa aktif pengguna
+        let successMsg = `Successfully claimed +${reward} BGRAM reward!`;
+        if (currentLang === 'ru') {
+            successMsg = `Успешно получено +${reward} BGRAM награды!`;
+        } else if (currentLang === 'id') {
+            successMsg = `Berhasil klaim reward +${reward} BGRAM!`;
+        }
+        alert(successMsg);
     }
 }
 
