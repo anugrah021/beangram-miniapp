@@ -382,18 +382,28 @@ function updateUI() {
 function handleButtonClick() {
     triggerHaptic('impact');
     const now = Date.now();
+
     if (miningStartTime === 0) {
+        // --- OPTIMISTIC UI: UPDATE INSTAN DI LAYAR ---
         miningStartTime = now;
         localStorage.setItem('bgram_start_time', miningStartTime);
-    } else if (now - miningStartTime >= FARM_DURATION) {
+        
+        // Langsung panggil updateUI agar layar berubah seketika tanpa jeda
+        updateUI();
+
+    } else if ((now - miningStartTime) >= FARM_DURATION) {
         triggerHaptic('notification');
+        
+        // --- OPTIMISTIC UI: TAMBAH SALDO INSTAN DI LAYAR ---
         totalBalance += TOTAL_REWARD;
         localStorage.setItem('bgram_balance', totalBalance);
         
         miningStartTime = 0;
         localStorage.removeItem('bgram_start_time');
+        
+        // Langsung panggil updateUI agar saldo baru langsung terlihat instan
+        updateUI();
     }
-    updateUI();
 }
 
 async function fetchUserData() {
