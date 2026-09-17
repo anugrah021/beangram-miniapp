@@ -271,3 +271,31 @@ def claim_mining(init_data: str = Query(...)):
     )
 
     return {"status": "success", "reward": reward_amount, "balance": new_balance, "message": "Reward mining berhasil diklaim!"}
+# --- FUNGSI NOTIFIKASI PENARIKAN KE ADMIN ---
+def notify_admin_withdrawal(username, telegram_id, wallet, amount):
+    message = (
+        f"🚨 *KONFIRMASI PENARIKAN TON VALID!* 🚨\n\n"
+        f"👤 Username: @{username}\n"
+        f"🆔 Telegram ID: `{telegram_id}`\n"
+        f"💰 Jumlah Valid: *{amount} TON*\n"
+        f"👛 Alamat Dompet: `{wallet}`\n\n"
+        f"✅ Status: Lolos validasi anti-bot, saldo, & task. Silakan transfer TON secara manual."
+    )
+    
+    bot_token = os.getenv("BOT_TOKEN", "")
+    admin_id = os.getenv("ADMIN_TELEGRAM_ID", "")
+    
+    if not bot_token or not admin_id:
+        return
+        
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    payload = {
+        "chat_id": admin_id,
+        "text": message,
+        "parse_mode": "Markdown"
+    }
+    
+    try:
+        requests.post(url, json=payload)
+    except Exception as e:
+        print(f"Gagal mengirim notifikasi ke Telegram: {e}")
