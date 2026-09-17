@@ -698,3 +698,20 @@ function completeTask(taskType) {
 
     alert(`Selamat! Task ${taskType.toUpperCase()} berhasil diselesaikan. Reward ${bgramReward} BGRAM & ${tonReward} TON telah ditambahkan secara akurat!`);
 }
+// --- OTOMATIS HUBUNGKAN TOMBOL TASK DENGAN SISTEM CLOUD SYNC ---
+document.addEventListener("DOMContentLoaded", function() {
+    const btnTask1 = document.getElementById('btnTask1');
+    const btnTask2 = document.getElementById('btnTask2');
+
+    if (btnTask1) {
+        btnTask1.onclick = function() {
+            completeTask('telegram');
+        };
+    }
+
+    if (btnTask2) {
+        btnTask2.onclick = function() {
+            completeTask('twitter');
+        };
+    }
+});
