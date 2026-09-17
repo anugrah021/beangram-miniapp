@@ -271,6 +271,27 @@ def claim_mining(init_data: str = Query(...)):
     )
 
     return {"status": "success", "reward": reward_amount, "balance": new_balance, "message": "Reward mining berhasil diklaim!"}
+    @app.post("/api/withdraw")
+async def request_withdrawal(init_data: str = Query(...), payload: dict = dict):
+    user_data = verify_telegram_data(init_data)
+    if not user_data:
+        raise HTTPException(status_code=401, detail="Autentikasi gagal")
+        
+    telegram_id = user_data.get("id")
+    username = user_data.get("username", "NoUsername")
+    
+    wallet_address = payload.get("wallet_address", "")
+    amount = payload.get("amount_requested", 0)
+    
+    if amount < 0.1 or len(wallet_address) < 10:
+        raise HTTPException(status_code=400, detail="Jumlah penarikan atau alamat dompet tidak valid.")
+        
+    notify_admin_withdrawal(username, telegram_id, wallet_address, amount)
+    
+    return {
+        "status": "success",
+        "message": "Permintaan penarikan berhasil dikirim dan diverifikasi oleh server."
+    }
 # --- FUNGSI NOTIFIKASI PENARIKAN KE ADMIN ---
 def notify_admin_withdrawal(username, telegram_id, wallet, amount):
     message = (
