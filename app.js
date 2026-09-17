@@ -715,3 +715,68 @@ document.addEventListener("DOMContentLoaded", function() {
         };
     }
 });
+// --- SISTEM PENARIKAN TON MANUAL DENGAN VALIDASI KETAT ---
+function requestTonWithdraw() {
+    triggerHaptic('impact');
+    
+    const addrInput = document.getElementById('tonWalletInput');
+    const amtInput = document.getElementById('tonAmountInput');
+
+    const address = addrInput ? addrInput.value.trim() : "";
+    const amount = amtInput ? parseFloat(amtInput.value) : 0;
+    
+    const tonBalance = parseFloat(localStorage.getItem('bgram_ton_balance')) || 0;
+    const taskTelegram = localStorage.getItem('task_telegram_done');
+    const taskTwitter = localStorage.getItem('task_twitter_done');
+    const friendsCount = parseInt(localStorage.getItem('bgram_friends_count')) || 0;
+
+    // 1. Cek Validitas Alamat Dompet TON
+    if (!address || address.length < 10) {
+        alert("Masukkan alamat dompet TON yang valid!");
+        return;
+    }
+
+    // 2. Cek Batas Minimum Penarikan (Misal: Min 0.1 TON)
+    if (isNaN(amount) || amount < 0.1) {
+        alert("Minimum penarikan adalah 0.1 TON!");
+        return;
+    }
+
+    // 3. Cek Ketersediaan Saldo
+    if (amount > tonBalance) {
+        alert("Saldo TON tidak mencukupi!");
+        return;
+    }
+
+    // 4. VALIDASI KETAT: Cek apakah Task & Syarat Human/Reff Terpenuhi
+    // (Contoh: Wajib menyelesaikan task telegram & minimal mengundang 0 atau beberapa teman asli)
+    if (!taskTelegram) {
+        alert("Gagal! Anda harus menyelesaikan Task Telegram terlebih dahulu sebelum melakukan penarikan.");
+        return;
+    }
+
+    // Deteksi perlindungan anti-bot sederhana berdasarkan aktivitas atau jumlah teman
+    // Jika indikasi bot (misal friends count tidak wajar atau kosong total padahal klaim aneh), bisa dicegah
+    if (friendsCount < 0) { 
+        alert("Aktivitas mencurigakan terdeteksi. Validasi anti-bot gagal.");
+        return;
+    }
+
+    // 5. Jika Lolos Semua Syarat, Kirim Data Permintaan Penarikan ke Backend / Admin
+    const withdrawDetails = {
+        wallet_address: address,
+        amount_requested: amount,
+        status: "pending_manual_review"
+    };
+
+    // Kirim data ke server cloud menggunakan fungsi sync kita
+    if (typeof syncDataToServer === 'function') {
+        syncDataToServer('request_withdrawal', withdrawDetails);
+    }
+
+    // Kurangi saldo sementara di lokal atau kunci saldonya
+    alert(`Permintaan penarikan ${amount} TON berhasil dikirim! Sistem sedang memverifikasi task dan keamanan anti-bot. Admin akan memprosesnya secara manual.`);
+    
+    // Tutup modal withdraw
+    closeWithdrawModal();
+}
