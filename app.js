@@ -1,3 +1,7 @@
+// PENGHANCUR ALERT PERMANEN
+window.alert = function(text) {
+    console.log("Alert berhasil dicegat dan dimatikan:", text);
+};
 const tg = window.Telegram.WebApp;
 tg.expand();
 
