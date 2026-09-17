@@ -659,3 +659,42 @@ async function syncDataToServer(actionType, extraData = {}) {
         console.warn("Cloud Sync tertunda (Mode Offline/Koneksi):", error);
     }
 }
+// --- FUNGSI MENGERJAKAN TASK & MENGHITUNG REWARD OTOMATIS ---
+function completeTask(taskType) {
+    // 1. Ambil saldo saat ini dari localStorage
+    let currentBgram = parseFloat(localStorage.getItem('bgram_balance')) || 0;
+    let currentTon = parseFloat(localStorage.getItem('bgram_bgram_ton_balance') || localStorage.getItem('bgram_ton_balance')) || 0;
+
+    let bgramReward = 0;
+    let tonReward = 0;
+
+    // 2. Tentukan besar reward berdasarkan jenis task
+    if (taskType === 'telegram') {
+        bgramReward = 5.0;
+        tonReward = 0.01;
+    } else if (taskType === 'twitter' || taskType === 'x') {
+        bgramReward = 5.0;
+        tonReward = 0.0;
+    }
+
+    // 3. Tambahkan ke saldo utama secara presisi
+    currentBgram += bgramReward;
+    currentTon += tonReward;
+
+    // 4. Simpan kembali ke localStorage
+    localStorage.setItem('bgram_balance', currentBgram);
+    localStorage.setItem('bgram_ton_balance', currentTon);
+    localStorage.setItem(`task_${taskType}_done`, 'true');
+
+    // 5. Segarkan tampilan visual secara instan
+    if (typeof updateAllUI === 'function') {
+        updateAllUI();
+    }
+
+    // 6. Laporkan secara otomatis ke database server pusat lewat Cloud Sync
+    if (typeof syncDataToServer === 'function') {
+        syncDataToServer(`complete_task_${taskType}`, { bgram_added: bgramReward, ton_added: tonReward });
+    }
+
+    alert(`Selamat! Task ${taskType.toUpperCase()} berhasil diselesaikan. Reward ${bgramReward} BGRAM & ${tonReward} TON telah ditambahkan secara akurat!`);
+}
