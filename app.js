@@ -211,59 +211,73 @@ function updateTaskUI() {
     if (profileStats) profileStats.innerText = `${completedCount}/3`;
 }
 
-async function verifyTaskBackend(taskId, channelUsername) {
+async function verifyTaskBackend(taskId, channelUsername, reward) {
     triggerHaptic('impact');
-    const btn = document.getElementById('btnTask1');
-    const msgElem = document.getElementById('task-status-msg');
-
-    if (taskState[1] === 'completed') return;
+    
+    // Tentukan tombol berdasarkan taskId
+    const btnId = taskId === 'task_channel_1' ? 'btnTask1' : 'btnTask2';
+    const btn = document.getElementById(btnId);
+    
+    // Cegah klik jika task sudah selesai
+    if (taskState && taskState[taskId] === 'completed') return;
 
     if (btn) {
         btn.disabled = true;
-        btn.innerText = "Claiming...";
+        btn.innerText = "Checking...";
     }
 
     try {
-        const encodedInitData = encodeURIComponent(initData);
-        const url = `${BACKEND_URL}/verify-channel?init_data=${encodedInitData}&channel=${channelUsername}&task_id=${taskId}&lang=${currentLang}`;
-        const res = await fetch(url);
-        await res.json();
+        const initData = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp.initData : '';
+        const lang = document.getElementById('langSelect') ? document.getElementById('langSelect').value : 'en';
 
-        totalBalance += 5.0; 
-        localStorage.setItem('bgram_balance', totalBalance);
-
-        tonBalance += 0.05; 
-        localStorage.setItem('bgram_ton_balance', tonBalance);
-
-        taskState[1] = 'completed';
-        localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
-        
-        if (msgElem) {
-            msgElem.style.color = "#059669";
-            msgElem.innerText = "+5.0 BGRAM & +0.05 TON successfully claimed!";
+        // Buka tautan resmi sesuai task yang diklik
+        if (taskId === 'task_channel_1') {
+            window.open('https://t.me/BeanGram_Official', '_blank');
+        } else {
+            window.open('https://x.com/BeanGram_', '_blank');
         }
-        triggerHaptic('notification');
 
+        // Panggil endpoint backend (main.py) untuk verifikasi server-side
+        const verifyUrl = `/verify-channel?init_data=${encodeURIComponent(initData)}&channel=${encodeURIComponent(channelUsername)}&task_id=${encodeURIComponent(taskId)}&lang=${encodeURIComponent(lang)}`;
+        const res = await fetch(verifyUrl);
+        const data = await res.json();
+
+        // Tampilkan pesan respons dari backend (otomatis multi-bahasa)
+        if (data.message) {
+            alert(data.message);
+        }
+
+        // Jika server menyatakan sukses, update balance dan kunci task jadi completed
+        if (data.status === 'success') {
+            totalBalance = data.balance;
+            localStorage.setItem('bgram_balance', totalBalance);
+
+            if (!taskState) taskState = {};
+            taskState[taskId] = 'completed';
+            localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
+
+            if (btn) {
+                btn.innerText = "✓ Done";
+                btn.disabled = true;
+            }
+            triggerHaptic('notification');
+            updateUI();
+            updateTaskUI();
+        } else {
+            // Jika belum join atau gagal, kembalikan tombol seperti semula
+            if (btn) {
+                btn.disabled = false;
+                btn.innerText = "Claim Reward";
+            }
+        }
     } catch (err) {
-        totalBalance += 5.0;
-        localStorage.setItem('bgram_balance', totalBalance);
-
-        tonBalance += 0.05;
-        localStorage.setItem('bgram_ton_balance', tonBalance);
-
-        taskState[1] = 'completed';
-        localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
-        
-        if (msgElem) {
-            msgElem.style.color = "#059669";
-            msgElem.innerText = "+5.0 BGRAM & +0.05 TON successfully claimed!";
+        console.error('Task verification error:', err);
+        if (btn) {
+            btn.disabled = false;
+            btn.innerText = "Claim Reward";
         }
-        triggerHaptic('notification');
+        alert("Verification error, please try again.");
     }
-
-    if (btn) btn.disabled = false;
-    updateUI();
-    updateTaskUI();
 }
 
 function processLocalTask(id, url, reward) {
