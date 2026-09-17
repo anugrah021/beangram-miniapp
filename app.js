@@ -16,7 +16,7 @@ function triggerHaptic(type) {
 
 const translations = {
     en: {
-        connect: "Connect", tier: "⚡ NOVICE FARMER TIER", vault: "Vault", rate: "Rate", withdraw: "💳 WITHDRAW",
+        connect: "Connect", tier: "🫘 BGRAM MINE", vault: "Vault", rate: "Rate", withdraw: "💳 WITHDRAW",
         startFarming: "START FARMING", claim: "CLAIM BGRAM", tasksTitle: "Community Tasks",
         tasksDesc: "Complete social tasks to earn extra BGRAM & TON!", task1: "Join Official Channel", task2: "Follow Official X/Twitter",
         task3: "Invite 3 Active Friends", btnJoin: "Claim", btnFollow: "Follow", btnInvite: "Invite",
@@ -29,7 +29,7 @@ const translations = {
         wdBtnConfirm: "HUBUNGKAN TON WALLET", wdBtnClose: "Close", alertWallet: "TON Wallet integration coming soon!", alertCopied: "Referral link copied!"
     },
     ru: {
-        connect: "Кошелек", tier: "⚡ НОВИЧОК ФАРМЕР", vault: "Хранилище", rate: "Скорость", withdraw: "💳 ВЫВОД",
+        connect: "Кошелек", tier: "🫘 Шахта Биграм", vault: "Хранилище", rate: "Скорость", withdraw: "💳 ВЫВОД",
         startFarming: "НАЧАТЬ ФАРМИНГ", claim: "ЗАБРАТЬ BGRAM", tasksTitle: "Задания Сообщества",
         tasksDesc: "Выполняйте задания и получайте больше BGRAM & TON!", task1: "Подписаться на Канал", task2: "Подписаться на X/Twitter",
         task3: "Пригласить 3 Друзей", btnJoin: "Получить", btnFollow: "Читать", btnInvite: "Звать",
@@ -42,7 +42,7 @@ const translations = {
         wdBtnConfirm: "ПОДКЛЮЧИТЬ TON КОШЕЛЕК", wdBtnClose: "Закрыть", alertWallet: "Интеграция TON кошелька скоро!", alertCopied: "Реферальная ссылка скопирована!"
     },
     id: {
-        connect: "Connect", tier: "⚡ NOVICE FARMER TIER", vault: "Vault", rate: "Rate", withdraw: "💳 PENARIKAN",
+        connect: "Connect", tier: "🫘 TAMBANG BGRAM", vault: "Vault", rate: "Rate", withdraw: "💳 PENARIKAN",
         startFarming: "MULAI FARMING", claim: "KLAIM BGRAM", tasksTitle: "Misi Komunitas",
         tasksDesc: "Selesaikan tugas sosial untuk menambah saldo BGRAM & TON!", task1: "Join Official Channel", task2: "Follow Official X/Twitter",
         task3: "Undang 3 Teman Aktif", btnJoin: "Klaim", btnFollow: "Follow", btnInvite: "Undang",
