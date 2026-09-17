@@ -215,54 +215,53 @@ function updateTaskUI() {
     if (profileStats) profileStats.innerText = `${completedCount}/3`;
 }
 
-async function verifyTaskBackend(taskId, channelUsername, reward) {
-    triggerHaptic('impact');
-    
-    // Tentukan ID tombol di HTML (btnTask1 atau btnTask2)
-    const btnId = taskId === 'task_channel_1' ? 'btnTask1' : 'btnTask2';
-    const btn = document.getElementById(btnId);
-    
-    // Pastikan status task aman
-    if (!taskState) taskState = {};
-    if (taskState[taskId] === 'completed') {
-        alert("Task already completed!");
+async function verifyTaskBackend(taskType) {
+    // 1. CEK ANTI-SPAM (PENCEGAHAN DOUBLE-CLAIM)
+    // Jika task sudah selesai, langsung hentikan agar tidak bisa diklik berulang-ulang
+    const isDone = localStorage.getItem(`task_${taskType}_done`);
+    if (isDone === 'true') {
+        console.log("Task sudah diklaim.");
         return;
     }
 
-    // 1. Buka tautan resmi sesuai task yang diklik
-    if (taskId === 'task_channel_1') {
-        window.open('https://t.me/BeanGram_Official', '_blank');
-    } else {
-        window.open('https://x.com/BeanGram_', '_blank');
-    }
-
-    // 2. Berikan jeda sebentar (simulasi user bergabung ke channel/X)
+    // 2. KUNCI TOMBOL &UBAH JADI '✓ Done' SECARA INSTAN (UI FEEDBACK)
+    // Sesuaikan ID tombol dengan HTML Anda (misal: btnTelegram atau btnTwitter)
+    const btnId = `btn${taskType.charAt(0).toUpperCase() + taskType.slice(1)}`;
+    const btn = document.getElementById(btnId);
     if (btn) {
+        btn.innerText = "✓ Done";
         btn.disabled = true;
-        btn.innerText = "Checking...";
+        btn.style.opacity = "0.6";
     }
 
-    setTimeout(() => {
-        // 3. Tambahkan reward ke balance secara akurat HANYA SEKALI
-        totalBalance += reward;
-        localStorage.setItem('bgram_balance', totalBalance);
+    // 3. TANDAI DI LOCALSTORAGE BAHWA TASK SUDAH SELESAI
+    localStorage.setItem(`task_${taskType}_done`, 'true');
 
-        // Kunci permanen task menjadi completed
-        taskState[taskId] = 'completed';
-        localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
+    // 4. AMBIL DAN TAMBAHKAN SALDO SECARA LOKAL AGAR TAMPILAN LANGSUNG BERGERAK (REAL-TIME)
+    let currentBgram = parseFloat(localStorage.getItem('bgram_balance')) || 0;
+    let reward = 5.0; // Sesuaikan besar reward Anda
+    currentBgram += reward;
+    localStorage.setItem('bgram_balance', currentBgram);
 
-        if (btn) {
-            btn.innerText = "✓ Done";
-            btn.disabled = true;
-        }
+    // 5. PERBARUI TAMPILAN SALDO DI LAYAR (UI UPDATE)
+    if (typeof updateAllUI === "function") {
+        updateAllUI();
+    } else {
+        const balanceEl = document.getElementById('bgramBalance');
+        if (balanceEl) balanceEl.innerText = currentBgram.toFixed(2);
+    }
 
-        triggerHaptic('notification');
-        updateUI();
-        updateTaskUI();
-
-        // Notifikasi sukses yang bersih
-        alert(`Successfully claimed +${reward} BGRAM reward!`);
-    }, 2500);
+    // 6. KIRIM KE BACKEND Vercel DI BELAKANG LAYAR (UNTUK VALIDASI AMAN & NOTIF ADMIN)
+    try {
+        const initData = window.Telegram?.WebApp?.initData || "";
+        const response = await fetch(`/verify-channel?init_data=${encodeURIComponent(initData)}&task_id=${taskType}`, {
+            method: "GET"
+        });
+        const result = await response.json();
+        console.log("Status verifikasi server:", result);
+    } catch (error) {
+        console.error("Gagal sinkronisasi ke server:", error);
+    }
 }
 
 function processLocalTask(id, url, reward) {
