@@ -270,7 +270,13 @@ def claim_mining(init_data: str = Query(...)):
         }
     )
 
-    return {"status": "success", "reward": reward_amount, "balance": new_balance, "message": "Reward mining berhasil diklaim!"}
+    return {
+        "status": "success",
+        "reward": reward_amount,
+        "balance": new_balance,
+        "message": "Reward mining berhasil diklaim!"
+    }
+    
     @app.post("/api/withdraw")
 async def request_withdrawal(init_data: str = Query(...), payload: dict = dict):
     user_data = verify_telegram_data(init_data)
