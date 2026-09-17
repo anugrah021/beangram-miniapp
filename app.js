@@ -269,13 +269,13 @@ async function verifyTaskBackend(taskId, channelUsername) {
 function processLocalTask(id, url, reward) {
     triggerHaptic('impact');
     
-    // Ambil status task terbaru dari localStorage dengan aman
+    // Ambil data status task dari memori lokal
     let currentTaskState = JSON.parse(localStorage.getItem('bgram_tasks')) || {};
     const state = currentTaskState[id] || 'init';
 
-    // 1. JIKA STATUS MASIH INIT (Belum dikerjakan)
+    // 1. JIKA TASK BELUM DIKERJAKAN (Status: init)
     if (state === 'init') {
-        // Buka tautan tujuan secara mulus tanpa pop-up
+        // Langsung buka link target ke Channel Telegram atau X dengan mulus
         if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
             window.Telegram.WebApp.openTelegramLink(url);
         } else if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
@@ -284,65 +284,31 @@ function processLocalTask(id, url, reward) {
             window.open(url, '_blank');
         }
 
-        // Ubah status menjadi 'checking' (proses verifikasi)
-        currentTaskState[id] = 'checking';
+        // Ubah status menjadi proses verifikasi/menunggu klaim
+        currentTaskState[id] = 'claimable';
         localStorage.setItem('bgram_tasks', JSON.stringify(currentTaskState));
         updateTaskUI();
-
-        // Setelah beberapa detik, ubah status menjadi siap klaim ('claimable')
-        setTimeout(() => {
-            let latestState = JSON.parse(localStorage.getItem('bgram_tasks')) || {};
-            if (latestState[id] === 'checking') {
-                latestState[id] = 'claimable';
-                localStorage.setItem('bgram_tasks', JSON.stringify(latestState));
-                updateTaskUI();
-                triggerHaptic('notification');
-            }
-        }, 4000);
+        triggerHaptic('notification');
 
     } 
-    // 2. JIKA SEDANG DALAM PROSES PENGECEKAN (Mencegah user spam klik saat task belum siap)
-    else if (state === 'checking') {
-        // Beri tahu user bahwa sistem sedang memverifikasi
-        let checkingMsg = `Please complete the task first!`;
-        if (currentLang === 'ru') {
-            checkingMsg = `Пожалуйста, сначала выполните задание!`;
-        } else if (currentLang === 'id') {
-            checkingMsg = `Silakan selesaikan tugas terlebih dahulu!`;
-        }
-        alert(checkingMsg);
-    }
-    // 3. JIKA STATUS SUDAH SIAP KLAIM ('claimable')
+    // 2. JIKA USER KLIK LAGI UNTUK KLAIM REWARD (Status: claimable)
     else if (state === 'claimable') {
-        // Eksekusi penambahan saldo HANYA SEKALI
+        // Tambahkan reward ke balance secara akurat HANYA SEKALI
         totalBalance += reward;
         localStorage.setItem('bgram_balance', totalBalance);
 
+        // Kunci permanen status task menjadi selesai
         currentTaskState[id] = 'completed';
         localStorage.setItem('bgram_tasks', JSON.stringify(currentTaskState));
 
         triggerHaptic('notification');
         updateUI();
         updateTaskUI();
-
-        // Pop-up sukses multi-bahasa
-        let successMsg = `Successfully claimed +${reward} BGRAM reward!`;
-        if (currentLang === 'ru') {
-            successMsg = `Успешно получено +${reward} BGRAM награды!`;
-        } else if (currentLang === 'id') {
-            successMsg = `Berhasil klaim reward +${reward} BGRAM!`;
-        }
-        alert(successMsg);
     }
-    // 4. JIKA TASK SUDAH SELESAI SEBELUMNYA ('completed')
+    // 3. JIKA TASK SUDAH SELESAI (Status: completed)
     else if (state === 'completed') {
-        let completedMsg = `Task already completed!`;
-        if (currentLang === 'ru') {
-            completedMsg = `Задание уже выполнено!`;
-        } else if (currentLang === 'id') {
-            completedMsg = `Tugas sudah pernah diselesaikan!`;
-        }
-        alert(completedMsg);
+        // Tombol mati total, diklik berulang kali tidak akan menambah reward apa pun
+        return false;
     }
 }
 
