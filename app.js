@@ -422,8 +422,45 @@ async function fetchUserData() {
 }
 
 try {
+    // --- 1. AMBIL CACHE LOKAL AGAR TAMPILAN INSTAN ---
+    const cachedUser = JSON.parse(localStorage.getItem('bgram_user_cache'));
+    if (cachedUser) {
+        const uTop = document.getElementById('usernameTop');
+        const pName = document.getElementById('profileName');
+        const pId = document.getElementById('profileId');
+        const rLink = document.getElementById('reffLink');
+        const avatarElem = document.getElementById('userAvatar');
+
+        if (uTop) uTop.innerText = cachedUser.first_name || "Farmer";
+        if (pName) pName.innerText = (cachedUser.first_name || "Farmer") + (cachedUser.last_name ? " " + cachedUser.last_name : "");
+        if (pId) pId.innerText = "ID: " + (cachedUser.id || "12345");
+        if (rLink) rLink.value = `https://t.me/BeanGranBot?start=${cachedUser.id || 'ref'}`;
+
+        if (avatarElem) {
+            if (cachedUser.photo_url) {
+                avatarElem.innerHTML = `<img src="${cachedUser.photo_url}" style="width: 100%; height: 100%; border-radius: 50%;">`;
+            } else {
+                const initial = (cachedUser.first_name || "F").charAt(0).toUpperCase();
+                avatarElem.innerText = initial;
+                avatarElem.style.background = "linear-gradient(135deg, #0284c7, #0ea5e9)";
+                avatarElem.style.color = "#fff";
+                avatarElem.style.fontWeight = "bold";
+            }
+        }
+    }
+
+    // --- 2. AMBIL DATA TELEGRAM & SIMPAN KE CACHE BARU ---
     if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
         const u = tg.initDataUnsafe.user;
+        
+        // Simpan data ke cache localStorage agar aman untuk sesi berikutnya
+        localStorage.setItem('bgram_user_cache', JSON.stringify({
+            first_name: u.first_name,
+            last_name: u.last_name,
+            id: u.id,
+            photo_url: u.photo_url
+        }));
+
         const uTop = document.getElementById('usernameTop');
         const pName = document.getElementById('profileName');
         const pId = document.getElementById('profileId');
@@ -432,12 +469,12 @@ try {
         if (uTop) uTop.innerText = u.first_name || "Farmer";
         if (pName) pName.innerText = (u.first_name || "Farmer") + (u.last_name ? " " + u.last_name : "");
         if (pId) pId.innerText = "ID: " + (u.id || "12345");
-        if (rLink) rLink.value = `https://t.me/BeanGramBot?start=${u.id || 'ref'}`;
+        if (rLink) rLink.value = `https://t.me/BeanGranBot?start=${u.id || 'ref'}`;
 
         const avatarElem = document.getElementById('userAvatar');
         if (avatarElem) {
             if (u.photo_url) {
-                avatarElem.innerHTML = `<img src="${u.photo_url}" style="width:100%; height:100%; object-fit:cover;">`;
+                avatarElem.innerHTML = `<img src="${u.photo_url}" style="width: 100%; height: 100%; border-radius: 50%;">`;
             } else {
                 const initial = (u.first_name || "F").charAt(0).toUpperCase();
                 avatarElem.innerText = initial;
@@ -447,7 +484,9 @@ try {
             }
         }
     }
-} catch (e) {}
+} catch (e) {
+    console.error("Cache error:", e);
+}
 function checkReferralBonus() {
     const urlParams = new URLSearchParams(window.location.search);
     const refId = urlParams.get('start');
