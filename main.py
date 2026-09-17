@@ -187,3 +187,87 @@ def get_user(init_data: str = Query(...)):
         return {"status": "success", "user": {"balance": user_doc.get("balance", 0)}}
     
     return {"status": "not_found", "user": {"telegram_id": telegram_id, "balance": 0}}
+    import time
+
+# --- RUTE TAMBAHAN: SERVER-SIDE MINING AUTHORITY ---
+
+@app.post("/api/start-mining")
+def start_mining(init_data: str = Query(...)):
+    # 1. Verifikasi keamanan user dari Telegram
+    user_data = verify_telegram_data(init_data)
+    if not user_data:
+        raise HTTPException(status_code=401, detail="Autentikasi gagal")
+    
+    telegram_id = user_data.get("id")
+    
+    if users_collection is None:
+        raise HTTPException(status_code=500, detail="Database MongoDB belum terhubung")
+
+    # 2. Cek data user di MongoDB
+    user = users_collection.find_one({"telegram_id": telegram_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User tidak ditemukan di database")
+
+    # 3. Cek apakah sedang aktif mining
+    if user.get("is_mining", False):
+        return {"status": "error", "message": "Mining sedang berjalan!"}
+
+    # 4. Catat waktu mulai mutlak dari server
+    current_time = int(time.time())
+    duration = 10800  # Contoh durasi 3 jam (dalam detik)
+
+    users_collection.update_one(
+        {"telegram_id": telegram_id},
+        {
+            "$set": {
+                "is_mining": True,
+                "mining_start_time": current_time,
+                "mining_duration": duration
+            }
+        }
+    )
+
+    return {"status": "success", "message": "Mining berhasil dimulai oleh server!"}
+
+
+@app.post("/api/claim-mining")
+def claim_mining(init_data: str = Query(...)):
+    # 1. Verifikasi keamanan
+    user_data = verify_telegram_data(init_data)
+    if not user_data:
+        raise HTTPException(status_code=401, detail="Autentikasi gagal")
+    
+    telegram_id = user_data.get("id")
+    
+    if users_collection is None:
+        raise HTTPException(status_code=500, detail="Database MongoDB belum terhubung")
+
+    user = users_collection.find_one({"telegram_id": telegram_id})
+    if not user or not user.get("is_mining", False):
+        raise HTTPException(status_code=400, detail="Tidak ada sesi mining aktif")
+
+    current_time = int(time.time())
+    start_time = user.get("mining_start_time", 0)
+    duration = user.get("mining_duration", 0)
+
+    # 2. HAKIM SERVER: Cek apakah waktu sudah benar-benar selesai
+    if current_time < (start_time + duration):
+        return {"status": "error", "message": "Waktu mining belum selesai!"}
+
+    # 3. Berikan reward dan reset status mining di database
+    reward_amount = 50
+    current_balance = user.get("balance", 0)
+    new_balance = current_balance + reward_amount
+
+    users_collection.update_one(
+        {"telegram_id": telegram_id},
+        {
+            "$set": {
+                "balance": new_balance,
+                "is_mining": False,
+                "mining_start_time": 0
+            }
+        }
+    )
+
+    return {"status": "success", "reward": reward_amount, "balance": new_balance, "message": "Reward mining berhasil diklaim!"}
