@@ -707,7 +707,6 @@ function completeTask(taskType) {
         syncDataToServer(`complete_task_${taskType}`, { bgram_added: bgramReward, ton_added: tonReward });
     }
 
-    alert(`Selamat! Task ${taskType.toUpperCase()} berhasil diselesaikan. Reward ${bgramReward} BGRAM & ${tonReward} TON telah ditambahkan secara akurat!`);
 }
 // --- OTOMATIS HUBUNGKAN TOMBOL TASK DENGAN SISTEM CLOUD SYNC ---
 document.addEventListener("DOMContentLoaded", function() {
