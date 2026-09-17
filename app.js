@@ -271,7 +271,15 @@ function processLocalTask(id, url, reward) {
     const state = taskState[id] || 'init';
 
     if (state === 'init') {
-        window.open(url, '_blank');
+        // Menggunakan fungsi resmi Telegram WebApp agar mulus tanpa pop-up aneh
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
+            window.Telegram.WebApp.openTelegramLink(url);
+        } else if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+            window.Telegram.WebApp.openLink(url);
+        } else {
+            window.open(url, '_blank');
+        }
+
         taskState[id] = 'checking';
         localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
         updateTaskUI();
