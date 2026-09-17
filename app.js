@@ -546,6 +546,7 @@ function checkReferralBonus() {
         localStorage.setItem('bgram_friends_reward', currentRefReward + 5.0);
 
         console.log("Bonus referral berhasil diklaim secara otomatis!");
+        syncDataToServer('claim_referral_bonus');
     }
 
     // Jalankan pembaruan visual secara otomatis setiap fungsi ini dipanggil
