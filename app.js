@@ -487,37 +487,70 @@ try {
 } catch (e) {
     console.error("Cache error:", e);
 }
-function checkReferralBonus() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const refId = urlParams.get('start');
+// --- FUNGSI UTAMA PEMBARUAN VISUAL OTOMATIS (GLOBAL UI SYNC) ---
+function updateAllUI() {
+    // 1. Ambil data terbaru dari localStorage (atau cache)
+    const bgramBal = parseFloat(localStorage.getItem('bgram_balance')) || 0;
+    const tonBal = parseFloat(localStorage.getItem('bgram_ton_balance')) || 0;
+    const friendsCount = parseInt(localStorage.getItem('bgram_friends_count')) || 0;
+    const friendsReward = parseFloat(localStorage.getItem('bgram_friends_reward')) || 0;
+
+    // 2. Perbarui tampilan saldo utama di seluruh elemen yang relevan
+    const uTop = document.getElementById('usernameTop');
+    // Jika ada elemen saldo utama di header/dashboard, update di sini
     
-    const hasClaimedRef = localStorage.getItem('bgram_ref_claimed');
-    if (refId && !hasClaimedRef && refId !== String(tg.initDataUnsafe?.user?.id)) {
-        totalBalance += 5.0; 
-        localStorage.setItem('bgram_balance', totalBalance);
-
-        tonBalance += 0.01; 
-        localStorage.setItem('bgram_ton_balance', tonBalance);
-
-        localStorage.setItem('bgram_ref_claimed', 'true');
-        
-        let currentInvites = parseInt(localStorage.getItem('bgram_friends_count')) || 0;
-        localStorage.setItem('bgram_friends_count', currentInvites + 1);
-        
-        let currentRefReward = parseFloat(localStorage.getItem('bgram_friends_reward')) || 0;
-        localStorage.setItem('bgram_friends_reward', currentRefReward + 5.0);
-    }
-
+    // 3. Perbarui tampilan statistik Referral secara otomatis ke visual
     const fCount = document.getElementById('friendsCount');
     const fReward = document.getElementById('friendsReward');
     const pRef = document.getElementById('profTotalRef');
+    const tonAvail = document.getElementById('tonAvailableBalance');
 
-    if (fCount) fCount.innerText = localStorage.getItem('bgram_friends_count') || '0';
-    if (fReward) fReward.innerText = (parseFloat(localStorage.getItem('bgram_friends_reward')) || 0).toFixed(4) + " BGRAM";
-    if (pRef) pRef.innerText = localStorage.getItem('bgram_friends_count') || '0';
+    if (fCount) fCount.innerText = friendsCount;
+    if (fReward) fReward.innerText = friendsReward.toFixed(2) + " BGRAM";
+    if (pRef) pRef.innerText = friendsCount;
+    if (tonAvail) tonAvail.innerText = tonBal.toFixed(4) + " TON";
+
+    // 4. Perbarui juga tampilan di modal withdraw jika sedang dibuka
+    const lockedVal = document.getElementById('lockedBgramVal');
+    if (lockedVal) lockedVal.innerText = bgramBal.toFixed(4) + " BGRAM";
 }
 
-checkReferralBonus();
+// --- FUNGSI CHECK REFERRAL BONUS YANG DISEMPURNAKAN ---
+function checkReferralBonus() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const refId = urlParams.get('start');
+
+    const hasClaimedRef = localStorage.getItem('bgram_ref_claimed');
+    
+    // Pastikan user punya refId, belum pernah klaim, dan bukan diri sendiri
+    if (refId && !hasClaimedRef && refId !== String(tg.initDataUnsafe?.user?.id)) {
+        
+        // Ambil saldo saat ini
+        let currentBgram = parseFloat(localStorage.getItem('bgram_balance')) || 0;
+        let currentTon = parseFloat(localStorage.getItem('bgram_ton_balance')) || 0;
+
+        // Tambahkan bonus referral: 5 BGRAM + 0.01 TON
+        currentBgram += 5.0;
+        currentTon += 0.01;
+
+        // Simpan kembali ke localStorage
+        localStorage.setItem('bgram_balance', currentBgram);
+        localStorage.setItem('bgram_ton_balance', currentTon);
+        localStorage.setItem('bgram_ref_claimed', 'true');
+
+        // Catat statistik teman & reward referral
+        let currentInvites = parseInt(localStorage.getItem('bgram_friends_count')) || 0;
+        localStorage.setItem('bgram_friends_count', currentInvites + 1);
+
+        let currentRefReward = parseFloat(localStorage.getItem('bgram_friends_reward')) || 0;
+        localStorage.setItem('bgram_friends_reward', currentRefReward + 5.0);
+
+        console.log("Bonus referral berhasil diklaim secara otomatis!");
+    }
+
+    // Jalankan pembaruan visual secara otomatis setiap fungsi ini dipanggil
+    updateAllUI();
+}
 
 function switchWdTab(tab) {
     triggerHaptic('selection');
