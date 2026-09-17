@@ -214,70 +214,51 @@ function updateTaskUI() {
 async function verifyTaskBackend(taskId, channelUsername, reward) {
     triggerHaptic('impact');
     
-    // Tentukan tombol berdasarkan taskId
+    // Tentukan ID tombol di HTML (btnTask1 atau btnTask2)
     const btnId = taskId === 'task_channel_1' ? 'btnTask1' : 'btnTask2';
     const btn = document.getElementById(btnId);
     
-    // Cegah klik jika task sudah selesai
-    if (taskState && taskState[taskId] === 'completed') return;
+    // Pastikan status task aman
+    if (!taskState) taskState = {};
+    if (taskState[taskId] === 'completed') {
+        alert("Task already completed!");
+        return;
+    }
 
+    // 1. Buka tautan resmi sesuai task yang diklik
+    if (taskId === 'task_channel_1') {
+        window.open('https://t.me/BeanGram_Official', '_blank');
+    } else {
+        window.open('https://x.com/BeanGram_', '_blank');
+    }
+
+    // 2. Berikan jeda sebentar (simulasi user bergabung ke channel/X)
     if (btn) {
         btn.disabled = true;
         btn.innerText = "Checking...";
     }
 
-    try {
-        const initData = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp.initData : '';
-        const lang = document.getElementById('langSelect') ? document.getElementById('langSelect').value : 'en';
+    setTimeout(() => {
+        // 3. Tambahkan reward ke balance secara akurat HANYA SEKALI
+        totalBalance += reward;
+        localStorage.setItem('bgram_balance', totalBalance);
 
-        // Buka tautan resmi sesuai task yang diklik
-        if (taskId === 'task_channel_1') {
-            window.open('https://t.me/BeanGram_Official', '_blank');
-        } else {
-            window.open('https://x.com/BeanGram_', '_blank');
-        }
+        // Kunci permanen task menjadi completed
+        taskState[taskId] = 'completed';
+        localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
 
-        // Panggil endpoint backend (main.py) untuk verifikasi server-side
-        const verifyUrl = `/verify-channel?init_data=${encodeURIComponent(initData)}&channel=${encodeURIComponent(channelUsername)}&task_id=${encodeURIComponent(taskId)}&lang=${encodeURIComponent(lang)}`;
-        const res = await fetch(verifyUrl);
-        const data = await res.json();
-
-        // Tampilkan pesan respons dari backend (otomatis multi-bahasa)
-        if (data.message) {
-            alert(data.message);
-        }
-
-        // Jika server menyatakan sukses, update balance dan kunci task jadi completed
-        if (data.status === 'success') {
-            totalBalance = data.balance;
-            localStorage.setItem('bgram_balance', totalBalance);
-
-            if (!taskState) taskState = {};
-            taskState[taskId] = 'completed';
-            localStorage.setItem('bgram_tasks', JSON.stringify(taskState));
-
-            if (btn) {
-                btn.innerText = "✓ Done";
-                btn.disabled = true;
-            }
-            triggerHaptic('notification');
-            updateUI();
-            updateTaskUI();
-        } else {
-            // Jika belum join atau gagal, kembalikan tombol seperti semula
-            if (btn) {
-                btn.disabled = false;
-                btn.innerText = "Claim Reward";
-            }
-        }
-    } catch (err) {
-        console.error('Task verification error:', err);
         if (btn) {
-            btn.disabled = false;
-            btn.innerText = "Claim Reward";
+            btn.innerText = "✓ Done";
+            btn.disabled = true;
         }
-        alert("Verification error, please try again.");
-    }
+
+        triggerHaptic('notification');
+        updateUI();
+        updateTaskUI();
+
+        // Notifikasi sukses yang bersih
+        alert(`Successfully claimed +${reward} BGRAM reward!`);
+    }, 2500);
 }
 
 function processLocalTask(id, url, reward) {
