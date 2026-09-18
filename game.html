@@ -3,106 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>BeanGram Game</title>
+    <title>BeanGram Ads & Task Platform</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         *{box-sizing:border-box;user-select:none;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-        body{background:#f8f9fc;color:#1e293b;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;display:flex;flex-direction:column;justify-content:space-between;height:100vh;padding:15px 15px 75px 15px;overflow:hidden;position:relative;}
+        body{background:#090d16;color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;display:flex;flex-direction:column;justify-content:space-between;height:100vh;padding:15px 15px 75px 15px;overflow:hidden;position:relative;}
         .page{display:none;flex-direction:column;flex-grow:1;overflow-y:auto;position:relative;z-index:1;}
         .page.active{display:flex;}
-        .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-        .top-right-group{display:flex;align-items:center;gap:6px;}
-        .user-profile-top{display:flex;align-items:center;gap:8px;background:#e0f2fe;padding:6px 12px;border-radius:20px;font-size:13px;border:1px solid #bae6fd;box-shadow:0 2px 5px rgba(0,0,0,0.03);}
-        .status-badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:bold;background:#0284c7;color:#fff;}
-        .lang-select{background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;padding:6px 8px;border-radius:14px;font-size:11px;font-weight:bold;outline:none;cursor:pointer;}
-        .lang-select option{background:#fff;color:#1e293b;}
-        .btn-connect{background:linear-gradient(90deg,#0284c7,#0ea5e9);color:#fff;border:none;padding:7px 12px;border-radius:16px;font-size:11px;font-weight:bold;cursor:pointer;box-shadow:0 2px 8px rgba(2,132,199,0.25);}
-        .balance-container{text-align:center;margin-top:5px;}
-        .tier-tag{font-size:11px;color:#0284c7;letter-spacing:1.5px;text-transform:uppercase;font-weight:bold;margin-bottom:2px;}
-        .balance-value{font-size:38px;font-weight:800;color:#0f172a;margin:2px 0;}
-        .sub-balance{display:flex;justify-content:center;gap:15px;font-size:12px;color:#64748b;}
-        .withdraw-action-bar{display:flex;justify-content:center;gap:10px;margin-top:10px;}
-        .btn-withdraw-small{background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;padding:5px 14px;border-radius:12px;font-size:11px;font-weight:bold;cursor:pointer;}
-        .mining-area{display:flex;flex-direction:column;align-items:center;justify-content:center;flex-grow:1;}
-        .mining-display-box{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:15px;background:#e0f2fe;padding:8px 16px;border-radius:20px;border:1px solid #bae6fd;box-shadow:0 2px 8px rgba(0,0,0,0.03);}
-        .unclaimed-text{font-size:20px;font-weight:700;color:#059669;}
         
-        @keyframes slimeWobble {
-            0% { transform: scale(1) rotate(0deg); }
-            30% { transform: scale(1.12, 0.88) rotate(-3deg); }
-            50% { transform: scale(0.92, 1.08) rotate(3deg); }
-            75% { transform: scale(1.05, 0.95) rotate(-1deg); }
-            100% { transform: scale(1) rotate(0deg); }
-        }
-        .coin-wrapper{
-            width:210px;height:210px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;background:#fff;
-            box-shadow:0 12px 30px rgba(2,132,199,0.18),0 4px 10px rgba(0,0,0,0.05);transition:transform 0.1s ease;
-            -webkit-touch-callout:none;
-        }
-        .coin-wrapper.wobble{animation:slimeWobble 0.5s ease-in-out;}
-        .coin-img{
-            width:100%;height:100%;border-radius:50%;object-fit:cover;
-            -webkit-touch-callout:none;
-        }
+        /* Top Navigation Bar */
+        .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;}
+        .user-profile-top{display:flex;align-items:center;gap:8px;background:rgba(15,23,42,0.8);backdrop-filter:blur(10px);padding:6px 12px;border-radius:20px;font-size:13px;border:1px solid rgba(255,255,255,0.1);box-shadow:0 4px 12px rgba(0,0,0,0.2);}
+        .status-badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:bold;background:#0ea5e9;color:#fff;}
+        .top-right-group{display:flex;align-items:center;gap:8px;}
+        .lang-select{background:rgba(15,23,42,0.8);backdrop-filter:blur(10px);color:#38bdf8;border:1px solid rgba(255,255,255,0.1);padding:6px 10px;border-radius:14px;font-size:11px;font-weight:bold;outline:none;cursor:pointer;}
+        .lang-select option{background:#0f172a;color:#f8fafc;}
+        .btn-connect{background:linear-gradient(135deg,#0ea5e9,#2563eb);color:#fff;border:none;padding:7px 14px;border-radius:16px;font-size:11px;font-weight:bold;cursor:pointer;box-shadow:0 4px 15px rgba(14,165,233,0.3);transition:transform 0.1s;}
+        .btn-connect:active{transform:scale(0.95);}
 
-        .action-btn-container{width:100%;max-width:320px;margin-top:25px;}
-        .main-btn{width:100%;padding:16px;border-radius:16px;border:none;font-size:15px;font-weight:bold;cursor:pointer;transition:all 0.2s ease;text-transform:uppercase;letter-spacing:1px;}
-        .btn-start{background:linear-gradient(90deg,#0284c7,#0ea5e9);color:#fff;box-shadow:0 4px 15px rgba(2,132,199,0.3);}
-        .btn-mining{background:#e2e8f0;color:#475569;border:1px solid #cbd5e1;cursor:default;font-size:18px;letter-spacing:2px;}
-        .btn-claim{background:linear-gradient(90deg,#10b981,#059669);color:#fff;box-shadow:0 4px 15px rgba(16,185,129,0.3);}
+        /* Balance Card & Glassmorphism */
+        .balance-card{background:linear-gradient(135deg, rgba(15,23,42,0.85), rgba(30,41,59,0.75));backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:20px;text-align:center;margin-bottom:15px;box-shadow:0 8px 25px rgba(0,0,0,0.3);}
+        .balance-title{font-size:11px;color:#38bdf8;letter-spacing:1.5px;text-transform:uppercase;font-weight:bold;margin-bottom:5px;}
+        .balance-value{font-size:32px;font-weight:800;color:#fff;margin:5px 0;}
+        .sub-balance{display:flex;justify-content:center;gap:20px;font-size:12px;color:#94a3b8;margin-top:8px;}
+
+        /* Card Boxes & Task Items */
+        .card-box{background:rgba(15,23,42,0.75);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 4px 15px rgba(0,0,0,0.2);}
+        .card-title{font-size:12px;color:#38bdf8;margin-bottom:12px;letter-spacing:0.5px;text-transform:uppercase;font-weight:bold;}
         
-        .card-box{background:#e0f2fe;border:1px solid #bae6fd;border-radius:16px;padding:15px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,0.02);}
-        .card-title{font-size:12px;color:#0369a1;margin-bottom:10px;letter-spacing:0.5px;text-transform:uppercase;font-weight:bold;}
-        .daily-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
-        .daily-item{background:#f0f9ff;border:1px solid #bae6fd;border-radius:12px;padding:10px 4px;text-align:center;}
-        .daily-item.active-today{border-color:#0284c7;background:#bae6fd;}
-        .daily-item.claimed{border-color:#10b981;opacity:0.6;}
-        .daily-day{font-size:10px;color:#0369a1;}
-        .daily-val{font-size:11px;font-weight:bold;color:#0284c7;margin-top:2px;}
-        .task-item{display:flex;justify-content:space-between;align-items:center;background:#e0f2fe;border:1px solid #bae6fd;padding:12px 14px;border-radius:14px;margin-bottom:10px;}
+        .task-item{display:flex;justify-content:space-between;align-items:center;background:rgba(30,41,59,0.6);border:1px solid rgba(255,255,255,0.08);padding:14px;border-radius:14px;margin-bottom:10px;}
         .task-info{display:flex;align-items:center;gap:12px;}
-        .task-icon{font-size:22px;}
-        .task-details .name{font-size:13px;font-weight:bold;color:#0f172a;}
-        .task-details .reward{font-size:11px;color:#0284c7;}
-        .btn-task{background:#bae6fd;color:#0369a1;border:none;padding:7px 14px;border-radius:12px;font-size:11px;font-weight:bold;cursor:pointer;}
-        .btn-task.checking{background:#fef08a;color:#854d0e;border:1px solid #fde047;}
-        .btn-task.claimable{background:linear-gradient(90deg,#10b981,#059669);color:#fff;}
-        .btn-task.completed{background:#d1fae5;color:#065f46;border:1px solid #a7f3d0;cursor:default;}
-        .reff-banner{text-align:center;padding:20px 10px;background:linear-gradient(135deg,rgba(2,132,199,0.1),rgba(14,165,233,0.1));border-radius:16px;border:1px solid #bae6fd;margin-bottom:15px;}
-        .reff-banner h3{font-size:18px;color:#0369a1;margin-bottom:5px;}
-        .reff-banner p{font-size:12px;color:#475569;}
-        .profile-header{display:flex;flex-direction:column;align-items:center;margin:15px 0;}
-        .profile-avatar{width:75px;height:75px;border-radius:50%;background:#e0f2fe;border:2px solid #0284c7;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:8px;overflow:hidden;}
-        .profile-name{font-size:18px;font-weight:bold;color:#0f172a;}
-        .profile-id{font-size:11px;color:#64748b;}
-        .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:15px;}
-        .stat-card{background:#e0f2fe;border:1px solid #bae6fd;border-radius:14px;padding:12px;text-align:center;box-shadow:0 2px 5px rgba(0,0,0,0.02);}
-        .stat-card .val{font-size:16px;font-weight:bold;color:#0284c7;margin-top:4px;}
-        .stat-card .lbl{font-size:10px;color:#0369a1;text-transform:uppercase;}
-        .bottom-nav{position:fixed;bottom:0;left:0;right:0;height:65px;background:#fff;box-shadow:0 -2px 10px rgba(0,0,0,0.05);display:flex;justify-content:space-around;align-items:center;border-top:1px solid #e2e8f0;z-index:1000;}
-        .nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:#64748b;font-size:10px;cursor:pointer;}
-        .nav-item.active{color:#0284c7;}
+        .task-icon{font-size:24px;}
+        .task-details .name{font-size:13px;font-weight:bold;color:#f8fafc;}
+        .task-details .reward{font-size:11px;color:#38bdf8;margin-top:2px;}
+        .btn-task{background:rgba(56,189,248,0.15);color:#38bdf8;border:1px solid rgba(56,189,248,0.3);padding:8px 14px;border-radius:12px;font-size:11px;font-weight:bold;cursor:pointer;transition:transform 0.1s;}
+        .btn-task:active{transform:scale(0.95);}
+        .btn-task.claimable{background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;}
+        .btn-task.completed{background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3);cursor:default;}
+
+        /* Advertiser Form */
+        .form-group{margin-bottom:12px;}
+        .form-label{font-size:11px;color:#94a3b8;margin-bottom:5px;display:block;}
+        .form-input{width:100%;background:rgba(30,41,59,0.8);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:12px;border-radius:12px;font-size:12px;outline:none;}
+        .form-input:focus{border-color:#0ea5e9;}
+        .main-btn{width:100%;padding:14px;border-radius:14px;border:none;font-size:13px;font-weight:bold;cursor:pointer;background:linear-gradient(135deg,#0ea5e9,#2563eb);color:#fff;box-shadow:0 4px 15px rgba(14,165,233,0.3);text-transform:uppercase;letter-spacing:1px;margin-top:5px;transition:transform 0.1s;}
+        .main-btn:active{transform:scale(0.98);}
+
+        /* Bottom Navigation Bar */
+        .bottom-nav{position:fixed;bottom:0;left:0;right:0;height:65px;background:rgba(15,23,42,0.95);backdrop-filter:blur(15px);box-shadow:0 -4px 20px rgba(0,0,0,0.4);display:flex;justify-content:space-around;align-items:center;border-top:1px solid rgba(255,255,255,0.1);z-index:1000;}
+        .nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:#64748b;font-size:10px;cursor:pointer;transition:color 0.2s;}
+        .nav-item.active{color:#38bdf8;}
         .nav-icon{font-size:18px;}
-        .modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(5px);z-index:2000;align-items:center;justify-content:center;padding:20px;}
-        .modal-overlay.active{display:flex;}
-        .modal-card{background:#fff;border:1px solid #cbd5e1;border-radius:20px;padding:20px;width:100%;max-width:340px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.15);}
-        .modal-title{font-size:18px;color:#0369a1;font-weight:bold;margin-bottom:6px;}
-        .modal-input{width:100%;background:#f8f9fc;border:1px solid #cbd5e1;color:#1e293b;padding:12px;border-radius:12px;font-size:12px;margin-bottom:12px;outline:none;}
-        .modal-btn-close{background:#e2e8f0;color:#334155;border:none;padding:10px;width:100%;border-radius:12px;font-size:12px;font-weight:bold;cursor:pointer;margin-top:6px;}
-        @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-60px) scale(1.2); }
-        }
-        .floating-number { position: absolute; color: #059669; font-weight: bold; font-size: 16px; pointer-events: none; animation: floatUp 0.8s ease-out forwards; text-shadow: 0 0 8px rgba(5,150,105,0.4); }
     </style>
 </head>
-<body>
-    <!-- PAGE 1: MINE -->
-    <div id="page-mine" class="page active">
+
+    <body>
+    <!-- PAGE 1: EARN / TASKS -->
+    <div id="page-earn" class="page active">
         <div class="top-bar">
             <div class="user-profile-top">
-                <span id="usernameTop" style="color:#0f172a; font-weight:bold;">Farmer</span>
-                <span class="status-badge" id="statusBadge">Miners</span>
+                <span id="usernameTop" style="font-weight:bold;">User</span>
+                <span class="status-badge" id="statusBadge">Active</span>
             </div>
             <div class="top-right-group">
                 <select class="lang-select" id="langSelect" onchange="changeLanguage(this.value)">
@@ -110,231 +71,147 @@
                     <option value="ru">🌐 RU</option>
                     <option value="id">🌐 ID</option>
                 </select>
-                <button class="btn-connect" id="btnConnectTop" onclick="triggerHaptic('impact'); alert(currentTranslations.alertWallet)">Connect</button>
+                <button class="btn-connect" onclick="switchTab('profile')">Wallet</button>
             </div>
         </div>
 
-        <div class="balance-container">
-            <div class="tier-tag" id="txtTier">🫘 BGRAM MINE</div>
-            <div class="balance-value" id="totalBalance">0.0000 BGRAM</div>
+        <div class="balance-card">
+            <div class="balance-title">Total Rewards Earned</div>
+            <div class="balance-value" id="totalBalance">0.0000 TON</div>
             <div class="sub-balance">
-                <span><span id="txtVaultLabel">Vault</span>: <b id="vaultBalance" style="color:#0f172a;">0.0000</b></span>
-                <span><span id="txtRateLabel">Rate</span>: <b style="color:#0284c7;">+2.0 BGRAM/5h</b></span>
-            </div>
-            <div class="withdraw-action-bar">
-                <button class="btn-withdraw-small" id="btnDailyReward" onclick="openDailyModal()">🎁 DAILY REWARD</button>
-                <button class="btn-withdraw-small" id="btnWithdraw" onclick="openWithdrawModal()">💵 WITHDRAW</button>
+                <span>BGRAM: <b style="color:#fff;" id="bgramBalance">0.00</b></span>
+                <span>Completed Tasks: <b style="color:#38bdf8;" id="completedCount">0</b></span>
             </div>
         </div>
 
-        <div class="mining-area">
-            <div class="mining-display-box" id="miningDisplayBox" style="display: none;">
-                <span style="font-size: 12px; color: #0369a1; font-weight: bold;">Mined:</span>
-                <div class="unclaimed-text" id="unclaimedText">+0.0000</div>
-            </div>
-
-            <!-- Logo Bean Background Putih di Tengah & Animasi Slime -->
-            <div class="coin-wrapper" id="coinWrapper" onclick="handleCoinClick(event)" oncontextmenu="return false;">
-                <img src="Bgram.jpeg" alt="BeanGram" class="coin-img" onerror="this.src='https://telegram.org/img/t_logo.png'">
-            </div>
+        <div class="card-box">
+            <div class="card-title">🔥 Available Tasks & Ads</div>
             
-            <div class="action-btn-container">
-                <button class="main-btn btn-start" id="actionBtn" onclick="handleButtonClick()">🫘BGRAM MINE</button>
+            <div class="task-item">
+                <div class="task-info">
+                    <div class="task-icon">📢</div>
+                    <div class="task-details">
+                        <div class="name">Join Official BeanGram Channel</div>
+                        <div class="reward">+0.05 TON + 5.0 BGRAM</div>
+                    </div>
+                </div>
+                <button class="btn-task" id="btnTask1" onclick="handleTask(1, 'https://t.me/BeanGram_Official', 0.05)">Start</button>
+            </div>
+
+            <div class="task-item">
+                <div class="task-info">
+                    <div class="task-icon">🐦</div>
+                    <div class="task-details">
+                        <div class="name">Follow Official X / Twitter</div>
+                        <div class="reward">+0.03 TON + 3.0 BGRAM</div>
+                    </div>
+                </div>
+                <button class="btn-task" id="btnTask2" onclick="handleTask(2, 'https://x.com/BeanGram_', 0.03)">Start</button>
             </div>
         </div>
     </div>
 
-    <!-- PAGE 2: TASKS -->
-    <div id="page-tasks" class="page">
-        <div class="card-box" style="text-align: center;">
-            <h2 style="font-size:18px; color:#0369a1;" id="txtTasksTitle">Community Tasks</h2>
-            <p style="font-size:12px; color:#475569; margin-top:4px;" id="txtTasksDesc">Complete social tasks to earn extra BGRAM & TON!</p>
-        </div>
-
-        <div class="task-item">
-            <div class="task-info">
-                <div class="task-icon">🔔</div>
-                <div class="task-details">
-                    <div class="name" id="txtTask1">Join Official Channel</div>
-                    <div class="reward">+5.0 BGRAM + 0.05 TON</div>
-                </div>
-            </div>
-            <button class="btn-task" id="btnTask1" onclick="verifyTaskBackend('task_telegram', '@BeanGram_Official', 5.0)">Join Channel</button>
-        </div>
-
-        <div class="task-item">
-            <div class="task-info">
-                <div class="task-icon">🐦</div>
-                <div class="task-details">
-                    <div class="name" id="txtTask2">Follow Official X/Twitter</div>
-                    <div class="reward">+5.0 BGRAM</div>
-                </div>
-            </div>
-            <button class="btn-task" id="btnTask2" onclick="verifyTaskBackend('task_x', '@BeanGram_', 5.0)">Follow X</button>
-        </div>
-
-        <div class="task-item">
-            <div class="task-info">
-                <div class="task-icon">👥</div>
-                <div class="task-details">
-                    <div class="name" id="txtTask3">Invite Active Friends</div>
-                    <div class="reward">+5.0 BGRAM + 0.01 TON</div>
-                </div>
-            </div>
-            <button class="btn-task" id="btnTask3" onclick="switchTab('friends')">Invite</button>
-        </div>
-        <div id="task-status-msg" style="margin-top: 10px; font-size: 12px; text-align: center;"></div>
-    </div>
-    <!-- PAGE 3: FRIENDS -->
-    <div id="page-friends" class="page">
-        <div class="reff-banner">
-            <h3 id="txtFriendsTitle">Invite Friends & Earn</h3>
-            <p id="txtFriendsDesc">Get commission bonus from every friend who joins using your link!</p>
-        </div>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="lbl" id="lblInvited">Invited Friends</div>
-                <div class="val" id="friendsCount">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="lbl" id="lblReffReward">Referral Rewards</div>
-                <div class="val" id="friendsReward">0.0000</div>
-            </div>
+        <!-- PAGE 2: ADVERTISE (PASANG IKLAN DEVELOPER) -->
+    <div id="page-advertise" class="page">
+        <div class="top-bar">
+            <div style="font-size: 16px; font-weight: bold; color: #38bdf8;">📢 Advertiser Hub</div>
         </div>
 
         <div class="card-box">
-            <div class="card-title" id="txtReffTitle">Your Refferal</div>
-            <div style="display: flex; gap: 8px;">
-                <input type="text" id="reffLink" value="https://t.me/BeanGramBot?start=ref" readonly style="flex:1; background:#f0f9ff; border:1px solid #bae6fd; color:#1e293b; padding:10px; border-radius:10px; font-size:11px;">
-                <button class="btn-connect" id="btnCopy" onclick="copyReffLink()">Copy</button>
+            <div class="card-title">Launch Your Channel Campaign</div>
+            <p style="font-size: 11px; color: #94a3b8; margin-bottom: 15px; line-height: 1.4;">
+                Promote your Telegram channel or group to thousands of active Web3 users instantly. Secure automated placement via TON.
+            </p>
+
+            <div class="form-group">
+                <label class="form-label">Channel / Group Link</label>
+                <input type="text" class="form-input" id="adLink" placeholder="https://t.me/YourChannel">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Task Title / Description</label>
+                <input type="text" class="form-input" id="adTitle" placeholder="e.g. Join Community & Get Bonus">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Target Members (Min. 100 users)</label>
+                <input type="number" class="form-input" id="adTarget" placeholder="100">
+            </div>
+
+            <div style="background: rgba(30,41,59,0.8); padding: 12px; border-radius: 12px; margin-bottom: 15px; font-size: 11px; display: flex; justify-content: space-between;">
+                <span style="color: #94a3b8;">Total Campaign Cost:</span>
+                <span style="color: #10b981; font-weight: bold;" id="adTotalCost">0.00 TON</span>
+            </div>
+
+            <button class="main-btn" onclick="submitAdvertisement()">Pay & Launch Campaign</button>
+        </div>
+    </div>
+
+    <!-- PAGE 3: NETWORK (REFERRAL) -->
+    <div id="page-network" class="page">
+        <div class="top-bar">
+            <div style="font-size: 16px; font-weight: bold; color: #38bdf8;">👥 Referral Network</div>
+        </div>
+
+        <div class="balance-card" style="text-align: left;">
+            <div class="balance-title">Your Referral Link</div>
+            <div style="display: flex; gap: 8px; margin-top: 10px;">
+                <input type="text" id="reffLink" value="https://t.me/BeanGramBot?start=ref" readonly style="flex:1; background:rgba(30,41,59,0.8); border:1px solid rgba(255,255,255,0.1); color:#fff; padding:10px; border-radius:10px; font-size:11px;">
+                <button class="btn-connect" onclick="copyReff()">Copy</button>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="card-box" style="text-align: center; margin-bottom: 0;">
+                <div style="font-size: 11px; color: #94a3b8;">Total Referrals</div>
+                <div style="font-size: 20px; font-weight: bold; color: #38bdf8; margin-top: 5px;" id="refCount">0</div>
+            </div>
+            <div class="card-box" style="text-align: center; margin-bottom: 0;">
+                <div style="font-size: 11px; color: #94a3b8;">Commission Earned</div>
+                <div style="font-size: 20px; font-weight: bold; color: #10b981; margin-top: 5px;" id="refEarnings">0.00 TON</div>
             </div>
         </div>
     </div>
 
-    <!-- PAGE 4: PROFILE -->
+        <!-- PAGE 4: PROFILE -->
     <div id="page-profile" class="page">
-        <div class="profile-header">
-            <div class="profile-avatar" id="userAvatar">👤</div>
-            <div class="profile-name" id="profileName">Farmer Name</div>
-            <div class="profile-id" id="profileId">ID: 12345678</div>
+        <div class="top-bar">
+            <div style="font-size: 16px; font-weight: bold; color: #38bdf8;">👤 User Profile</div>
         </div>
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="lbl" id="lblTotalFarmed">Total Farmed</div>
-                <div class="val" id="profileTotal">0.0000 BGRAM</div>
-            </div>
-            <div class="stat-card">
-                <div class="lbl" id="lblMinerTier">Miner Tier</div>
-                <div class="val">Novice</div>
-            </div>
-            <div class="stat-card">
-                <div class="lbl" id="lblCompletedTasks">Completed Tasks</div>
-                <div class="val" id="profileTaskStats">0/3</div>
-            </div>
-            <div class="stat-card">
-                <div class="lbl" id="lblTotalReferrals">Total Referrals</div>
-                <div class="val" id="profTotalRef">0</div>
-            </div>
+        <div class="card-box" style="text-align: center; padding: 25px;">
+            <div style="width: 65px; height: 65px; background: rgba(14,165,233,0.2); border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid #0ea5e9;">💎</div>
+            <div style="font-size: 16px; font-weight: bold;" id="profileName">Farmer</div>
+            <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;" id="profileId">ID: --</div>
         </div>
 
         <div class="card-box">
-            <div class="card-title" id="txtWalletTitle">Ton Wallet</div>
+            <div class="card-title">Web3 TON Wallet</div>
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <div style="font-weight: bold; font-size: 13px; color:#0f172a;">TON Keeper / Wallet</div>
-                    <div style="font-size: 11px; color: #64748b;" id="walletStatus">Not Connected</div>
+                    <div style="font-size: 13px; font-weight: bold;" id="walletStatusText">Not Connected</div>
+                    <div style="font-size: 10px; color: #94a3b8;">TON Connect Enabled</div>
                 </div>
-                <button class="btn-connect" id="btnConnectProfile" onclick="triggerHaptic('impact'); alert(currentTranslations.alertWallet)">Connect</button>
+                <button class="btn-connect" onclick="alert('TON Connect integration coming soon!')">Connect</button>
             </div>
-        </div>
-
-        <div class="card-box">
-            <div class="card-title" id="txtSupportTitle">COMMUNITY</div>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn-connect" style="background: #bae6fd; color:#0369a1; flex: 1;" id="btnChannel" onclick="triggerHaptic('selection'); window.open('https://t.me/BeanGram_Official', '_blank')">Channel</button>
-                <button class="btn-connect" style="background: #bae6fd; color:#0369a1; flex: 1;" id="btnXSocial" onclick="triggerHaptic('selection'); window.open('https://x.com', '_blank')">X (Twitter)</button>
-            </div>
-        </div>
-    </div>
-    <!-- MODAL WITHDRAW -->
-    <div class="modal-overlay" id="withdrawModal">
-        <div class="modal-card" style="max-width: 360px; text-align: left; padding: 22px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <div style="font-size: 16px; font-weight: 800; color: #0369a1;" id="wdModalTitle">Token Withdrawal</div>
-                <div onclick="closeWithdrawModal()" style="font-size: 18px; color: #64748b; cursor: pointer; padding: 2px 8px;">✕</div>
-            </div>
-
-            <div style="display: flex; background: #e0f2fe; padding: 4px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #bae6fd;">
-                <button onclick="switchWdTab('ton')" id="wdTabTon" style="flex: 1; background: #bae6fd; color: #0369a1; border: none; padding: 8px; border-radius: 9px; font-size: 11px; font-weight: bold; cursor: pointer;">💎 TON (Gram)</button>
-                <button onclick="switchWdTab('bgram')" id="wdTabBgram" style="flex: 1; background: transparent; color: #64748b; border: none; padding: 8px; border-radius: 9px; font-size: 11px; font-weight: bold; cursor: pointer;">🪙 BGRAM</button>
-            </div>
-
-            <div id="wdContentTon">
-                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #64748b; margin-bottom: 6px;">
-                    <span>Available Balance:</span>
-                    <span style="color: #059669; font-weight: bold;" id="tonAvailableBalance">0.0000 TON</span>
-                </div>
-                <input type="text" class="modal-input" id="tonWalletInput" placeholder="Enter TON Wallet Address (EQ... / UQ...)">
-                <input type="number" class="modal-input" id="tonAmountInput" placeholder="Amount (Min. 0.1 TON)" step="0.01">
-                
-                <div style="font-size: 10px; color: #64748b; margin-bottom: 15px; display: flex; justify-content: space-between;">
-                    <span>Fee: ~0.005 TON</span>
-                    <span style="color: #0369a1;">Instant Payout Engine</span>
-                </div>
-
-                <button class="main-btn btn-start" style="padding: 13px; font-size: 12px;" onclick="requestTonWithdraw()">WITHDRAW TON</button>
-            </div>
-
-            <div id="wdContentBgram" style="display: none; text-align: center; padding: 15px 0;">
-                <div style="font-size: 36px; margin-bottom: 8px;">🔒</div>
-                <div style="font-size: 14px; font-weight: bold; color: #ef4444; margin-bottom: 5px;">LOCKED</div>
-                <p style="font-size: 11px; color: #475569; line-height: 1.4; margin-bottom: 20px;">
-                    BGRAM token distribution and withdrawals will unlock officially after the Token Generation Event (TGE) & CEX/DEX Listing. HODL your mining power!
-                </p>
-                <div style="background: #f0f9ff; border: 1px dashed #bae6fd; padding: 10px; border-radius: 10px; font-size: 11px; color: #64748b;">
-                    Total BGRAM Locked: <b style="color: #0369a1;" id="lockedBgramVal">0.0000</b>
-                </div>
-            </div>
-
-            <button class="modal-btn-close" onclick="closeWithdrawModal()" style="margin-top: 12px;">Close</button>
-        </div>
-    </div>
-
-    <!-- MODAL DAILY REWARD -->
-    <div class="modal-overlay" id="dailyModal">
-        <div class="modal-card">
-            <div class="modal-title">🎁 Daily Streak Reward</div>
-            <p style="font-size: 11px; color: #64748b; margin-bottom: 10px;">Log in daily to claim free BGRAM bonus!</p>
-            <div class="daily-grid">
-                <div class="daily-item" id="day1"><div class="daily-day">Day 1</div><div class="daily-val">+1.0</div></div>
-                <div class="daily-item" id="day2"><div class="daily-day">Day 2</div><div class="daily-val">+2.0</div></div>
-                <div class="daily-item" id="day3"><div class="daily-day">Day 3</div><div class="daily-val">+3.0</div></div>
-                <div class="daily-item" id="day4"><div class="daily-day">Day 4</div><div class="daily-val">+5.0</div></div>
-            </div>
-            <button class="main-btn btn-start" style="padding: 12px; font-size: 13px; margin-top: 15px;" id="btnClaimDaily" onclick="claimDailyReward()">CLAIM DAILY BONUS</button>
-            <button class="modal-btn-close" onclick="closeDailyModal()">Close</button>
         </div>
     </div>
 
     <!-- Bottom Navigation Bar -->
     <div class="bottom-nav">
-        <div class="nav-item active" id="nav-mine" onclick="switchTab('mine')">
-            <div class="nav-icon">🫘</div>
-            <div id="navTxtMine">Mine</div>
+        <div class="nav-item active" id="nav-earn" onclick="switchTab('earn')">
+            <div class="nav-icon">🚀</div>
+            <div>Earn</div>
         </div>
-        <div class="nav-item" id="nav-tasks" onclick="switchTab('tasks')">
-            <div class="nav-icon">📋</div>
-            <div id="navTxtTasks">Tasks</div>
+        <div class="nav-item" id="nav-advertise" onclick="switchTab('advertise')">
+            <div class="nav-icon">📢</div>
+            <div>Advertise</div>
         </div>
-        <div class="nav-item" id="nav-friends" onclick="switchTab('friends')">
+        <div class="nav-item" id="nav-network" onclick="switchTab('network')">
             <div class="nav-icon">👥</div>
-            <div id="navTxtFriends">Friends</div>
+            <div>Network</div>
         </div>
         <div class="nav-item" id="nav-profile" onclick="switchTab('profile')">
             <div class="nav-icon">👤</div>
-            <div id="navTxtProfile">Profile</div>
+            <div>Profile</div>
         </div>
     </div>
 
