@@ -103,11 +103,77 @@ function switchTab(tabName) {
     });
 }
 
-// Fitur Ganti Bahasa
-function changelanguage(lang) {
-    currentLang = lang;
-    console.语言(`Bahasa diubah ke: ${lang}`);
-    // Update teks UI dinamis sesuai bahasa jika diperlukan
+// ==========================================
+// PERBAIKAN SPESIFIK: KAMUS & FUNGSI MULTI-BAHASA MENYELURUH
+// ==========================================
+
+const appTranslations = {
+    en: {
+        navEarn: "Earn",
+        navAdvertise: "Advertise",
+        navNetwork: "Network",
+        navProfile: "Profile",
+        totalRewards: "TOTAL REWARDS EARNED",
+        availableTasks: "🔥 Available Tasks & Ads",
+        activeStatus: "Active",
+        walletBtn: "Wallet"
+    },
+    ru: {
+        navEarn: "Заработок",
+        navAdvertise: "Реклама",
+        navNetwork: "Сеть",
+        navProfile: "Профиль",
+        totalRewards: "ВСЕГО ЗАРАБОТАНО НАГРАД",
+        availableTasks: "🔥 Доступные задания и реклама",
+        activeStatus: "Активный",
+        walletBtn: "Кошелек"
+    },
+    id: {
+        navEarn: "Misi",
+        navAdvertise: "Iklan",
+        navNetwork: "Jaringan",
+        navProfile: "Profil",
+        totalRewards: "TOTAL HADIAH YANG DIDAPAT",
+        availableTasks: "🔥 Misi & Iklan Tersedia",
+        activeStatus: "Aktif",
+        walletBtn: "Dompet"
+    }
+};
+
+// Fungsi Mengganti Bahasa Menyeluruh (Timpa fungsi changelanguage yang lama dengan ini)
+function changelanguage(selectedLang) {
+    currentLang = selectedLang || 'en';
+    localStorage.setItem('bgram_lang', currentLang);
+
+    const t = appTranslations[currentLang] || appTranslations['en'];
+
+    // 1. Terjemahkan bagian Earn & Status
+    const balanceTitle = document.querySelector(".balance-title");
+    if (balanceTitle) balanceTitle.textContent = t.totalRewards;
+
+    const cardTitleAds = document.querySelector("#page-earn .card-box .card-title");
+    if (cardTitleAds) cardTitleAds.textContent = t.availableTasks;
+
+    const activeBadge = document.querySelector(".badge-active, .status-active, div[class*='Active']");
+    if (activeBadge) activeBadge.textContent = t.activeStatus;
+
+    const walletBtn = document.querySelector(".wallet-btn, button[onclick*='Wallet']");
+    if (walletBtn) walletBtn.textContent = t.walletBtn;
+
+    // 2. Terjemahkan 5 Menu Navigasi Utama di Bagian Bawah
+    const navEarnEl = document.querySelector("[onclick*='earn'] span, [onclick*='earn']");
+    if (navEarnEl) navEarnEl.textContent = t.navEarn;
+
+    const navAdvEl = document.querySelector("[onclick*='advertise'] span, [onclick*='advertise']");
+    if (navAdvEl) navAdvEl.textContent = t.navAdvertise;
+
+    const navNetEl = document.querySelector("[onclick*='network'] span, [onclick*='network']");
+    if (navNetEl) navNetEl.textContent = t.navNetwork;
+
+    const navProfEl = document.querySelector("[onclick*='profile'] span, [onclick*='profile']");
+    if (navProfEl) navProfEl.textContent = t.navProfile;
+
+    console.log(`Bahasa diubah ke: ${currentLang.toUpperCase()}`);
 }
 
 // Fungsi Sinkronisasi Data dari Server (Main.py / MongoDB)
