@@ -326,7 +326,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     if (btnTask2) {
         btnTask2.onclick = function() {
-            processTaskAction(2, 'https://x.com', 'twitter', 5.0, 0.0);
+            processTaskAction(2, 'https://x.com/BeanGram_', 'twitter', 5.0, 0.0);
         };
     }
 
