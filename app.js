@@ -149,31 +149,11 @@ function updateUIbalances() {
 // Pengurusan Misi, Saluran, & Validasi Tugas
 // ==========================================
 
-// Fungsi Menangani Task (Task 1: Telegram Channel, Task 2: Twitter/X)
 // ==========================================
-// PERBAIKAN UTAMA: INISIALISASI, STORAGE, & TASK
+// PERBAIKAN STATUS TASK AGAR TIDAK RESET
 // ==========================================
 
-// 1. Dipanggil otomatis saat halaman pertama kali dimuat
-document.addEventListener("DOMContentLoaded", () => {
-    // Muat data tersimpan dari browser agar saldo dan task tidak reset saat di-refresh
-    loadUserFromLocalStorage();
-
-    // Perbarui tampilan saldo BGRAM, TON, dan jumlah task di layar
-    updateUIbalances();
-
-    // Setup event listener untuk dropdown pilihan bahasa
-    const langSelectElement = document.querySelector("select, .lang-dropdown, [id*='lang']");
-    if (langSelectElement) {
-        langSelectElement.addEventListener("change", (e) => {
-            changelanguage(e.target.value);
-        });
-    }
-
-    console.log("Inisialisasi awal & LocalStorage berhasil dimuat saat DOMContentLoaded!");
-});
-
-// 2. Fungsi Memuat Data Tersimpan
+// 1. Memuat data & status task yang sudah selesai dari localStorage
 function loadUserFromLocalStorage() {
     const savedData = localStorage.getItem('bgram_user');
     if (savedData) {
@@ -183,16 +163,54 @@ function loadUserFromLocalStorage() {
         currentUser.completedTasksCount = parsed.completedTasksCount || 2;
         currentUser.referralCount = parsed.referralCount || 0;
         currentUser.referralEarnings = parsed.referralEarnings || 0.0;
+        
+        // Memuat daftar ID task yang sudah pernah diselesaikan
+        currentUser.completedTaskIds = parsed.completedTaskIds || [];
+    } else {
+        currentUser.completedTaskIds = [];
     }
 }
 
-// 3. Fungsi Menyimpan Data (Anti-Reset)
+// 2. Menyimpan data termasuk task yang sudah selesai
 function saveUserToLocalStorage() {
     localStorage.setItem('bgram_user', JSON.stringify(currentUser));
 }
 
-// 4. Fungsi Mengerjakan Task (Saldo BGRAM & TON Bertambah Bersamaan + Simpan Data)
+// 3. Modifikasi DOMContentLoaded untuk mengunci tombol task yang sudah selesai saat halaman dimuat
+document.addEventListener("DOMContentLoaded", () => {
+    loadUserFromLocalStorage();
+    updateUIbalances();
+
+    // Kunci tombol task yang sebelumnya sudah berstatus "Completed"
+    if (currentUser.completedTaskIds && currentUser.completedTaskIds.length > 0) {
+        currentUser.completedTaskIds.forEach(taskId => {
+            const taskButton = document.getElementById(`btnTask${taskId}`);
+            if (taskButton) {
+                taskButton.textContent = "Completed";
+                taskButton.className = "btn-task";
+                taskButton.style.background = "rgba(16, 185, 129, 0.75)";
+                taskButton.style.color = "#d43999";
+                taskButton.style.cursor = "default";
+                taskButton.disabled = true;
+            }
+        });
+    }
+
+    const langSelectElement = document.querySelector("select, .lang-dropdown, [id*='lang']");
+    if (langSelectElement) {
+        langSelectElement.addEventListener("change", (e) => {
+            changelanguage(e.target.value);
+        });
+    }
+});
+
+// 4. Fungsi Mengerjakan Task (Menyimpan ID task yang selesai ke memori)
 function handleTask(taskNumber, taskUrl, rewardTon) {
+    // Cegah jika task sudah pernah dikerjakan sebelumnya
+    if (currentUser.completedTaskIds && currentUser.completedTaskIds.includes(taskNumber)) {
+        return;
+    }
+
     const btnId = `btnTask${taskNumber}`;
     const taskButton = document.getElementById(btnId);
 
@@ -209,12 +227,18 @@ function handleTask(taskNumber, taskUrl, rewardTon) {
     setTimeout(() => {
         const rewardBgram = (taskNumber === 1 ? 5.0 : 3.0);
         
-        // Tambahkan BGRAM & TON secara akurat
+        // Tambahkan saldo
         currentUser.bgramBalance += rewardBgram;
         currentUser.tonBalance += rewardTon; 
         currentUser.completedTasksCount += 1;
 
-        // Simpan otomatis ke localStorage agar aman saat bot direfresh
+        // Catat nomor task yang sudah selesai ke dalam array
+        if (!currentUser.completedTaskIds) {
+            currentUser.completedTaskIds = [];
+        }
+        currentUser.completedTaskIds.push(taskNumber);
+
+        // Simpan permanen ke localStorage
         saveUserToLocalStorage();
 
         // Perbarui tampilan UI
@@ -229,7 +253,7 @@ function handleTask(taskNumber, taskUrl, rewardTon) {
             taskButton.disabled = true;
         }
 
-        console.log("Tugas berhasil diselesaikan dan reward ditambahkan.");
+        console.log(`Task ${taskNumber} berhasil diselesaikan dan dikunci.`);
     }, 1000);
 }
 
