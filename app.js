@@ -68,33 +68,39 @@ function initializeAppUI() {
 }
 
 // ==========================================
-// PERBAIKAN FUNGSI NAVIGASI MENU (SWITCH TAB)
+// PERBAIKAN FINAL NAVIGASI 5 MENU UTAMA
 // ==========================================
 function switchTab(tabName) {
-    // 1. Sembunyikan semua halaman halaman (.page)
+    // 1. Sembunyikan semua halaman (.page) secara total
     const pages = document.querySelectorAll('.page');
     pages.forEach(page => {
-        page.classList.remove('page-active');
         page.style.display = 'none';
+        page.classList.remove('page-active');
     });
 
-    // 2. Tampilkan halaman tujuan berdasarkan ID (misal: page-game, page-earn, dll)
+    // 2. Tampilkan halaman target sesuai ID (game, earn, advertise, network, profile)
     const targetPage = document.getElementById(`page-${tabName}`);
     if (targetPage) {
+        targetPage.style.display = 'block'; // Dipaksa tampil block/flex agar terlihat jelas
         targetPage.classList.add('page-active');
-        targetPage.style.display = 'flex'; // Mengikuti format display utama game.html
     }
 
-    // 3. Hilangkan status aktif dari semua tombol navigasi bawah
+    // 3. Bersihkan semua status aktif dari tombol navigasi bawah
     const navItems = document.querySelectorAll('.nav-item');
     navItems.forEach(item => {
+        item.classList.remove('active');
         item.classList.remove('nav-item-active');
     });
 
-    // 4. Berikan status aktif ke tombol navigasi yang sedang diklik
-    if (event && event.currentTarget) {
-        event.currentTarget.classList.add('nav-item-active');
-    }
+    // 4. Berikan kelas aktif secara spesifik ke tombol yang diklik berdasarkan nama tab-nya
+    // Mencari elemen nav-item yang memiliki fungsi onclick sesuai tabName
+    navItems.forEach(item => {
+        const onClickAttr = item.getAttribute('onclick');
+        if (onClickAttr && onClickAttr.includes(`('${tabName}')`)) {
+            item.classList.add('active');
+            item.classList.add('nav-item-active');
+        }
+    });
 }
 
 // Fitur Ganti Bahasa
