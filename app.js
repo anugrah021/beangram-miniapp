@@ -229,10 +229,6 @@ function setupAdvertiseForm() {
     }
 }
 
-// ==========================================
-// PERBAIKAN: MODAL PEMBAYARAN IKLAN + TOMBOL COPY ADDRESS TON
-// ==========================================
-
 async function submitAdvertisement() {
     const adLink = document.getElementById("adLink")?.value.trim();
     const adTitle = document.getElementById("adTitle")?.value.trim();
@@ -244,24 +240,24 @@ async function submitAdvertisement() {
     }
 
     if (adTarget < 10) {
-        alert("Minimum target is 10 active members!");
+        alert("Minimum target is 10 active users!");
         return;
     }
 
     const totalCost = (adTarget * 0.1).toFixed(1);
     const recipientTonAddress = "UQAg56EPp1zQDT7baczs2CNWSMsFkBE37EP7jFABLCMk-2Fa";
 
-    // Membuat elemen Modal Card Keren dengan Tombol Copy
-    let modalOverlay = document.getElementById("customAdModal");
-    if (!modalOverlay) {
-        modalOverlay = document.createElement("div");
-        modalOverlay.id = "customAdModal";
-        modalOverlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 9999; padding: 20px;";
-        document.body.appendChild(modalOverlay);
-    }
+    // Hapus modal lama jika ada agar tidak menumpuk
+    const existingModal = document.getElementById("customAdModal");
+    if (existingModal) existingModal.remove();
 
+    // Buat elemen modal card kustom yang profesional
+    const modalOverlay = document.createElement("div");
+    modalOverlay.id = "customAdModal";
+    modalOverlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 99999; padding: 20px;";
+    
     modalOverlay.innerHTML = `
-        <div style="background: #1e1e2f; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px; width: 100%; max-width: 360px; color: #fff; box-shadow: 0 8px 32px rgba(0,0,0,0.5); font-family: inherit;">
+        <div style="background: #1e1e2f; border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 24px; width: 100%; max-width: 360px; color: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.6); font-family: inherit;">
             <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 18px; color: #38bdf8; text-align: center;">🚀 AD CAMPAIGN PAYMENT</h3>
             
             <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; font-size: 13px; margin-bottom: 16px; line-height: 1.5;">
@@ -273,30 +269,31 @@ async function submitAdvertisement() {
 
             <p style="font-size: 12px; color: #94a3b8; margin-bottom: 8px;">Please transfer exactly <strong>${totalCost} TON</strong> to the official address:</p>
             
-            <!-- Kotak Alamat TON + Tombol Copy di Dalamnya -->
-            <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.1);">
-                <span id="tonAddressText" style="font-size: 11px; word-break: break-all; color: #34d399;">${recipientTonAddress}</span>
+            <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                <span style="font-size: 11px; word-break: break-all; color: #34d399;">${recipientTonAddress}</span>
                 <button id="copyTonBtn" style="background: #38bdf8; color: #0f172a; border: none; border-radius: 6px; padding: 6px 12px; font-size: 11px; font-weight: bold; cursor: pointer; white-space: nowrap;">Copy</button>
             </div>
 
             <div style="display: flex; gap: 10px;">
-                <button id="cancelAdBtn" style="flex: 1; padding: 10px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer;">Cancel</button>
-                <button id="confirmAdBtn" style="flex: 1; padding: 10px; background: #3b82f6; border: none; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer;">Confirm & Pay</button>
+                <button id="cancelAdBtn" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer;">Cancel</button>
+                <button id="confirmAdBtn" style="flex: 1; padding: 12px; background: #3b82f6; border: none; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer;">Confirm & Pay</button>
             </div>
         </div>
     `;
 
-    // Fungsi Tombol Copy Address TON
+    document.body.appendChild(modalOverlay);
+
+    // Fungsi Tombol Copy
     document.getElementById("copyTonBtn").onclick = () => {
         navigator.clipboard.writeText(recipientTonAddress).then(() => {
-            const copyBtn = document.getElementById("copyTonBtn");
-            copyBtn.textContent = "Copied!";
-            copyBtn.style.background = "#10b981";
-            copyBtn.style.color = "#fff";
+            const btn = document.getElementById("copyTonBtn");
+            btn.textContent = "Copied!";
+            btn.style.background = "#10b981";
+            btn.style.color = "#fff";
             setTimeout(() => {
-                copyBtn.textContent = "Copy";
-                copyBtn.style.background = "#38bdf8";
-                copyBtn.style.color = "#0f172a";
+                btn.textContent = "Copy";
+                btn.style.background = "#38bdf8";
+                btn.style.color = "#0f172a";
             }, 2000);
         });
     };
@@ -335,7 +332,7 @@ async function submitAdvertisement() {
             alert("Payment instruction received! Campaign will be processed once transaction is verified.");
         }
     };
-}
+                                        }
 
 // Referral System
 function setupReferralSystem() {
