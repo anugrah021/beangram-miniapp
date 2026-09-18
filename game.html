@@ -30,6 +30,13 @@
         /* Card Boxes & Task Items */
         .card-box{background:rgba(15,23,42,0.75);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 4px 15px rgba(0,0,0,0.2);}
         .card-title{font-size:12px;color:#38bdf8;margin-bottom:12px;letter-spacing:0.5px;text-transform:uppercase;font-weight:bold;}
+
+        /* Leaderboard Styling */
+        .leaderboard-list{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+        .leaderboard-item{display:flex;justify-content:space-between;align-items:center;background:rgba(30,41,59,0.5);border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:12px;font-size:12px;}
+        .leaderboard-rank{font-weight:bold;color:#38bdf8;width:25px;}
+        .leaderboard-user{flex:1;color:#f8fafc;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .leaderboard-score{font-weight:bold;color:#10b981;}
         
         .task-item{display:flex;justify-content:space-between;align-items:center;background:rgba(30,41,59,0.6);border:1px solid rgba(255,255,255,0.08);padding:14px;border-radius:14px;margin-bottom:10px;}
         .task-info{display:flex;align-items:center;gap:12px;}
@@ -145,7 +152,7 @@
         </div>
     </div>
 
-    <!-- PAGE 3: NETWORK (REFERRAL) -->
+    <!-- PAGE 3: NETWORK (REFERRAL & LEADERBOARD) -->
     <div id="page-network" class="page">
         <div class="top-bar">
             <div style="font-size: 16px; font-weight: bold; color: #38bdf8;">👥 Referral Network</div>
@@ -159,7 +166,7 @@
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
             <div class="card-box" style="text-align: center; margin-bottom: 0;">
                 <div style="font-size: 11px; color: #94a3b8;">Total Referrals</div>
                 <div style="font-size: 20px; font-weight: bold; color: #38bdf8; margin-top: 5px;" id="refCount">0</div>
@@ -167,6 +174,29 @@
             <div class="card-box" style="text-align: center; margin-bottom: 0;">
                 <div style="font-size: 11px; color: #94a3b8;">Commission Earned</div>
                 <div style="font-size: 20px; font-weight: bold; color: #10b981; margin-top: 5px;" id="refEarnings">0.00 TON</div>
+            </div>
+        </div>
+
+        <!-- Leaderboard Box -->
+        <div class="card-box">
+            <div class="card-title">🏆 Top Referral Leaderboard</div>
+            <div class="leaderboard-list" id="leaderboardContainer">
+                <!-- Baris Peringkat Contoh / Placeholder Visual -->
+                <div class="leaderboard-item">
+                    <span class="leaderboard-rank">#1</span>
+                    <span class="leaderboard-user">CryptoKing</span>
+                    <span class="leaderboard-score">142 Refs</span>
+                </div>
+                <div class="leaderboard-item">
+                    <span class="leaderboard-rank">#2</span>
+                    <span class="leaderboard-user">BeanMaster</span>
+                    <span class="leaderboard-score">98 Refs</span>
+                </div>
+                <div class="leaderboard-item">
+                    <span class="leaderboard-rank">#3</span>
+                    <span class="leaderboard-user">TonWhale</span>
+                    <span class="leaderboard-score">65 Refs</span>
+                </div>
             </div>
         </div>
     </div>
