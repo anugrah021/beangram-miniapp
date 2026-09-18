@@ -77,7 +77,14 @@
         .game-character{width:60px;height:60px;background:linear-gradient(135deg,#38bdf8,#0284c7);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 4px 15px rgba(56,189,248,0.4);position:absolute;bottom:40px;left:50px;transition:bottom 0.15s ease-out;}
         .game-obstacle{width:30px;height:45px;background:#ef4444;border-radius:8px;position:absolute;bottom:40px;right:-40px;}
         .btn-game-action{width:100%;max-width:320px;padding:14px;border-radius:14px;border:none;font-size:13px;font-weight:bold;cursor:pointer;background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 4px 15px rgba(16,185,129,0.3);text-transform:uppercase;letter-spacing:1px;}
-    </style>
+
+        /* Coming Soon Blur Overlay */
+        .coming-soon-wrapper{position:relative;width:100%;max-width:320px;height:350px;border-radius:20px;overflow:hidden;margin-bottom:15px;display:flex;align-items:center;justify-content:center;}
+        .coming-soon-wrapper .game-canvas-box{filter:blur(5px);pointer-events:none;width:100%;height:100%;margin-bottom:0;}
+        .coming-soon-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(9,13,22,0.75);backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;border:1px solid rgba(56,189,248,0.25);border-radius:20px;}
+        .coming-soon-badge{font-size:20px;font-weight:800;color:#38bdf8;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;text-shadow:0 0 15px rgba(56,189,248,0.5);}
+        .coming-soon-desc{font-size:11px;color:#94a3b8;text-align:center;padding:0 20px;}
+   </style>
 </head>
 
     <body>
@@ -264,23 +271,28 @@
         </div>
     </div>
 
-        <!-- PAGE 5: BGRAM MINI-GAME -->
+        <!-- PAGE 5: BGRAM MINI-GAME (COMING SOON) -->
     <div id="page-game" class="page">
         <div class="top-bar">
-            <div style="font-size: 16px; font-weight: bold; color: #38bdf8;">🫘 BGRAM</div>
+            <div style="font-size: 16px; font-weight: bold; color: #38bdf8;">🫘 BGRAM Tap Game</div>
         </div>
 
         <div class="game-container">
-            <div class="game-score-display" id="gameScoreText">Score: 0 BGRAM</div>
-            <div class="game-canvas-box" id="gameCanvasBox" onclick="triggerBeanJump()">
-                <div style="position: absolute; top: 15px; font-size: 11px; color: #94a3b8;">Tap screen to jump & dodge obstacles!</div>
-                <!-- Karakter Kacang Bean & Rintangan Visual -->
-                <div class="game-character" id="gameBeanChar">🫘</div>
+            <div class="game-score-display" style="opacity: 0.5;">Score: 0 BGRAM</div>
+            
+            <div class="coming-soon-wrapper">
+                <div class="game-canvas-box">
+                    <div class="game-character">🫘</div>
+                </div>
+                <div class="coming-soon-overlay">
+                    <div class="coming-soon-badge">🚀 Coming Soon!</div>
+                    <div class="coming-soon-desc">Mini-game tap & dodge is currently under development. Stay tuned for massive BGRAM rewards!</div>
+                </div>
             </div>
-            <button class="btn-game-action" onclick="startBeanGame()" id="btnStartGame">Tap to Start Game</button>
+
+            <button class="btn-game-action" style="background: rgba(30,41,59,0.8); color: #64748b; cursor: not-allowed;" disabled>FEATURE LOCKED</button>
         </div>
     </div>
-
         
     <!-- Bottom Navigation Bar (BGRAM di sebelah kiri paling ujung) -->
     <div class="bottom-nav">
