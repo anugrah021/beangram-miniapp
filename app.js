@@ -103,103 +103,10 @@ function switchTab(tabName) {
     });
 }
 
-// ==========================================
-// PERBAIKAN SPESIFIK: KAMUS & FUNGSI MULTI-BAHASA MENYELURUH
-// ==========================================
-// Deklarasi dasar objek user jika belum ada
-let currentUser = currentUser || {
-    bgramBalance: 8.0,
-    tonBalance: 0.0,
-    completedTasksCount: 2,
-    referralCount: 0,
-    referralEarnings: 0.0,
-    completedTaskIds: []
-};
-
-let currentLang = 'en';
-
-// Kamus Multi-Bahasa Aman
-const appTranslations = {
-    en: {
-        navEarn: "Earn",
-        navAdvertise: "Advertise",
-        navNetwork: "Network",
-        navProfile: "Profile",
-        totalRewards: "TOTAL REWARDS EARNED",
-        availableTasks: "🔥 Available Tasks & Ads",
-        activeStatus: "Active",
-        walletBtn: "Wallet"
-    },
-    ru: {
-        navEarn: "Заработок",
-        navAdvertise: "Реклама",
-        navNetwork: "Сеть",
-        navProfile: "Профиль",
-        totalRewards: "ВСЕГО ЗАРАБОТАНО НАГРАД",
-        availableTasks: "🔥 Доступные задания и реклама",
-        activeStatus: "Активный",
-        walletBtn: "Кошелек"
-    },
-    id: {
-        navEarn: "Misi",
-        navAdvertise: "Iklan",
-        navNetwork: "Jaringan",
-        navProfile: "Profil",
-        totalRewards: "TOTAL HADIAH YANG DIDAPAT",
-        availableTasks: "🔥 Misi & Iklan Tersedia",
-        activeStatus: "Aktif",
-        walletBtn: "Dompet"
-    }
-};
-
-// Fungsi Ganti Bahasa yang Aman dari Error Selector Kosong
+// Fungsi Bahasa Universal (Bahasa Inggris Saja - Aman & Ringan)
 function changelanguage(selectedLang) {
-    currentLang = selectedLang || 'en';
-    localStorage.setItem('bgram_lang', currentLang);
-
-    const t = appTranslations[currentLang] || appTranslations['en'];
-
-    try {
-        const balanceTitle = document.querySelector(".balance-title");
-        if (balanceTitle) balanceTitle.textContent = t.totalRewards;
-
-        const cardTitleAds = document.querySelector("#page-earn .card-box .card-title");
-        if (cardTitleAds) cardTitleAds.textContent = t.availableTasks;
-
-        const activeBadge = document.querySelector(".badge-active, .status-active, div[class*='Active']");
-        if (activeBadge) activeBadge.textContent = t.activeStatus;
-
-        const walletBtn = document.querySelector(".wallet-btn, button[onclick*='Wallet']");
-        if (walletBtn) walletBtn.textContent = t.walletBtn;
-
-        // Navigasi Bawah
-        const navEarnEl = document.querySelector("[onclick*='earn'] span, [onclick*='earn']");
-        if (navEarnEl) navEarnEl.textContent = t.navEarn;
-
-        const navAdvEl = document.querySelector("[onclick*='advertise'] span, [onclick*='advertise']");
-        if (navAdvEl) navAdvEl.textContent = t.navAdvEl || t.navAdvertise;
-
-        const navNetEl = document.querySelector("[onclick*='network'] span, [onclick*='network']");
-        if (navNetEl) navNetEl.textContent = t.navNetEl || t.navNetwork;
-
-        const navProfEl = document.querySelector("[onclick*='profile'] span, [onclick*='profile']");
-        if (navProfEl) navProfEl.textContent = t.navProfEl || t.navProfile;
-    } catch (e) {
-        console.error("Error translation:", e);
-    }
-}
-
-// Fungsi Memuat Bahasa dari Storage
-function loadLanguageFromStorage() {
-    const savedLang = localStorage.getItem('bgram_lang') || 'en';
-    currentLang = savedLang;
-    
-    const langSelectElement = document.querySelector("select, .lang-dropdown, [id*='lang']");
-    if (langSelectElement) {
-        langSelectElement.value = savedLang;
-    }
-
-    changelanguage(savedLang);
+    // Tetap stabil menggunakan Bahasa Inggris
+    console.log("App running in English mode.");
 }
 
 // Fungsi Sinkronisasi Data dari Server (Main.py / MongoDB)
