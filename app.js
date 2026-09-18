@@ -67,24 +67,34 @@ function initializeAppUI() {
     }
 }
 
-// Sistem Navigasi 5 Menu Utama
+// ==========================================
+// PERBAIKAN FUNGSI NAVIGASI MENU (SWITCH TAB)
+// ==========================================
 function switchTab(tabName) {
-    // Sembunyikan semua halaman
+    // 1. Sembunyikan semua halaman halaman (.page)
     const pages = document.querySelectorAll('.page');
-    pages.forEach(page => page.classList.remove('page-active'));
+    pages.forEach(page => {
+        page.classList.remove('page-active');
+        page.style.display = 'none';
+    });
 
-    // Hilangkan status active di semua tombol nav
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach(item => item.classList.remove('nav-item-active'));
-
-    // Tampilkan halaman yang dipilih sesuai ID di game.html
+    // 2. Tampilkan halaman tujuan berdasarkan ID (misal: page-game, page-earn, dll)
     const targetPage = document.getElementById(`page-${tabName}`);
     if (targetPage) {
         targetPage.classList.add('page-active');
+        targetPage.style.display = 'flex'; // Mengikuti format display utama game.html
     }
 
-    // Aktifkan tombol navigasi bawah
-    event.currentTarget.classList.add('nav-item-active');
+    // 3. Hilangkan status aktif dari semua tombol navigasi bawah
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+        item.classList.remove('nav-item-active');
+    });
+
+    // 4. Berikan status aktif ke tombol navigasi yang sedang diklik
+    if (event && event.currentTarget) {
+        event.currentTarget.classList.add('nav-item-active');
+    }
 }
 
 // Fitur Ganti Bahasa
