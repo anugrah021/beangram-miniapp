@@ -256,10 +256,16 @@ function updateTaskUI() {
     if (profileStats) profileStats.innerText = `${completedCount}/3`;
 }
 
-function processTaskAction(id, url, taskType, rewardBgram, rewardTon) {
+// Fungsi utama yang dipanggil oleh game.html untuk Task Telegram & X
+function verifyTaskBackend(taskType, targetLink, rewardBgram) {
     triggerHaptic('impact');
+    
+    // Tentukan ID task berdasarkan tipe (1 untuk telegram, 2 untuk X/Twitter)
+    const id = (taskType === 'task_telegram') ? 1 : 2;
     let currentTaskState = JSON.parse(localStorage.getItem('bgram_tasks')) || {};
     const state = currentTaskState[id] || 'init';
+
+    const url = (id === 1) ? 'https://t.me/BeanGram_Official' : 'https://x.com/BeanGram_';
 
     if (state === 'init') {
         if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
@@ -273,8 +279,10 @@ function processTaskAction(id, url, taskType, rewardBgram, rewardTon) {
         updateTaskUI();
         triggerHaptic('notification');
     } 
-    else if (state === 'claimable') {
+    else if (state === 'claimable' || state === 'checking') {
         totalBalance += rewardBgram;
+        
+        let rewardTon = (id === 1) ? 0.05 : 0.0;
         tonBalance += rewardTon;
 
         localStorage.setItem('bgram_balance', totalBalance);
@@ -286,7 +294,7 @@ function processTaskAction(id, url, taskType, rewardBgram, rewardTon) {
         triggerHaptic('notification');
         updateUI();
         updateTaskUI();
-        syncDataToServer(`complete_task_${taskType}`, { bgram_added: rewardBgram, ton_added: rewardTon });
+        syncDataToServer(taskType, { bgram_added: rewardBgram, ton_added: rewardTon });
     }
 }
 
@@ -315,21 +323,6 @@ async function syncDataToServer(actionType, extraData = {}) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    const btnTask1 = document.getElementById('btnTask1');
-    const btnTask2 = document.getElementById('btnTask2');
-
-    if (btnTask1) {
-        btnTask1.onclick = function() {
-            processTaskAction(1, 'https://t.me/BeanGram_Official', 'telegram', 5.0, 0.05);
-        };
-    }
-
-    if (btnTask2) {
-        btnTask2.onclick = function() {
-            processTaskAction(2, 'https://x.com/BeanGram_', 'twitter', 5.0, 0.0);
-        };
-    }
-
     const langSelect = document.getElementById('langSelect');
     if (langSelect) langSelect.value = currentLang;
     changeLanguage(currentLang);
@@ -337,6 +330,27 @@ document.addEventListener("DOMContentLoaded", function() {
     updateTaskUI();
     setInterval(updateUI, 1000);
 });
+
+function openDailyModal() {
+    triggerHaptic('selection');
+    const modal = document.getElementById('dailyModal');
+    if (modal) modal.classList.add('active');
+}
+
+function closeDailyModal() {
+    triggerHaptic('selection');
+    const modal = document.getElementById('dailyModal');
+    if (modal) modal.classList.remove('active');
+}
+
+function claimDailyReward() {
+    triggerHaptic('notification');
+    totalBalance += 1.0;
+    localStorage.setItem('bgram_balance', totalBalance);
+    updateUI();
+    closeDailyModal();
+    syncDataToServer('claim_daily');
+}
 
 function switchWdTab(tab) {
     triggerHaptic('selection');
