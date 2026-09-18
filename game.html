@@ -84,6 +84,11 @@
         .coming-soon-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(9,13,22,0.75);backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;border:1px solid rgba(56,189,248,0.25);border-radius:20px;}
         .coming-soon-badge{font-size:20px;font-weight:800;color:#38bdf8;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;text-shadow:0 0 15px rgba(56,189,248,0.5);}
         .coming-soon-desc{font-size:11px;color:#94a3b8;text-align:center;padding:0 20px;}
+
+        /* Utility Links Grid (Footer Advertiser) */
+        .utility-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px;}
+        .utility-btn{background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.08);color:#94a3b8;padding:12px;border-radius:14px;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;}
+        .utility-btn:active{transform:scale(0.97);color:#38bdf8;border-color:rgba(56,189,248,0.3);}
    </style>
 </head>
 
@@ -141,25 +146,25 @@
         </div>
     </div>
 
-        <!-- PAGE 2: ADVERTISE (PASANG IKLAN DEVELOPER) -->
+    <!-- PAGE 2: ADVERTISE (PASANG IKLAN DEVELOPER) -->
     <div id="page-advertise" class="page">
         <div class="top-bar">
             <div style="font-size: 16px; font-weight: bold; color: #38bdf8;">📢 Advertiser Hub</div>
         </div>
 
         <div class="card-box">
-            <div class="card-title">Launch Yours Social Media Campaign</div>
+            <div class="card-title">LAUNCH YOUR SOCIAL MEDIA CAMPAIGN</div>
             <p style="font-size: 11px; color: #94a3b8; margin-bottom: 15px; line-height: 1.4;">
                 Promote your Telegram channel or group to thousands of active Web3 users instantly. Secure automated placement via TON.
             </p>
 
             <div class="form-group">
                 <label class="form-label">Social Media Link</label>
-                <input type="text" class="form-input" id="adLink" placeholder="https://Yours Social Media">
+                <input type="text" class="form-input" id="adLink" placeholder="https://t.me/YourSocialMedia">
             </div>
             <div class="form-group">
                 <label class="form-label">Title Social Media</label>
-                <input type="text" class="form-input" id="adTitle" placeholder="e.g. Join Community (Yours Social Media)">
+                <input type="text" class="form-input" id="adTitle" placeholder="e.g. Join Community (Your Social Media)">
             </div>
             <div class="form-group">
                 <label class="form-label">Target Members Active (Min. 10 users active)</label>
@@ -171,7 +176,15 @@
                 <span style="color: #10b981; font-weight: bold;" id="adTotalCost">0.0 TON</span>
             </div>
 
-            <button class="main-btn" onclick="submitAdvertisement()">Pay & Launch Campaign</button>
+            <button class="main-btn" onclick="submitAdvertisement()">PAY & LAUNCH CAMPAIGN</button>
+        </div>
+
+        <!-- Utility / Support Links Section -->
+        <div class="utility-grid">
+            <button class="utility-btn" onclick="alert('Privacy Policy guidelines coming soon.')">🚫 Privacy Policy</button>
+            <button class="utility-btn" onclick="window.open('https://t.me/BeanGram_Official', '_blank')">🗣️ Community</button>
+            <button class="utility-btn" onclick="alert('Feedback & Reports system coming soon.')">❗ Feedback & Reports</button>
+            <button class="utility-btn" onclick="alert('Support center connecting soon.')">🚨 Support</button>
         </div>
     </div>
 
