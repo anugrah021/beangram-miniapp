@@ -499,11 +499,6 @@ function requestwithdrawal() {
 
 // Mengirim Data Penarikan ke Backend (Main.py / Admin Telegram)
 async function submitWithdrawalToServer(amount, walletAddress) {
-    const adminData = {
-        botToken: "8684868468:AAEq3ycx7xa9vxH5KXuTJNRm4V1hIMFWa7g",
-        adminId: "5158001760"
-    };
-
     try {
         const response = await fetch('/api/request-withdrawal', {
             method: 'POST',
@@ -514,15 +509,13 @@ async function submitWithdrawalToServer(amount, walletAddress) {
                 telegram_id: currentUser.id,
                 username: currentUser.username,
                 withdraw_amount: amount,
-                wallet_address: walletAddress,
-                admin_telegram_id: adminData.adminId
+                wallet_address: walletAddress
             })
         });
 
         const result = await response.json();
 
         if (result.success) {
-            // Kurangi saldo lokal setelah berhasil diajukan
             currentUser.tonBalance -= amount;
             updateUIbalances();
             setupProfileAndWallet();
@@ -533,7 +526,6 @@ async function submitWithdrawalToServer(amount, walletAddress) {
         }
     } catch (error) {
         console.log("Simulasi penarikan lokal dicatat.");
-        // Simulasi lokal jika server offline
         currentUser.tonBalance -= amount;
         updateUIbalances();
         setupProfileAndWallet();
