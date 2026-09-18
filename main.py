@@ -16,8 +16,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Konfigurasi MongoDB Atlas (Ganti URL di bawah dengan Connection String BeanGramProDB Anda)
-MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://<username>:<password>@beangramprodb.xxxx.mongodb.net/?retryWrites=true&w=majority")
+# Konfigurasi MongoDB Atlas BeanGramProDB
+MONGO_URI = "mongodb+srv://agentanugrah_db_user:AeQxBtxGbMGJhEp7@beangramprodb.rwz4bgo.mongodb.net/?retryWrites=true&w=majority&appName=BeanGramProDB"
 client = AsyncIOMotorClient(MONGO_URI)
 db = client.bg_database
 
@@ -32,7 +32,7 @@ withdrawals_collection = db.withdrawals
 def root():
     return {"status": "success", "message": "BeanGram Backend API is running perfectly!"}
 
-# Model Pydantic untuk Validasi Data Masuk (Payload Validation)
+# Model Pydantic untuk Validasi Data Masuk
 class UserLogin(BaseModel):
     telegram_id: str
     username: str
@@ -54,20 +54,18 @@ class WithdrawalRequest(BaseModel):
     amount_ton: float
     wallet_address: str
 
-# 1. Endpoint Login / Registrasi User Otomatis saat Masuk Mini App
+# 1. Endpoint Login / Registrasi User Otomatis
 @app.post("/api/user/login")
 async def user_login(data: UserLogin):
     existing_user = await users_collection.find_one({"telegram_id": data.telegram_id})
     
     if existing_user:
-        # Update username jika berubah
         await users_collection.update_one(
             {"telegram_id": data.telegram_id},
             {"$set": {"username": data.username}}
         )
         return {"status": "success", "message": "User logged in successfully", "data": existing_user}
     
-    # Jika user baru, buat data baru di database
     new_user = {
         "telegram_id": data.telegram_id,
         "username": data.username,
@@ -79,16 +77,15 @@ async def user_login(data: UserLogin):
         "created_at": datetime.utcnow()
     }
     
-    # Jika ada kode referral, berikan bonus atau catat referral pengajak
     if data.referred_by:
         referrer = await users_collection.find_one({"telegram_id": data.referred_by})
         if referrer:
             await users_collection.update_one(
                 {"telegram_id": data.referred_by},
-                {"$inc": {"referral_count": 1, "bgram_balance": 10.0}} # Bonus 10 BGRAM untuk pengajak
+                {"$inc": {"referral_count": 1, "bgram_balance": 10.0}}
             )
 
-    await users_collection.insert_one(new_user}
+    await users_collection.insert_one(new_user)
     return {"status": "success", "message": "New user registered successfully", "data": new_user}
 
 # 2. Endpoint Mengambil Data Profil & Saldo User
@@ -102,7 +99,6 @@ async def get_user_profile(telegram_id: str):
 # 3. Endpoint Menyelesaikan Task / Misi (Earn)
 @app.post("/api/task/complete")
 async def complete_task(data: TaskComplete):
-    # Cek apakah user sudah pernah menyelesaikan task ini sebelumnya
     existing_claim = await user_tasks_collection.find_one({
         "telegram_id": data.telegram_id,
         "task_id": data.task_id
@@ -111,14 +107,12 @@ async def complete_task(data: TaskComplete):
     if existing_claim:
         raise HTTPException(status_code=400, detail="Task already completed by this user")
     
-    # Catat bahwa user telah menyelesaikan task
     await user_tasks_collection.insert_one({
         "telegram_id": data.telegram_id,
         "task_id": data.task_id,
         "completed_at": datetime.utcnow()
     })
     
-    # Berikan reward token BGRAM (misal: +5 BGRAM per task)
     await users_collection.update_one(
         {"telegram_id": data.telegram_id},
         {"$inc": {"bgram_balance": 5.0}}
@@ -158,7 +152,6 @@ async def request_withdrawal(data: WithdrawalRequest):
         
     withdrawal_id = f"WD-{int(datetime.utcnow().timestamp())}"
     
-    # Catat permintaan penarikan
     withdrawal_record = {
         "withdrawal_id": withdrawal_id,
         "telegram_id": data.telegram_id,
@@ -169,8 +162,6 @@ async def request_withdrawal(data: WithdrawalRequest):
     }
     
     await withdrawals_collection.insert_one(withdrawal_record)
-    
-    # Kurangi saldo TON user secara otomatis di database
     await users_collection.update_one(
         {"telegram_id": data.telegram_id},
         {"$inc": {"ton_balance": -data.amount_ton}}
