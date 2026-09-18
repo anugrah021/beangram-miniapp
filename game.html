@@ -112,9 +112,8 @@
 
         <div class="balance-card">
             <div class="balance-title">Total Rewards Earned</div>
-            <div class="balance-value" id="totalBalance">0.0 TON</div>
+            <div class="balance-value" id="totalBalance">0.0 BGRAM</div>
             <div class="sub-balance">
-                <span>BGRAM: <b style="color:#fff;" id="BgramBalance">0.0</b></span>
                 <span>TON: <b style="color:#fff;" id="TonBalance">0.0</b></span>
                 <span>Completed Tasks: <b style="color:#38bdf8;" id="completedCount">0</b></span>
             </div>
@@ -281,7 +280,7 @@
             <p style="font-size: 11px; color: #94a3b8; margin-bottom: 12px; line-height: 1.4;">
                 Withdrawals are automatically checked by a verification system to prevent fraud; if valid and accepted by the system, the real TON you have earned is instantly transferred to your external Web3 wallet.
             </p>
-            <button class="btn-withdraw-profile" onclick="alert('Withdrawal gateway opening soon!')">📥 Withdraw TON</button>
+            <button class="btn-withdraw-profile" onclick="requestWithdrawal()">💸 Withdraw</button>
         </div>
     </div>
 
