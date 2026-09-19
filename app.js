@@ -481,41 +481,41 @@ function requestwithdrawal() {
     const existingModal = document.getElementById("customWithdrawModal");
     if (existingModal) existingModal.remove();
 
-    // Buat elemen Modal Card Keren untuk Withdraw
+        // Buat elemen Nodal Card Keren untuk Withdraw
     const modalOverlay = document.createElement("div");
     modalOverlay.id = "customWithdrawModal";
-    modalOverlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 99999; padding: 20px;";
-    
+    modalOverlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 9999;";
+
     modalOverlay.innerHTML = `
-        <div style="background: #1e1e2f; border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 24px; width: 100%; max-width: 360px; color: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.6); font-family: inherit;">
-            <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 18px; color: #38bdf8; text-align: center;">📥 WITHDRAWAL ASSETS</h3>
+        <div style="background: #1e1e2f; border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; width: 90%; max-width: 380px; padding: 20px; color: #fff; font-family: sans-serif;">
+            <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 18px; color: #38bdf8; text-align: center;">📦 WITHDRAWAL ASSETS</h3>
             
             <!-- Kotak Informasi Saldo -->
-            <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; font-size: 13px; margin-bottom: 14px; line-height: 1.6;">
+            <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; margin-bottom: 14px;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
                     <span>🔒 BGRAM Locked:</span>
                     <strong style="color: #facc15;">${bgramBalance.toFixed(1)} BGRAM</strong>
                 </div>
                 <div style="display: flex; justify-content: space-between;">
                     <span>💎 TON Available:</span>
-                    <strong style="color: #34d399;" id="modalTonBal">${availableTon.toFixed(2)} TON</strong>
+                    <strong style="color: #34d399;">${availableTon.toFixed(2)} TON</strong>
                 </div>
             </div>
 
             <!-- Input Jumlah yang Ingin Ditarik -->
             <div style="margin-bottom: 12px;">
                 <label style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">Amount to Withdraw (TON)</label>
-                <input type="number" id="withdrawAmountInput" value="${availableTon.toFixed(2)}" step="0.01" style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px; color: #fff; font-size: 14px; box-sizing: border-box;" />
+                <input type="number" id="withdrawAmountInput" value="${availableTon.toFixed(2)}" style="width: 100%; padding: 10px; background: #111118; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; font-size: 14px; box-sizing: border-box;">
             </div>
 
             <!-- Input Alamat Wallet Web3 -->
-            <div style="margin-bottom: 8px;">
+            <div style="margin-bottom: 16px;">
                 <label style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">Your Web3 TON Wallet Address</label>
-                <input type="text" id="walletAddressInput" placeholder="Paste your TON address (EQ... / UQ...)" style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px; color: #fff; font-size: 13px; box-sizing: border-box;" />
+                <input type="text" id="walletAddressInput" placeholder="Paste your TON address (EQ... / UQ...)" style="width: 100%; padding: 10px; background: #111118; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; font-size: 13px; box-sizing: border-box;">
             </div>
 
             <!-- Tulisan kecil minimum withdraw -->
-            <p style="font-size: 11px; color: #f87171; margin-top: 0; margin-bottom: 20px;">* Minimum withdrawal limit is 0.25 TON</p>
+            <p style="font-size: 11px; color: #f87171; margin-top: 0; margin-bottom: 16px;">* Minimum withdrawal limit is 0.25 TON</p>
 
             <!-- Tombol Aksi -->
             <div style="display: flex; gap: 10px;">
@@ -525,7 +525,7 @@ function requestwithdrawal() {
         </div>
     `;
 
-    document.body.appendChild(modalOverlay);
+    document.body.appendChild(modalOverlay)
 
     // Tombol Cancel
     document.getElementById("cancelWithdrawBtn").onclick = () => {
