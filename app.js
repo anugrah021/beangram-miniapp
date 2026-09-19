@@ -581,16 +581,16 @@ async function submitWithdrawalToServer(amount, walletAddress) {
             saveUserToLocalStorage();
             updateUIbalances();
             setupProfileAndWallet();
-            alert("Permintaan penarikan berhasil dikirim!");
+            alert("Withdrawal request successfully submitted!");
         } else {
-            alert(result.message || "Gagal memproses penarikan.");
+            alert(result.message || "Failed to process withdrawal.");
         }
     } catch (error) {
         currentUser.tonBalance -= amount;
         saveUserToLocalStorage();
         updateUIbalances();
         setupProfileAndWallet();
-        alert("Permintaan penarikan dicatat secara lokal!");
+        alert("The withdrawal request is being automatically checked.!");
     }
 }
 
@@ -599,7 +599,7 @@ async function checkPaymentStatus() {
     // Ambil data kampanye atau ID terakhir yang disimpan saat user klik Pay & Launch
     const statusMsg = document.getElementById("check-status-msg"); // Opsional jika ingin menampilkan teks status
     
-    alert("⏳ Memeriksa status pembayaran di jaringan blockchain TON...");
+    alert("⏳ Checking payment status on the TON blockchain network....");
 
     try {
         const response = await fetch('/api/auto-verify-payment', {
@@ -621,6 +621,6 @@ async function checkPaymentStatus() {
         }
     } catch (error) {
         console.error("Error:", error);
-        alert("❌ Gagal terhubung ke server verifikasi.");
+        alert("❌ Failed to connect to the verification server..");
     }
 }
