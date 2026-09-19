@@ -261,13 +261,13 @@ async function submitAdvertisement() {
             <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 18px; color: #38bdf8; text-align: center;">🚀 AD CAMPAIGN PAYMENT</h3>
             
             <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; font-size: 13px; margin-bottom: 16px; line-height: 1.5;">
-                <div style="margin-bottom: 6px;"><strong>Title:</strong> ${adTitle}</div>
-                <div style="margin-bottom: 6px; word-break: break-all;"><strong>Link:</strong> ${adLink}</div>
+                <div style="margin-bottom: 6px;"><strong>Link Social Media:</strong> ${adTitle}</div>
+                <div style="margin-bottom: 6px; word-break: break-all;"><strong>Name Social Media:</strong> ${adLink}</div>
                 <div style="margin-bottom: 6px;"><strong>Target:</strong> ${adTarget} Active Users</div>
                 <div style="color: #facc15;"><strong>Total Cost:</strong> ${totalCost} TON</div>
             </div>
 
-            <p style="font-size: 12px; color: #94a3b8; margin-bottom: 8px;">Please transfer exactly <strong>${totalCost} TON</strong> to the $BGRAM address:</p>
+            <p style="font-size: 12px; color: #94a3b8; margin-bottom: 8px;">Please transfer exactly <strong>${totalCost} TON</strong> to the BGRAM address:</p>
             
             <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
                 <span style="font-size: 11px; word-break: break-all; color: #34d399;">${recipientTonAddress}</span>
