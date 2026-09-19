@@ -350,19 +350,29 @@ function setupReferralSystem() {
     }
 }
 
-// 2. Fungsi Tombol Copy Tautan Referral yang Interaktif
+// Fungsi Mengisi Tautan Referral Otomatis Berdasarkan ID User
+function setupReferralSystem() {
+    const refLinkInput = document.getElementById("refflink");
+    
+    // Ambil ID user dari objek currentUser (jika kosong pakai default)
+    const userId = (typeof currentUser !== 'undefined' && currentUser.id) ? currentUser.id : "5158001760";
+    
+    if (refLinkInput) {
+        refLinkInput.value = `https://t.me/BeanGram_Bot?start=ref_${userId}`;
+    }
+}
+
+// Fungsi Tombol Copy Tautan Referral
 function copyReff() {
     const refLinkInput = document.getElementById("refflink");
     
     if (refLinkInput) {
-        // Pilih teks di dalam input
         refLinkInput.select();
-        refLinkInput.setSelectionRange(0, 99999); // Kompatibel untuk perangkat mobile
+        refLinkInput.setSelectionRange(0, 99999); // Untuk perangkat mobile
         
-        // Salin ke clipboard menggunakan API modern
         navigator.clipboard.writeText(refLinkInput.value).then(() => {
-            // Ubah teks tombol sementara sebagai indikator berhasil disalin
-            const copyBtn = document.querySelector("#page-network button, .copy-btn, button[onclick*='copyReff']");
+            // Cari tombol copy di dekat input referral untuk mengubah teksnya sementara
+            const copyBtn = document.querySelector("#page-network .btn-connect, button[onclick*='copyReff']");
             if (copyBtn) {
                 const originalText = copyBtn.textContent;
                 copyBtn.textContent = "Copied!";
@@ -378,13 +388,13 @@ function copyReff() {
                 alert("Referral link copied successfully!");
             }
         }).catch(err => {
-            console.error("Failed to copy text: ", err);
-            alert("Failed to copy link. Please select and copy manually.");
+            console.error("Gagal menyalin teks: ", err);
+            alert("Failed to copy link.");
         });
     }
 }
 
-// Pastikan fungsi ini dipanggil di dalam DOMContentLoaded atau saat tab Network dibuka
+// Panggil fungsi otomatis saat halaman dimuat
 document.addEventListener("DOMContentLoaded", () => {
     setupReferralSystem();
 });
