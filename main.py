@@ -5,6 +5,31 @@ from typing import Dict, Any
 
 app = FastAPI()
 
+import os
+import requests
+
+# Konfigurasi Bot Telegram (Akan membaca dari environment variable Vercel secara aman)
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "MASUKKAN_TOKEN_BOT_ANDA_DI_SINI")
+ADMIN_CHAT_ID = os.getenv("ADMIN_CHAT_ID", "MASUKKAN_CHAT_ID_ANDA_DI_SINI")
+
+# === FUNGSI PENGIRIM NOTIFIKASI KE BOT TELEGRAM ===
+def send_telegram_notification(message: str):
+    if TELEGRAM_BOT_TOKEN == "MASUKKAN_TOKEN_BOT_ANDA_DI_SINI":
+        return False  # Lewati jika token belum diatur
+        
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    payload = {
+        "chat_id": ADMIN_CHAT_ID,
+        "text": message,
+        "parse_mode": "Markdown"
+    }
+    try:
+        response = requests.post(url, json=payload)
+        return response.json()
+    except Exception as e:
+        print(f"Gagal mengirim pesan Telegram: {e}")
+        return None
+
 # Konfigurasi CORS agar frontend (game.html / app.js) bisa berkomunikasi dengan aman
 app.add_middleware(
     CORSMiddleware,
@@ -144,9 +169,23 @@ def submit_ad(data: AdRequest):
         "status": "pending"  # Pending pembayaran diverifikasi bot
     }
     
+    
     campaigns_db.append(new_campaign)
 
-    # Kirim respon kembali ke app.js bahwa data diterima dan menunggu pembayaran
+    # ---> KIRIM NOTIFIKASI OTOMATIS KE BOT TELEGRAM ANDA <---
+    notif_msg = (
+        f"📢 *PENGAJUAN IKLAN BARU (PENDING)*\n\n"
+        f"🆔 ID User: `{data.telegram_id}`\n"
+        f"🔗 Link: {data.social_link}\n"
+        f"📌 Judul: {data.title}\n"
+        f"👥 Target: {data.target_members} User\n"
+        f"💰 Biaya: {data.total_cost} TON\n"
+        f"🆔 Campaign ID: `{campaign_id}`\n\n"
+        f"_Silakan cek mutasi dompet TON Anda. Jika sudah masuk, verifikasi via sistem._"
+    )
+    send_telegram_notification(notif_msg)
+
+    # Kirim respon kembali ke app.js
     return {
         "success": True,
         "message": "Campaign submitted successfully. Waiting for payment verification.",
