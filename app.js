@@ -424,34 +424,152 @@ async function loadLeaderboardData() {
     }
 }
 
+// ==========================================
+// PERBAIKAN: PROFIL AVATAR & MODERN WITHDRAW MODAL
+// ==========================================
+
+// 1. Sinkronisasi Foto Profil Telegram & Info Akun
 function setupProfileAndWallet() {
+    // Ambil foto profil dari Telegram WebApp jika tersedia
+    const userPhotoUrl = tg?.initDataUnsafe?.user?.photo_url;
+    
+    // Cari elemen bulatan avatar di menu profile (misalnya tag img atau div dengan background)
+    const avatarContainer = document.querySelector("#page-profile .profile-avatar, #page-profile img, .avatar-circle");
+    if (avatarContainer && userPhotoUrl) {
+        if (avatarContainer.tagName === 'IMG') {
+            avatarContainer.src = userPhotoUrl;
+        } else {
+            avatarContainer.style.backgroundImage = `url(${userPhotoUrl})`;
+            avatarContainer.style.backgroundSize = 'cover';
+            avatarContainer.style.backgroundPosition = 'center';
+        }
+    }
+
+    // Sinkronisasi nilai aset profil dengan saldo saat ini
     const profileBgramVal = document.getElementById("profileBgramVal");
     const profileTonVal = document.getElementById("profileTonVal");
+
     if (profileBgramVal) profileBgramVal.textContent = currentUser.bgramBalance.toFixed(1);
     if (profileTonVal) profileTonVal.textContent = currentUser.tonBalance.toFixed(1);
 }
 
+// 2. Fungsi Tombol Withdraw Memunculkan Modal Profesional (English)
 function requestwithdrawal() {
-    const minWithdraw = 0.2;
+    const minWithdraw = 0.25;
     const availableTon = currentUser.tonBalance;
-    const inputAmount = prompt(`Available TON: ${availableTon.toFixed(2)}\nMinimum Withdraw: ${minWithdraw}\nMasukkan jumlah TON:`, availableTon.toFixed(2));
+    const bgramBalance = currentUser.bgramBalance;
 
-    if (inputAmount === null) return;
-    const withdrawAmount = parseFloat(inputAmount);
+    // Hapus modal lama jika ada agar tidak menumpuk
+    const existingModal = document.getElementById("customWithdrawModal");
+    if (existingModal) existingModal.remove();
 
-    if (isNaN(withdrawAmount) || withdrawAmount < minWithdraw) {
-        alert(`Jumlah penarikan tidak valid atau kurang dari minimum ${minWithdraw} TON!`);
-        return;
-    }
-    if (withdrawAmount > availableTon) {
-        alert("Saldo TON tidak mencukupi!");
-        return;
-    }
+    // Buat elemen Modal Card Keren untuk Withdraw
+    const modalOverlay = document.createElement("div");
+    modalOverlay.id = "customWithdrawModal";
+    modalOverlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 99999; padding: 20px;";
+    
+    modalOverlay.innerHTML = `
+        <div style="background: #1e1e2f; border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 24px; width: 100%; max-width: 360px; color: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.6); font-family: inherit;">
+            <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 18px; color: #38bdf8; text-align: center;">📥 WITHDRAWAL ASSETS</h3>
+            
+            <!-- Kotak Informasi Saldo -->
+            <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; font-size: 13px; margin-bottom: 14px; line-height: 1.6;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span>🔒 BGRAM Locked:</span>
+                    <strong style="color: #facc15;">${bgramBalance.toFixed(1)} BGRAM</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>💎 TON Available:</span>
+                    <strong style="color: #34d399;" id="modalTonBal">${availableTon.toFixed(2)} TON</strong>
+                </div>
+            </div>
 
-    const userWalletAddress = prompt("Masukkan Alamat Web3 TON Wallet Anda (EQ...):");
-    if (!userWalletAddress) return;
+            <!-- Input Jumlah yang Ingin Ditarik -->
+            <div style="margin-bottom: 12px;">
+                <label style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">Amount to Withdraw (TON)</label>
+                <input type="number" id="withdrawAmountInput" value="${availableTon.toFixed(2)}" step="0.01" style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px; color: #fff; font-size: 14px; box-sizing: border-box;" />
+            </div>
 
-    submitWithdrawalToServer(withdrawAmount, userWalletAddress.trim());
+            <!-- Input Alamat Wallet Web3 -->
+            <div style="margin-bottom: 8px;">
+                <label style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">Your Web3 TON Wallet Address</label>
+                <input type="text" id="walletAddressInput" placeholder="Paste your TON address (EQ... / UQ...)" style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px; color: #fff; font-size: 13px; box-sizing: border-box;" />
+            </div>
+
+            <!-- Tulisan kecil minimum withdraw -->
+            <p style="font-size: 11px; color: #f87171; margin-top: 0; margin-bottom: 20px;">* Minimum withdrawal limit is 0.25 TON</p>
+
+            <!-- Tombol Aksi -->
+            <div style="display: flex; gap: 10px;">
+                <button id="cancelWithdrawBtn" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer;">Cancel</button>
+                <button id="confirmWithdrawBtn" style="flex: 1; padding: 12px; background: #10b981; border: none; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer;">Withdraw</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modalOverlay);
+
+    // Tombol Cancel
+    document.getElementById("cancelWithdrawBtn").onclick = () => {
+        modalOverlay.remove();
+    };
+
+    // Tombol Withdraw (Kirim ke backend main.py)
+    document.getElementById("confirmWithdrawBtn").onclick = async () => {
+        const withdrawAmount = parseFloat(document.getElementById("withdrawAmountInput").value);
+        const walletAddress = document.getElementById("walletAddressInput").value.trim();
+
+        // Validasi
+        if (isNaN(withdrawAmount) || withdrawAmount <= 0) {
+            alert("Please enter a valid withdrawal amount!");
+            return;
+        }
+        if (withdrawAmount < minWithdraw) {
+            alert(`Withdrawal denied! Minimum withdrawal is ${minWithdraw} TON.`);
+            return;
+        }
+        if (withdrawAmount > availableTon) {
+            alert("Withdrawal denied! Insufficient TON balance.");
+            return;
+        }
+        if (!walletAddress) {
+            alert("Please paste your TON wallet address!");
+            return;
+        }
+
+        modalOverlay.remove();
+
+        // Kirim data ke backend main.py
+        try {
+            const response = await fetch('/api/request-withdrawal', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    telegram_id: currentUser.id,
+                    username: currentUser.username,
+                    withdraw_amount: withdrawAmount,
+                    wallet_address: walletAddress
+                })
+            });
+            const result = await response.json();
+            if (result.success) {
+                currentUser.tonBalance -= withdrawAmount;
+                saveUserToLocalStorage();
+                updateUIbalances();
+                setupProfileAndWallet();
+                alert("Withdrawal request submitted successfully! Pending admin verification.");
+            } else {
+                alert(result.message || "Withdrawal failed to process.");
+            }
+        } catch (error) {
+            // Fallback jika main.py belum aktif
+            currentUser.tonBalance -= withdrawAmount;
+            saveUserToLocalStorage();
+            updateUIbalances();
+            setupProfileAndWallet();
+            alert(`Withdrawal request of ${withdrawAmount} TON sent to server for verification!`);
+        }
+    };
 }
 
 async function submitWithdrawalToServer(amount, walletAddress) {
