@@ -593,3 +593,34 @@ async function submitWithdrawalToServer(amount, walletAddress) {
         alert("Permintaan penarikan dicatat secara lokal!");
     }
 }
+
+// Fungsi untuk mengecek status pembayaran otomatis
+async function checkPaymentStatus() {
+    // Ambil data kampanye atau ID terakhir yang disimpan saat user klik Pay & Launch
+    const statusMsg = document.getElementById("check-status-msg"); // Opsional jika ingin menampilkan teks status
+    
+    alert("⏳ Memeriksa status pembayaran di jaringan blockchain TON...");
+
+    try {
+        const response = await fetch('/api/auto-verify-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                // Sesuaikan parameter dengan data campaign aktif user
+                campaign_id: window.activeCampaignId || "", 
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert("✅ " + result.message);
+            window.location.href = "/earn.html"; // Langsung arahkan ke menu Earn jika sukses
+        } else {
+            alert("⚠️ " + result.message);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("❌ Gagal terhubung ke server verifikasi.");
+    }
+}
