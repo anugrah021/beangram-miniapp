@@ -651,3 +651,43 @@ async function checkPaymentStatus() {
         alert("❌ Failed to connect to the verification server..");
     }
 }
+
+// === FUNGSI PUSAT SINKRONISASI DATA USER (SINGLE SOURCE OF TRUTH) ===
+async function syncUserGlobalData() {
+    try {
+        const userId = (typeof currentUser !== 'undefined' && currentUser.id) ? currentUser.id : "7717165262";
+        const response = await fetch(`/api/get-user-data?telegram_id=${userId}`);
+        const data = await response.json();
+
+        if (data.success) {
+            // 1. Perbarui objek global user
+            if (typeof currentUser === 'undefined') window.currentUser = {};
+            currentUser.bgramBalance = data.bgramBalance;
+            currentUser.tonBalance = data.tonBalance;
+            currentUser.completedTasks = data.completedTasks;
+
+            // 2. Sinkronkan Tampilan Menu EARN (Total Rewards & Status Task)
+            const totalRewardsElem = document.querySelector("#totalRewardsElem"); // Sesuaikan id di HTML jika perlu
+            const completedCountElem = document.querySelector("#completedCountElem");
+            
+            if (totalRewardsElem) totalRewardsElem.textContent = `${data.bgramBalance.toFixed(1)} BGRAM`;
+            if (completedCountElem) completedCountElem.textContent = data.completedTasks.length;
+
+            // 3. Sinkronkan Tampilan Menu PROFILE & WALLET
+            const profileBgram = document.getElementById("profileBgramVal");
+            const profileTon = document.getElementById("profileTonVal");
+            
+            if (profileBgram) profileBgram.textContent = data.bgramBalance.toFixed(1);
+            if (profileTon) profileTon.textContent = data.tonBalance.toFixed(2);
+
+            console.log("Global data synchronized successfully from main.py");
+        }
+    } catch (error) {
+        console.error("Failed to sync global user data:", error);
+    }
+}
+
+// Panggil otomatis saat halaman dimuat
+document.addEventListener("DOMContentLoaded", () => {
+    syncUserGlobalData();
+});
