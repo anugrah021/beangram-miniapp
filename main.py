@@ -182,9 +182,15 @@ class CampaignSubmitRequest(BaseModel):
     total_cost: float
     campaign_id: str
 
+# Buat database kecil untuk mencatat tx_hash yang sudah pernah digunakan (mencegah double claim)
+used_transaction_hashes = set()
+
 @app.post("/api/submit-and-verify-advertisement")
 async def submit_and_verify_advertisement(data: CampaignSubmitRequest):
     try:
+        import time
+        current_time = int(time.time()) # Waktu saat ini dalam timestamp detik
+
         params = {
             "address": ADMIN_WALLET_ADDRESS,
             "limit": 30,
@@ -204,14 +210,32 @@ async def submit_and_verify_advertisement(data: CampaignSubmitRequest):
         paid_amount = 0.0
 
         for tx in transactions:
+            # Ambil Transaction Hash sebagai identitas unik transaksi
+            tx_hash = tx.get("transaction_id", {}).get("hash", "")
+            
+            # 1. Cek apakah Hash transaksi ini sudah pernah digunakan sebelumnya?
+            if tx_hash in used_transaction_hashes:
+                continue # Lewati jika sudah pernah diklaim orang lain/sebelumnya
+
+            # 2. Cek waktu transaksi (Mencegah transaksi lama dipakai kembali)
+            tx_time = tx.get("utime", 0)
+            time_difference = current_time - tx_time
+            
+            # Batas waktu maksimal transaksi adalah 15 menit (900 detik) dari saat form disubmit
+            if time_difference > 900:
+                continue # Lewati jika transaksi sudah lebih dari 15 menit yang lalu
+
             in_msg = tx.get("in_msg", {})
             if in_msg:
                 value_nano = int(in_msg.get("value", 0))
                 value_ton = value_nano / 1_000_000_000
 
+                # 3. Cocokkan nominal dan pastikan belum dipakai
                 if value_ton >= data.total_cost:
                     is_paid = True
                     paid_amount = value_ton
+                    # Tandai hash transaksi ini agar tidak bisa dipakai lagi selamanya
+                    used_transaction_hashes.add(tx_hash)
                     break
 
         if is_paid:
@@ -228,13 +252,13 @@ async def submit_and_verify_advertisement(data: CampaignSubmitRequest):
 
             return {
                 "success": True,
-                "message": f"Transaksi {paid_amount} TON terdeteksi sah di blockchain! Iklan otomatis dipublikasikan ke menu Earn.",
+                "message": f"Transaksi {paid_amount} TON terverifikasi sah dan baru di blockchain! Iklan dipublikasikan.",
                 "campaign": new_campaign
             }
         else:
             return {
                 "success": False,
-                "message": "Pembayaran gagal. Belum ada transaksi masuk dengan nominal yang sesuai di blockchain wallet admin."
+                "message": "Verifikasi gagal. Pastikan Anda sudah mentransfer sesuai nominal dan transaksi dilakukan dalam 15 menit terakhir."
             }
 
     except Exception as e:
