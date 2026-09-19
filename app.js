@@ -335,34 +335,20 @@ async function submitAdvertisement() {
                                         }
 
 // ==========================================
-// PERBAIKAN: OTOMATIS LOAD LINK REFERRAL & TOMBOL COPY
+// FIX REFERRAL LINK & COPY FUNCTION
 // ==========================================
 
-// 1. Fungsi Mengisi Tautan Referral Otomatis Berdasarkan ID User
 function setupReferralSystem() {
     const refLinkInput = document.getElementById("refflink");
     
-    // Pastikan ID user terbaca, jika kosong gunakan ID default
-    const userId = currentUser.id || "5158001760";
-    
-    if (refLinkInput) {
-        refLinkInput.value = `https://t.me/BeanGram_Bot?start=ref_${userId}`;
-    }
-}
-
-// Fungsi Mengisi Tautan Referral Otomatis Berdasarkan ID User
-function setupReferralSystem() {
-    const refLinkInput = document.getElementById("refflink");
-    
-    // Ambil ID user dari objek currentUser (jika kosong pakai default)
+    // Ambil ID Telegram user yang aktif secara aman
     const userId = (typeof currentUser !== 'undefined' && currentUser.id) ? currentUser.id : "5158001760";
     
     if (refLinkInput) {
-        refLinkInput.value = `https://t.me/BeanGram_Bot?start=ref_${userId}`;
+        refLinkInput.value = `https://t.me/BeanGramBot?start=ref_${userId}`;
     }
 }
 
-// Fungsi Tombol Copy Tautan Referral
 function copyReff() {
     const refLinkInput = document.getElementById("refflink");
     
@@ -371,7 +357,7 @@ function copyReff() {
         refLinkInput.setSelectionRange(0, 99999); // Untuk perangkat mobile
         
         navigator.clipboard.writeText(refLinkInput.value).then(() => {
-            // Cari tombol copy di dekat input referral untuk mengubah teksnya sementara
+            // Cari tombol copy untuk mengubah teksnya sementara menjadi "Copied!"
             const copyBtn = document.querySelector("#page-network .btn-connect, button[onclick*='copyReff']");
             if (copyBtn) {
                 const originalText = copyBtn.textContent;
@@ -393,6 +379,11 @@ function copyReff() {
         });
     }
 }
+
+// Pastikan fungsi berjalan otomatis saat halaman dimuat atau tab dibuka
+document.addEventListener("DOMContentLoaded", () => {
+    setupReferralSystem();
+});
 
 // Panggil fungsi otomatis saat halaman dimuat
 document.addEventListener("DOMContentLoaded", () => {
