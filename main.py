@@ -237,7 +237,7 @@ from pydantic import BaseModel
 app = FastAPI()
 
 # Konfigurasi Wallet Penampung Platform Anda
-ADMIN_WALLET_ADDRESS = "EQYourAdminWalletAddressHere..."  # Ganti dengan wallet TON admin
+ADMIN_WALLET_ADDRESS = "UQAg56EPp1zQDT7baczs2CNWSMsFkBE37EP7jFABLCMk-2Fa"  # Ganti dengan wallet TON admin
 TONCENTER_API_URL = "https://toncenter.com/api/v2/getTransactions"
 
 class PaymentVerifyRequest(BaseModel):
@@ -248,7 +248,7 @@ async def auto_verify_payment(data: PaymentVerifyRequest):
     try:
         # 1. Ambil 20 transaksi terakhir masuk ke wallet admin via TonCenter API
         params = {
-            "address": ADMIN_WALLET_ADDRESS,
+            "address": UQAg56EPp1zQDT7baczs2CNWSMsFkBE37EP7jFABLCMk-2Fa,
             "limit": 20,
             "archival": True
         }
