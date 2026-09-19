@@ -242,3 +242,106 @@ async def submit_and_verify_advertisement(data: CampaignSubmitRequest):
             "success": False,
             "message": f"Terjadi kesalahan pada sistem backend: {str(e)}"
         }
+
+# === MODEL & ENDPOINT MENU NETWORK (REFERRAL & LEADERBOARD) ===
+
+class ReferralRegisterRequest(BaseModel):
+    referrer_id: str
+    new_user_id: str
+    username: str = "Anonymous"
+
+# 1. ENDPOINT: MENGAMBIL STATISTIK REFERRAL USER
+@app.get("/api/get-network-stats")
+def get_network_stats(telegram_id: str):
+    # Pastikan user ada di database
+    if telegram_id not in users_db:
+        users_db[telegram_id] = {
+            "id": telegram_id,
+            "bgramBalance": 0.0,
+            "tonBalance": 0.0,
+            "completedTasksCount": 0,
+            "completedTaskIds": [],
+            "referrals": [],
+            "commissionEarned": 0.0
+        }
+    
+    user_data = users_db[telegram_id]
+    total_refs = len(user_data.get("referrals", []))
+    commission = user_data.get("commissionEarned", 0.0)
+
+    return {
+        "success": True,
+        "totalReferrals": total_refs,
+        "commissionEarned": commission
+    }
+
+# 2. ENDPOINT: MENGAMBIL DATA LEADERBOARD REFERRAL TERATAS
+@app.get("/api/get-top-referrals")
+def get_top_referrals():
+    # Mengumpulkan data semua user dan mengurutkannya berdasarkan jumlah referral terbanyak
+    user_list = []
+    for uid, data in users_db.items():
+        ref_count = len(data.get("referrals", []))
+        username = data.get("username", f"User_{uid[-4:]}")
+        user_list.append({
+            "username": username,
+            "referralCount": ref_count
+        })
+
+    # Urutkan dari yang terbesar ke terkecil
+    sorted_users = sorted(user_list, key=lambda x: x["referralCount"], reverse=True)
+
+    # Jika data masih kosong atau sedikit, berikan contoh data dummy agar leaderboard tetap hidup di awal
+    if not sorted_users or all(u["referralCount"] == 0 for u in sorted_users):
+        sorted_users = [
+            {"username": "CryptoKing", "referralCount": 142},
+            {"username": "BeanMaster", "referralCount": 98},
+            {"username": "TonWhale", "referralCount": 65}
+        ]
+
+    return {
+        "success": True,
+        "topUsers": sorted_users[:15]  # Ambil top 15 sesuai script app.js
+    }
+
+# 3. ENDPOINT: MENDAFTARKAN REFERRAL BARU & MENGHITUNG KOMISI OTOMATIS
+@app.post("/api/register-referral")
+def register_referral(data: ReferralRegisterRequest):
+    ref_id = data.referrer_id
+    new_id = data.new_user_id
+
+    # Cegah user mereferensikan diri sendiri
+    if ref_id == new_id:
+        return {"success": False, "message": "Cannot refer yourself!"}
+
+    # Inisialisasi pengundang jika belum ada
+    if ref_id not in users_db:
+        users_db[ref_id] = {
+            "id": ref_id,
+            "bgramBalance": 0.0,
+            "tonBalance": 0.0,
+            "completedTasksCount": 0,
+            "completedTaskIds": [],
+            "referrals": [],
+            "commissionEarned": 0.0,
+            "username": f"User_{ref_id[-4:]}"
+        }
+
+    referrer_data = users_db[ref_id]
+
+    # Cek apakah user baru sudah pernah didaftarkan oleh pengundang ini
+    if new_id in referrer_data["referrals"]:
+        return {"success": False, "message": "Referral already registered."}
+
+    # Tambahkan referral baru dan hitung reward 0.01 TON secara akurat
+    referrer_data["referrals"].append(new_id)
+    reward_commission = 0.01
+    referrer_data["commissionEarned"] += reward_commission
+    referrer_data["tonBalance"] += reward_commission  # Masuk otomatis ke saldo TON user
+
+    return {
+        "success": True,
+        "message": "Referral registered successfully!",
+        "totalReferrals": len(referrer_data["referrals"]),
+        "commissionEarned": referrer_data["commissionEarned"]
+    }
