@@ -415,6 +415,33 @@ async function loadLeaderboardData() {
     }
 }
 
+// === LOAD NETWORK STATS & LEADERBOARD ===
+async function loadNetworkStats() {
+    try {
+        const userId = (typeof currentUser !== 'undefined' && currentUser.id) ? currentUser.id : "5158001712";
+        const response = await fetch(`/api/get-network-stats?telegram_id=${userId}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            const refElem = document.querySelector("#totalReferralsElem");
+            const commElem = document.querySelector("#commissionEarnedElem");
+            
+            if (refElem) refElem.textContent = data.totalReferrals;
+            if (commElem) commElem.textContent = `${data.commissionEarned.toFixed(2)} TON`;
+        }
+    } catch (error) {
+        console.log("Failed to load network stats:", error);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    setupReferralSystem();
+    loadNetworkStats();
+    if (typeof loadLeaderboardData === 'function') {
+        loadLeaderboardData();
+    }
+});
+
 // ==========================================
 // PERBAIKAN: PROFIL AVATAR & MODERN WITHDRAW MODAL
 // ==========================================
