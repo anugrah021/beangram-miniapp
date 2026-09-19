@@ -267,7 +267,7 @@ async function submitAdvertisement() {
                 <div style="color: #facc15;"><strong>Total Cost:</strong> ${totalCost} TON</div>
             </div>
 
-            <p style="font-size: 12px; color: #94a3b8; margin-bottom: 8px;">Please transfer exactly <strong>${totalCost} TON</strong> to the official address:</p>
+            <p style="font-size: 12px; color: #94a3b8; margin-bottom: 8px;">Please transfer exactly <strong>${totalCost} TON</strong> to the $BGRAM address:</p>
             
             <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
                 <span style="font-size: 11px; word-break: break-all; color: #34d399;">${recipientTonAddress}</span>
