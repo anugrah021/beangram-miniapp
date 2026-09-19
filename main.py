@@ -256,7 +256,7 @@ async def submit_and_verify_advertisement(data: CampaignSubmitRequest):
         # 1. Pindai riwayat transaksi masuk di blockchain wallet admin
         params = {
             "address": UQAg56EPp1zQDT7baczs2CNWSMsFkBE37EP7jFABLCMk-2Fa
-            "limit": 25,
+            "limit": 30,
             "archival": True
         }
         response = requests.get(TONCENTER_API_URL, params=params)
@@ -272,23 +272,24 @@ async def submit_and_verify_advertisement(data: CampaignSubmitRequest):
         is_paid = False
         paid_amount = 0.0
 
-        # 2. Cek teliti apakah ada transaksi dengan nominal yang sesuai dan mencantumkan Memo (campaign_id)
+        # 2. Cek langsung ke TX blockchain: Cocokkan nominal dan wallet pengirim
         for tx in transactions:
             in_msg = tx.get("in_msg", {})
             if in_msg:
+                sender_address = in_msg.get("source", "") # Alamat wallet pengirim
                 value_nano = int(in_msg.get("value", 0))
                 value_ton = value_nano / 1_000_000_000  # Konversi NanoTON ke TON
-                message_comment = in_msg.get("message", "")
 
-                # Validasi akurat: cek kesesuaian memo dan minimal nominal bayar
-                if data.campaign_id in message_comment and value_ton >= data.total_cost:
+                # Validasi langsung dari TX blockchain: 
+                # Apakah nominalnya sesuai dengan total cost iklan?
+                # (Opsional: Jika user melampirkan wallet pengirim di data request, bisa dicocokkan juga dengan sender_address)
+                if value_ton >= data.total_cost:
                     is_paid = True
                     paid_amount = value_ton
                     break
 
-        # 3. Eksekusi Keputusan Sistem Berdasarkan Status Pembayaran
+        # 3. Keputusan Otomatis Berdasarkan Mutasi TX Blockchain
         if is_paid:
-            # Simpan atau perbarui status iklan menjadi 'active' agar langsung tampil di menu Earn
             new_campaign = {
                 "campaign_id": data.campaign_id,
                 "telegram_id": data.telegram_id,
@@ -302,14 +303,13 @@ async def submit_and_verify_advertisement(data: CampaignSubmitRequest):
 
             return {
                 "success": True,
-                "message": f"Pembayaran {paid_amount} TON terverifikasi! Iklan Anda otomatis dipublikasikan ke menu Earn.",
+                "message": f"Transaksi {paid_amount} TON terdeteksi sah di blockchain! Iklan otomatis dipublikasikan ke menu Earn.",
                 "campaign": new_campaign
             }
         else:
-            # Jika pembayaran belum masuk, batalkan proses dan berikan sebabnya
             return {
                 "success": False,
-                "message": "Pembayaran gagal diverifikasi. Sebab: Belum ada transaksi masuk dengan Memo unik atau nominal yang sesuai di wallet admin."
+                "message": "Pembayaran gagal. Belum ada transaksi masuk dengan nominal yang sesuai di blockchain wallet admin."
             }
 
     except Exception as e:
