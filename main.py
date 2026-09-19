@@ -229,3 +229,74 @@ def get_active_ads():
         "success": True,
         "ads": active_ads
     }
+
+import requests
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
+app = FastAPI()
+
+# Konfigurasi Wallet Penampung Platform Anda
+ADMIN_WALLET_ADDRESS = "EQYourAdminWalletAddressHere..."  # Ganti dengan wallet TON admin
+TONCENTER_API_URL = "https://toncenter.com/api/v2/getTransactions"
+
+class PaymentVerifyRequest(BaseModel):
+    campaign_id: str
+
+@app.post("/api/auto-verify-payment")
+async def auto_verify_payment(data: PaymentVerifyRequest):
+    try:
+        # 1. Ambil 20 transaksi terakhir masuk ke wallet admin via TonCenter API
+        params = {
+            "address": ADMIN_WALLET_ADDRESS,
+            "limit": 20,
+            "archival": True
+        }
+        response = requests.get(TONCENTER_API_URL, params=params)
+        res_data = response.json()
+
+        if not res_data.get("ok"):
+            return {
+                "success": False, 
+                "message": "Gagal terhubung ke jaringan blockchain explorer."
+            }
+
+        transactions = res_data.get("result", [])
+        is_paid = False
+        paid_amount = 0.0
+
+        # 2. Teliti dan cocokkan transaksi berdasarkan Memo (Campaign ID)
+        for tx in transactions:
+            in_msg = tx.get("in_msg", {})
+            # Pastikan ini adalah transaksi masuk (dana diterima)
+            if in_msg.get("destination") == ADMIN_WALLET_ADDRESS or in_msg.get("source"):
+                value_nano = int(in_msg.get("value", 0))
+                value_ton = value_nano / 1_000_000_000  # Konversi dari NanoTON ke TON
+                message_comment = in_msg.get("message", "")
+
+                # Cek apakah campaign_id / memo unik ada di catatan transaksi
+                if data.campaign_id and data.campaign_id in message_comment:
+                    is_paid = True
+                    paid_amount = value_ton
+                    break
+
+        # 3. Keputusan Akurat & Respons Otomatis ke App.js
+        if is_paid:
+            # Di sini Anda bisa menambahkan fungsi database untuk mengubah status iklan dari pending menjadi active/live
+            # database.execute("UPDATE campaigns SET status = 'active' WHERE campaign_id = ?", (data.campaign_id,))
+            
+            return {
+                "success": True,
+                "message": f"Pembayaran senilai {paid_amount} TON berhasil dikonfirmasi! Iklan Anda otomatis tayang di menu Earn."
+            }
+        else:
+            return {
+                "success": False,
+                "message": "Pembayaran belum ditemukan. Pastikan Anda sudah mentransfer TON dengan memo yang benar."
+            }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "message": f"Terjadi kesalahan sistem: {str(e)}"
+        }
