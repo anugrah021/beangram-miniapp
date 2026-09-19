@@ -345,3 +345,88 @@ def register_referral(data: ReferralRegisterRequest):
         "totalReferrals": len(referrer_data["referrals"]),
         "commissionEarned": referrer_data["commissionEarned"]
     }
+
+# === MODEL & ENDPOINT PENARIKAN (WITHDRAWAL) ===
+
+class WithdrawalRequest(BaseModel):
+    telegram_id: str
+    username: str = "Anonymous"
+    withdraw_amount: float
+    wallet_address: str
+
+@app.post("/api/request-withdrawal")
+def request_withdrawal(data: WithdrawalRequest):
+    try:
+        min_withdraw = 0.25
+        t_id = data.telegram_id
+        amount = data.withdraw_amount
+        wallet = data.wallet_address.strip()
+
+        # 1. Validasi Minimum Penarikan
+        if amount < min_withdraw:
+            return {
+                "success": False,
+                "message": f"Withdrawal denied! Minimum withdrawal limit is {min_withdraw} TON."
+            }
+
+        # 2. Validasi Format Alamat Wallet TON
+        if not wallet or (not wallet.startswith("EQ") and not wallet.startswith("UQ") and len(wallet) < 40):
+            return {
+                "success": False,
+                "message": "Invalid TON wallet address format!"
+            }
+
+        # 3. Cek Data User di Database Server
+        if t_id not in users_db:
+            return {
+                "success": False,
+                "message": "User profile not found in server database."
+            }
+
+        user_data = users_db[t_id]
+        current_ton_balance = user_data.get("tonBalance", 0.0)
+
+        # 4. Validasi Kecukupan Saldo
+        if current_ton_balance < amount:
+            return {
+                "success": False,
+                "message": "Insufficient TON balance for this withdrawal."
+            }
+
+        # 5. Sistem Deteksi Anti-Cheat / Bot Protection (Otomatis)
+        # Contoh validasi: Cek apakah user menyelesaikan minimal task atau aktivitas mencurigakan
+        completed_tasks = user_data.get("completedTasksCount", 0)
+        referral_count = len(user_data.get("referrals", []))
+        
+        # Indikator bot: Saldo besar tapi task 0 dan referral 0 tanpa riwayat valid
+        if amount >= 1.0 and completed_tasks == 0 and referral_count == 0:
+            return {
+                "success": False,
+                "message": "Security Alert: Withdrawal flagged by anti-cheat system (Suspicious bot activity detected)."
+            }
+
+        # 6. Jika Lolos Validasi & Bersih: Kurangi Saldo User secara Otomatis
+        user_data["tonBalance"] -= amount
+
+        # 7. Kirim Detail Penarikan secara Instan ke Telegram Admin Chat ID
+        admin_notif = (
+            f"🚨 *NEW SUCCESSFUL WITHDRAWAL REQUEST*\n\n"
+            f"👤 User: `{data.username}`\n"
+            f"🆔 Telegram ID: `{t_id}`\n"
+            f"💎 Amount: `{amount} TON`\n"
+            f"👛 Destination Wallet:\n`{wallet}`\n\n"
+            f"✅ _System Status: Verified & Auto-Approved. Please send manual transfer to user wallet._"
+        )
+        send_telegram_notification(admin_notif)
+
+        return {
+            "success": True,
+            "message": "Withdrawal request successfully verified and submitted to admin network!",
+            "remainingBalance": user_data["tonBalance"]
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "message": f"Server error during withdrawal processing: {str(e)}"
+        }
