@@ -345,7 +345,7 @@ function setupReferralSystem() {
     const userId = (typeof currentUser !== 'undefined' && currentUser.id) ? currentUser.id : "5158001760";
     
     if (refLinkInput) {
-        refLinkInput.value = `https://t.me/BeanGramBot?start=ref_${userId}`;
+        refLinkInput.value = `https://t.me/BeanGram_Bot?start=ref_${userId}`;
     }
 }
 
