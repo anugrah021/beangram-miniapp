@@ -236,20 +236,27 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
-# Konfigurasi Wallet Penampung Platform Anda
-ADMIN_WALLET_ADDRESS = "UQAg56EPp1zQDT7baczs2CNWSMsFkBE37EP7jFABLCMk-2Fa"  # Ganti dengan wallet TON admin
+ADMIN_WALLET_ADDRESS = "UQA5G6EPp1zQDT7baczs2CNWSmsfKbE37Ep7jFABLCNk-2Fa"
 TONCENTER_API_URL = "https://toncenter.com/api/v2/getTransactions"
 
-class PaymentVerifyRequest(BaseModel):
-    campaign_id: str
+# Database sementara untuk menyimpan data kampanye iklan (bisa disesuaikan dengan database Anda)
+campaigns_db = []
 
-@app.post("/api/auto-verify-payment")
-async def auto_verify_payment(data: PaymentVerifyRequest):
+class CampaignSubmitRequest(BaseModel):
+    telegram_id: str
+    social_link: str
+    title: str
+    target_members: int
+    total_cost: float
+    campaign_id: str  # Digunakan juga sebagai Memo unik transfer TON
+
+@app.post("/api/submit-and-verify-advertisement")
+async def submit_and_verify_advertisement(data: CampaignSubmitRequest):
     try:
-        # 1. Ambil 20 transaksi terakhir masuk ke wallet admin via TonCenter API
+        # 1. Pindai riwayat transaksi masuk di blockchain wallet admin
         params = {
-            "address": UQAg56EPp1zQDT7baczs2CNWSMsFkBE37EP7jFABLCMk-2Fa,
-            "limit": 20,
+            "address": UQAg56EPp1zQDT7baczs2CNWSMsFkBE37EP7jFABLCMk-2Fa
+            "limit": 25,
             "archival": True
         }
         response = requests.get(TONCENTER_API_URL, params=params)
@@ -257,46 +264,56 @@ async def auto_verify_payment(data: PaymentVerifyRequest):
 
         if not res_data.get("ok"):
             return {
-                "success": False, 
-                "message": "Gagal terhubung ke jaringan blockchain explorer."
+                "success": False,
+                "message": "Gagal terhubung ke jaringan blockchain explorer. Silakan coba beberapa saat lagi."
             }
 
         transactions = res_data.get("result", [])
         is_paid = False
         paid_amount = 0.0
 
-        # 2. Teliti dan cocokkan transaksi berdasarkan Memo (Campaign ID)
+        # 2. Cek teliti apakah ada transaksi dengan nominal yang sesuai dan mencantumkan Memo (campaign_id)
         for tx in transactions:
             in_msg = tx.get("in_msg", {})
-            # Pastikan ini adalah transaksi masuk (dana diterima)
-            if in_msg.get("destination") == ADMIN_WALLET_ADDRESS or in_msg.get("source"):
+            if in_msg:
                 value_nano = int(in_msg.get("value", 0))
-                value_ton = value_nano / 1_000_000_000  # Konversi dari NanoTON ke TON
+                value_ton = value_nano / 1_000_000_000  # Konversi NanoTON ke TON
                 message_comment = in_msg.get("message", "")
 
-                # Cek apakah campaign_id / memo unik ada di catatan transaksi
-                if data.campaign_id and data.campaign_id in message_comment:
+                # Validasi akurat: cek kesesuaian memo dan minimal nominal bayar
+                if data.campaign_id in message_comment and value_ton >= data.total_cost:
                     is_paid = True
                     paid_amount = value_ton
                     break
 
-        # 3. Keputusan Akurat & Respons Otomatis ke App.js
+        # 3. Eksekusi Keputusan Sistem Berdasarkan Status Pembayaran
         if is_paid:
-            # Di sini Anda bisa menambahkan fungsi database untuk mengubah status iklan dari pending menjadi active/live
-            # database.execute("UPDATE campaigns SET status = 'active' WHERE campaign_id = ?", (data.campaign_id,))
-            
+            # Simpan atau perbarui status iklan menjadi 'active' agar langsung tampil di menu Earn
+            new_campaign = {
+                "campaign_id": data.campaign_id,
+                "telegram_id": data.telegram_id,
+                "social_link": data.social_link,
+                "title": data.title,
+                "target_members": data.target_members,
+                "total_cost": paid_amount,
+                "status": "active"
+            }
+            campaigns_db.append(new_campaign)
+
             return {
                 "success": True,
-                "message": f"Pembayaran senilai {paid_amount} TON berhasil dikonfirmasi! Iklan Anda otomatis tayang di menu Earn."
+                "message": f"Pembayaran {paid_amount} TON terverifikasi! Iklan Anda otomatis dipublikasikan ke menu Earn.",
+                "campaign": new_campaign
             }
         else:
+            # Jika pembayaran belum masuk, batalkan proses dan berikan sebabnya
             return {
                 "success": False,
-                "message": "Pembayaran belum ditemukan. Pastikan Anda sudah mentransfer TON dengan memo yang benar."
+                "message": "Pembayaran gagal diverifikasi. Sebab: Belum ada transaksi masuk dengan Memo unik atau nominal yang sesuai di wallet admin."
             }
 
     except Exception as e:
         return {
             "success": False,
-            "message": f"Terjadi kesalahan sistem: {str(e)}"
+            "message": f"Terjadi kesalahan pada sistem backend: {str(e)}"
         }
