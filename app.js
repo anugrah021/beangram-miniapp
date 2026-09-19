@@ -334,23 +334,60 @@ async function submitAdvertisement() {
     };
                                         }
 
-// Referral System
+// ==========================================
+// PERBAIKAN: OTOMATIS LOAD LINK REFERRAL & TOMBOL COPY
+// ==========================================
+
+// 1. Fungsi Mengisi Tautan Referral Otomatis Berdasarkan ID User
 function setupReferralSystem() {
     const refLinkInput = document.getElementById("refflink");
-    if (refLinkInput && currentUser.id) {
-        refLinkInput.value = `https://t.me/BeanGramBot?start=ref_${currentUser.id}`;
+    
+    // Pastikan ID user terbaca, jika kosong gunakan ID default
+    const userId = currentUser.id || "5158001760";
+    
+    if (refLinkInput) {
+        refLinkInput.value = `https://t.me/BeanGram_Bot?start=ref_${userId}`;
     }
 }
 
+// 2. Fungsi Tombol Copy Tautan Referral yang Interaktif
 function copyReff() {
     const refLinkInput = document.getElementById("refflink");
+    
     if (refLinkInput) {
+        // Pilih teks di dalam input
         refLinkInput.select();
+        refLinkInput.setSelectionRange(0, 99999); // Kompatibel untuk perangkat mobile
+        
+        // Salin ke clipboard menggunakan API modern
         navigator.clipboard.writeText(refLinkInput.value).then(() => {
-            alert("Referral link berhasil disalin!");
+            // Ubah teks tombol sementara sebagai indikator berhasil disalin
+            const copyBtn = document.querySelector("#page-network button, .copy-btn, button[onclick*='copyReff']");
+            if (copyBtn) {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = "Copied!";
+                copyBtn.style.background = "#10b981";
+                copyBtn.style.color = "#fff";
+                
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.style.background = "";
+                    copyBtn.style.color = "";
+                }, 2000);
+            } else {
+                alert("Referral link copied successfully!");
+            }
+        }).catch(err => {
+            console.error("Failed to copy text: ", err);
+            alert("Failed to copy link. Please select and copy manually.");
         });
     }
 }
+
+// Pastikan fungsi ini dipanggil di dalam DOMContentLoaded atau saat tab Network dibuka
+document.addEventListener("DOMContentLoaded", () => {
+    setupReferralSystem();
+});
 
 async function loadLeaderboardData() {
     const leaderboardContainer = document.getElementById("leaderboardContainer");
