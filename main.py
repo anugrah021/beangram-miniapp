@@ -454,3 +454,23 @@ def request_withdrawal(data: WithdrawalRequest):
             "success": False,
             "message": f"Server error during withdrawal processing: {str(e)}"
         }
+
+@app.get("/api/get-user-data")
+def get_user_data(telegram_id: str):
+    if telegram_id not in users_db:
+        # Buat data default jika user baru
+        users_db[telegram_id] = {
+            "bgramBalance": 0.0,
+            "tonBalance": 0.0,
+            "completedTasks": [],
+            "referrals": []
+        }
+    
+    user = users_db[telegram_id]
+    return {
+        "success": True,
+        "bgramBalance": user.get("bgramBalance", 0.0),
+        "tonBalance": user.get("tonBalance", 0.0),
+        "completedTasks": user.get("completedTasks", []),
+        "totalReferrals": len(user.get("referrals", []))
+    }
