@@ -3,63 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>BeanGram ($BGRAM) Gateway</title>
+    <title>BeanGram - Welcome Gate</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        *{box-sizing:border-box;user-select:none;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-        body{background:#090d16;color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;padding:20px;overflow:hidden;position:relative;}
-        
-        /* Background Glow Effect */
-        .glow-bg{position:absolute;width:250px;height:250px;background:rgba(14,165,233,0.15);filter:blur(80px);border-radius:50%;z-index:0;}
+        :root {
+            --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #fae8ff 50%, #fef3c7 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-main: #1e293b;
+            --primary-purple: #7c3aed;
+            --shadow-3d: 0 15px 35px -5px rgba(124, 58, 237, 0.15), 0 5px 15px rgba(0, 0, 0, 0.05);
+            --radius-box: 28px;
+        }
 
-        /* Gateway Card Container */
-        .gateway-card{position:relative;z-index:1;background:rgba(15,23,42,0.85);backdrop-filter:blur(15px);border:1px solid rgba(255,255,255,0.1);border-radius:24px;padding:30px 20px;width:100%;max-width:340px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.5);}
-        
-        /* Logo & Icon */
-        .gateway-logo{width:80px;height:80px;background:linear-gradient(135deg,#0ea5e9,#2563eb);border-radius:50%;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 8px 25px rgba(14,165,233,0.4);border:2px solid rgba(255,255,255,0.2);animation:pulseLogo 2s infinite ease-in-out;}
-        @keyframes pulseLogo{0%{transform:scale(1);}50%{transform:scale(1.05);box-shadow:0 12px 30px rgba(14,165,233,0.6);}100%{transform:scale(1;)}}
+        * {box-sizing: border-box; user-select: none; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent;}
 
-        /* Typography */
-        .gateway-title{font-size:22px;font-weight:800;color:#fff;margin-bottom:8px;letter-spacing:0.5px;}
-        .gateway-subtitle{font-size:12px;color:#38bdf8;text-transform:uppercase;letter-spacing:1.5px;font-weight:bold;margin-bottom:20px;}
-        .gateway-desc{font-size:11px;color:#94a3b8;line-height:1.5;margin-bottom:25px;}
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
 
-        /* Action Button */
-        .btn-enter{width:100%;padding:15px;border-radius:16px;border:none;font-size:13px;font-weight:bold;cursor:pointer;background:linear-gradient(135deg,#0ea5e9,#2563eb);color:#fff;box-shadow:0 6px 20px rgba(14,165,233,0.4);text-transform:uppercase;letter-spacing:1.5px;transition:transform 0.1s;}
-        .btn-enter:active{transform:scale(0.97);}
+        /* Efek Dekoratif Karakter Bean Pastel di Background Gerbang */
+        body::before {
+            content: '🫘 ☁️ ✨ 🫘 🌟 ☁️ 🫘';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            font-size: 32px;
+            opacity: 0.12;
+            z-index: 0;
+            pointer-events: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-content: space-around;
+            letter-spacing: 40px;
+            line-height: 120px;
+        }
 
-        /* Loading / Version Footer */
-        .gateway-footer{margin-top:20px;font-size:10px;color:#64748b;letter-spacing:1px;}
+        .welcome-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border: 3px solid #ffffff;
+            border-radius: var(--radius-box);
+            padding: 30px 24px;
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+            box-shadow: var(--shadow-3d);
+            position: relative;
+            z-index: 1;
+            animation: floatCard 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatCard {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-8px); }
+        }
+
+        .welcome-icon-box {
+            width: 85px;
+            height: 85px;
+            background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(56,189,248,0.15));
+            border-radius: 50%;
+            margin: 0 auto 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            border: 3px solid #ffffff;
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.12);
+        }
+
+        .welcome-title {
+            font-size: 22px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #7c3aed, #0284c7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .welcome-desc {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.5;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .enter-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 18px;
+            border: none;
+            font-size: 15px;
+            font-weight: 900;
+            cursor: pointer;
+            background: linear-gradient(135deg, #38bdf8, #7c3aed);
+            color: #fff;
+            box-shadow: 0 10px 25px rgba(124, 58, 237, 0.35);
+            transition: 0.2s;
+            letter-spacing: 0.5px;
+        }
+
+        .enter-btn:active {
+            transform: scale(0.97);
+        }
     </style>
 </head>
 <body>
 
-    <div class="glow-bg"></div>
-
-    <div class="gateway-card">
-        <div class="gateway-logo">🌐</div>
-        <div class="gateway-title">BeanGram ($BGRAM)</div>
-        <div class="gateway-subtitle">Ad Network & Task-to-Earn</div>
-        <div class="gateway-desc">
-            Welcome to the ultimate Web3 ecosystem. Complete tasks, launch campaigns, and earn real TON & BGRAM rewards seamlessly.
+    <div class="welcome-card">
+        <div class="welcome-icon-box">🫘</div>
+        <div class="welcome-title">BeanGram Ecosystem</div>
+        <div class="welcome-desc">
+            Selamat datang di dunia Web3 kasual yang ceria! Kumpulkan token $BGRAM, selesaikan tugas, dan nikmati ekosistemnya.
         </div>
-        
-        <button class="btn-enter" onclick="enterApp()">🚀 START APP</button>
-        
-        <div class="gateway-footer">SECURE TON CONNECTED v2.0</div>
+        <button class="enter-btn" onclick="enterApp()">MASUK KE APLIKASI</button>
     </div>
 
     <script>
-        // Inisialisasi Telegram WebApp jika ada
-        window.Telegram.WebApp.ready();
-        window.Telegram.WebApp.expand();
-
         function enterApp() {
-            // Efek getar haptic Telegram jika didukung
-            if (window.Telegram.WebApp.HapticFeedback) {
-                window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-            }
-            // Langsung arahkan ke file visual utama game kita
+            // Langsung mengarahkan ke file game utama tanpa hambatan backend untuk tahap uji coba ini
             window.location.href = 'game.html';
         }
     </script>
