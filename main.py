@@ -6,25 +6,24 @@ app = Flask(__name__)
 
 # Mengambil Token Bot dan ID Admin dari Environment Variables Vercel
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
-ADMIN_CHAT_ID = os.environ.get("ADMIN_CHAT_ID")  # ID Telegram Anda tempat notifikasi masuk
+ADMIN_CHAT_ID = os.environ.get("ADMIN_CHAT_ID")
 
 @app.route('/api/withdraw', methods=['POST'])
 def handle_withdraw():
     try:
         data = request.get_json()
         
-        # Memastikan sinyal klik dari app.js diterima
+        # Otak kendali membaca sinyal klik dari app.js
         if data and data.get("action") == "withdraw_clicked":
             
-            # Otak kendali (main.py) meracik data notifikasi secara mandiri
+            # Meracik pesan notifikasi untuk Admin
             pesan_admin = (
-                "🚨 *NOTIFIKASI PENARIKAN BARU* 🚨\n\n"
-                "👤 *Status:* User mengajukan Withdraw\n"
-                "💰 *Jumlah:* 24.0 BGRAM (Contoh)\n"
-                "⚡ *Sinyal:* Berhasil diterima oleh Otak Backend Vercel!"
+                "🚨 *NOTIFIKASI PENARIKAN BGRAM* 🚨\n\n"
+                "👤 *Status:* Tombol Withdraw diklik di Mini App!\n"
+                "⚡ *Keterangan:* Otak kendali (main.py) berhasil menerima sinyal dan memicu notifikasi ini."
             )
             
-            # Mengirim perintah langsung ke API Telegram untuk membunyikan chat admin
+            # Menembak langsung ke API Telegram agar chat admin berdering
             if TELEGRAM_BOT_TOKEN and ADMIN_CHAT_ID:
                 tg_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
                 payload = {
@@ -34,10 +33,9 @@ def handle_withdraw():
                 }
                 requests.post(tg_url, json=payload)
             
-            # Memberikan respons sukses kembali ke app.js
             return jsonify({
                 "success": True,
-                "message": "Permintaan penarikan diproses oleh otak kendali!"
+                "message": "Notifikasi berhasil dikirim oleh otak kendali ke Telegram Admin!"
             })
             
         return jsonify({"success": False, "error": "Aksi tidak dikenal"}), 400
