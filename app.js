@@ -1,6 +1,7 @@
-// app.js - Sinyal sederhana pemberi pesan klik ke main.py
+// app.js - Kurir sederhana pengirim sinyal klik ke otak backend (main.py)
 async function requestWithdrawal() {
-    alert("⏳ Mengirim permintaan withdraw...");
+    // Memberikan respons instan bahwa tombol disentuh
+    alert("⏳ Mengirim sinyal penarikan ke server...");
 
     try {
         const response = await fetch('https://beangram-miniapp-1fw4s50e1-beangram.vercel.app/api/withdraw', {
