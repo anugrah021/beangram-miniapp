@@ -90,14 +90,33 @@
         .utility-btn{background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.08);color:#94a3b8;padding:12px;border-radius:14px;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;}
         .utility-btn:active{transform:scale(0.97);color:#38bdf8;border-color:rgba(56,189,248,0.3);}
 
-        /* Marketplace Coming Soon Blur Styling (Custom Semi-Blur Halus) */
-        .marketplace-wrapper {position: relative; width: 100%; height: 350px; border-radius: 16px; overflow: hidden; display: flex; align-items: center; justify-content: center;}
-        .marketplace-bg {position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('https://i.ibb.co.com/pvRryt8q/logomarketplace.png') center/cover no-repeat; filter: blur(3px) brightness(0.7); pointer-events: none;}
-        .marketplace-overlay {position: relative; z-index: 2; text-align: center; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); padding: 20px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.15);}
-        .marketplace-badge {font-size: 22px; font-weight: bold; color: #38bdf8; letter-spacing: 1px; margin-bottom: 6px; text-shadow: 0 2px 10px rgba(14, 165, 233, 0.5);}
-        .marketplace-desc {font-size: 12px; color: #94a3b8; padding: 0 10px;}
-   </style>
-</head>
+        .marketplace-coming-soon {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    height: 350px;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+.marketplace-bg-blur {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url('https://i.ibb.co.com/SXd7rh8S/logomarketplace.png') no-repeat center center;
+    background-size: 40px 40px; /* Ukuran gambar diperjelas */
+    filter: blur(8px);
+    opacity: 0.6; /* Dinaikkan agar tidak terlalu gelap */
+    pointer-events: none;
+}
+
+</style>
+ </head>
 
     <body>
     <!-- PAGE 1: EARN / TASKS -->
@@ -335,13 +354,11 @@
             <div>Profile</div>
         </div>
     </div>
-
-        <!-- Tombol Marketplace HARUS BERADA DI DALAM SINI (SEBELUM </div> PENUTUP BOT-NAV) -->
         <div class="nav-item" id="nav-marketplace" onclick="switchTab('marketplace')">
             <div class="nav-icon">🛍️</div>
             <div>Marketplace</div>
         </div>
-    </div> <!-- <- Tag penutup bot-nav ada di sini (setelah tombol marketplace) -->
+    </div>
 
         <!-- PAGE: NFT MARKETPLACE (COMING SOON) -->
 <div id="page-marketplace" class="page">
