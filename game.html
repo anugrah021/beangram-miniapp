@@ -65,9 +65,30 @@
         .btn-connect {background: linear-gradient(135deg, #38bdf8, #818cf8); color: #fff; border: none; padding: 8px 16px; border-radius: 16px; font-size: 12px; font-weight: 800; cursor: pointer; box-shadow: 0 6px 15px rgba(56, 189, 248, 0.4); transition: 0.2s;}
         .btn-connect:active {transform: scale(0.95);}
 
-        /* Card Box & 3D Floating Effect */
-        .card-box {background: var(--card-bg); backdrop-filter: blur(12px); border: 2px solid var(--card-border); border-radius: var(--radius-box); padding: 20px; margin-bottom: 18px; box-shadow: var(--shadow-3d); position: relative; z-index: 2;}
-        .card-title {font-size: 14px; color: var(--primary-purple); margin-bottom: 12px; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.05);}
+        /* Card Box & 3D Floating Effect (Termasuk Card Total & Semua Kartu) */
+        .card-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 3px solid #ffffff;
+            border-radius: 28px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 15px 35px -5px rgba(124, 58, 237, 0.15), 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Judul Kartu Menjadi Tebal & Berkesan 3D */
+        .card-title {
+            font-size: 15px;
+            color: #7c3aed;
+            margin-bottom: 14px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            font-weight: 900;
+            text-shadow: 0 1px 2px rgba(124, 58, 237, 0.1);
+        }
+
 
         /* Leaderboard Styling 3D Pastel */
         .leaderboard-list {display: flex; flex-direction: column; gap: 8px; margin-top: 10px;}
