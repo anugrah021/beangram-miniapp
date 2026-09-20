@@ -1,43 +1,22 @@
-// Fungsi Kirim Permintaan Penarikan (Withdraw) ke Backend Vercel
+// app.js - Sinyal sederhana pemberi pesan klik ke main.py
 async function requestWithdrawal() {
-    // Mengambil data pengguna dari Telegram WebApp secara aman
-    const tgUser = window.Telegram && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user;
-    const username = tgUser ? tgUser.username || tgUser.first_name : "BGRAMERS_TestUser";
-    const userId = tgUser ? tgUser.id : "75726";
-
-    // Mengambil nilai saldo dari elemen HTML profil (id="profileBgramVal" yang ada di file Anda)
-    const bgramVal = document.getElementById('profileBgramVal') ? document.getElementById('profileBgramVal').innerText : "24.0";
-    const amountToWithdraw = bgramVal + " BGRAM";
-
-    async function requestWithdrawal() {
-    // TAMBAHKAN BARIS INI UNTUK MEMASTIKAN FUNGSI TERBACA
-    console.log("Tombol withdraw berhasil diklik!");
-    alert("Tombol aktif!"); 
-
-    // ... (kode fetch selanjutnya di bawah)
-    }
-
-    // Menampilkan pemberitahuan awal di layar
-    alert("⏳ Mengirim permintaan withdraw ke server...");
+    alert("⏳ Mengirim permintaan withdraw...");
 
     try {
-        // Menembak langsung ke domain Vercel Anda yang aktif
         const response = await fetch('https://beangram-miniapp-1fw4s50e1-beangram.vercel.app/api/withdraw', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                user_id: userId,
-                username: username,
-                amount: amountToWithdraw
+                action: "withdraw_clicked"
             })
         });
 
         const result = await response.json();
         
         if (result.success) {
-            alert("✅ Berhasil! Permintaan penarikan telah dikirim & Notifikasi masuk ke Telegram Admin.");
+            alert("✅ " + result.message);
         } else {
             alert("❌ Gagal: " + (result.error || "Terjadi kesalahan pada server."));
         }
