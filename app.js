@@ -9,6 +9,14 @@ async function requestWithdrawal() {
     const bgramVal = document.getElementById('profileBgramVal') ? document.getElementById('profileBgramVal').innerText : "24.0";
     const amountToWithdraw = bgramVal + " BGRAM";
 
+    async function requestWithdrawal() {
+    // TAMBAHKAN BARIS INI UNTUK MEMASTIKAN FUNGSI TERBACA
+    console.log("Tombol withdraw berhasil diklik!");
+    alert("Tombol aktif!"); 
+
+    // ... (kode fetch selanjutnya di bawah)
+    }
+
     // Menampilkan pemberitahuan awal di layar
     alert("⏳ Mengirim permintaan withdraw ke server...");
 
