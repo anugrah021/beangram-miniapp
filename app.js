@@ -5,7 +5,7 @@ async function requestWithdrawal() {
     const username = tgUser ? tgUser.username || tgUser.first_name : "BGRAMERS_TestUser";
     const userId = tgUser ? tgUser.id : "75726";
 
-    // Mengambil nilai saldo dari elemen HTML profil
+    // Mengambil nilai saldo dari elemen HTML profil (id="profileBgramVal" yang ada di file Anda)
     const bgramVal = document.getElementById('profileBgramVal') ? document.getElementById('profileBgramVal').innerText : "24.0";
     const amountToWithdraw = bgramVal + " BGRAM";
 
@@ -13,7 +13,7 @@ async function requestWithdrawal() {
     alert("⏳ Mengirim permintaan withdraw ke server...");
 
     try {
-        // PERHATIAN: URL ini sudah diarahkan langsung ke domain Vercel Anda yang aktif
+        // Menembak langsung ke domain Vercel Anda yang aktif
         const response = await fetch('https://beangram-miniapp-1fw4s50e1-beangram.vercel.app/api/withdraw', {
             method: 'POST',
             headers: {
