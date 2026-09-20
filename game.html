@@ -230,52 +230,57 @@
         </div>
     </div>
 
-        <!-- PAGE 4: PROFILE -->
-    <div id="page-profile" class="page">
-        <div class="top-bar">
-            <div style="font-size: 16px; font-weight: bold; color: #38bdf8;">👤 User Profile</div>
-        </div>
+       <!-- PAGE 4: PROFILE -->
+<div id="page-profile" class="page">
+    <div class="top-bar">
+        <div style="font-size: 16px; font-weight: bold; color: #38bdf8;">👤 User Profile</div>
+    </div>
 
-        <!-- User Identity Card -->
-        <div class="card-box" style="text-align: center; padding: 22px;">
-            <div style="width: 65px; height: 65px; background: rgba(14,165,233,0.2); border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid #0ea5e9;">💎</div>
-            <div style="font-size: 16px; font-weight: bold;" id="profileName">🫘BGRAMERS</div>
-            <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;" id="profileId">ID: --</div>
-        </div>
+    <!-- User Identity Card -->
+    <div class="card-box" style="text-align: center; padding: 22px;">
+        <div style="width: 65px; height: 65px; background: rgba(14,165,233,0.2); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 28px;">👑</div>
+        <div style="font-size: 16px; font-weight: bold; margin-top: 10px;" id="profilename">BGRAMERS</div>
+        <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;" id="profileid">ID: --</div>
+    </div>
 
-        <!-- Verification Status Card -->
-        <div class="card-box">
-            <div class="card-title">🎴Badge Tier</div>
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #94a3b8;">
-                <span>Status Tier:</span>
-                <span style="color: #38bdf8; font-weight: bold;">Beginner</span>
-            </div>
-        </div>
-
-        <!-- Wallet Assets Card -->
-        <div class="card-box">
-            <div class="card-title">👛 Wallet</div>
-            <div class="profile-asset-box">
-                <div class="asset-row">
-                    <span class="asset-label">BGRAM Token:</span>
-                    <span class="asset-val" id="profileBgramVal">0.0</span>
-                </div>
-                <div class="asset-row">
-                    <span class="asset-label">TON Balance:</span>
-                    <span class="asset-val" id="profileTonVal">0.0</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Withdraw Action Card -->
-        <div class="card-box">
-            <div class="card-title">📥 Withdrawal</div>
-            <p style="font-size: 11px; color: #94a3b8; margin-bottom: 12px; line-height: 1.4;">
-                Withdrawals are automatically checked by a verification system to prevent fraud; if valid and accepted by the system, the real TON you have earned is instantly transferred to your external Web3 wallet.
-            </p>
-            <button class="btn-withdraw-profile" onclick="requestwithdrawal()">🪙 Withdraw</button>
+    <!-- Verification Status Card -->
+    <div class="card-box">
+        <div class="card-title">🛡️ Badge Tier</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #94a3b8;">
+            <span>Status Tier:</span>
+            <span style="color: #38bdf8; font-weight: bold;" id="badgeTier">Beginner</span>
         </div>
     </div>
+
+    <!-- Wallet Assets Card -->
+    <div class="card-box">
+        <div class="card-title">💰 Wallet</div>
+        <div class="profile-asset-box">
+            <div class="asset-row">
+                <span class="asset-label">$BGRAM Token:</span>
+                <span class="asset-val" id="profileBgramVal">0.0</span>
+            </div>
+            <div class="asset-row">
+                <span class="asset-label">TON Balance:</span>
+                <span class="asset-val" id="profileTonVal">0.0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Withdraw & Payment Actions Card -->
+    <div class="card-box">
+        <div class="card-title">💎 Withdrawal & Verification</div>
+        <p style="font-size: 11px; color: #94a3b8; margin-bottom: 12px; line-height: 1.4;">
+            Withdrawals and payment verifications are automatically checked by our secure system to prevent fraud[cite: 6].
+        </p>
+        
+        <!-- Tombol Withdraw Asli -->
+        <button class="btn-withdraw-profile" onclick="requestWithdrawal()" style="margin-bottom: 10px;">💸 Withdraw</button>
+        
+        <!-- Tombol Check Payment yang Dipindahkan dari Advertise -->
+        <button class="btn-withdraw-profile" onclick="checkPaymentStatus()" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">🔍 Check Payment</button>
+    </div>
+</div>
 
         <!-- PAGE 5: BGRAM MINI-GAME (COMING SOON) -->
     <div id="page-game" class="page">
