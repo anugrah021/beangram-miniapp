@@ -14,7 +14,7 @@ async function requestWithdrawal() {
 
     try {
         // PERHATIAN: Ganti URL di bawah dengan domain backend Vercel Anda yang aktif
-        const response = await fetch('https://project-anda.vercel.app/api/withdraw', {
+        const response = await fetch('https://beangram-miniapp.vercel.app//api/withdraw', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
