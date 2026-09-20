@@ -90,33 +90,55 @@
         .utility-btn{background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.08);color:#94a3b8;padding:12px;border-radius:14px;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;}
         .utility-btn:active{transform:scale(0.97);color:#38bdf8;border-color:rgba(56,189,248,0.3);}
 
-        .marketplace-coming-soon {
-    position: relative;
-    width: 100%;
-    max-width: 320px;
-    height: 350px;
-    border-radius: 20px;
-    overflow: hidden;
-    background: #0f172a;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+        /* Styling BeanGram NFT Mystery Box Grid */
+.nft-header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.nft-title-main {
+    font-size: 16px;
+    font-weight: bold;
+    color: #38bdf8;
+}
+.nft-coming-soon-badge {
+    font-size: 11px;
+    font-weight: bold;
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.15);
+    padding: 3px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    letter-spacing: 0.5px;
+}
+.nft-grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 Kolom agar pas di layar HP */
+    gap: 10px;
+    max-height: 380px;
+    overflow-y: auto;
+    padding-right: 4px;
+    margin-bottom: 15px;
+}
+.nft-mystery-box {
+    background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,41,59,0.8));
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 16px;
+    height: 130px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 15px auto;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
-/* Posisi logo diatur tepat di tengah kotak dengan ukuran yang jelas */
-.marketplace-logo-center {
-    position: absolute;
-    width: 80px;
-    height: 80px;
-    object-fit: contain;
-    filter: blur(10px);
-    opacity: 0.7;
-    z-index: 1;
-    pointer-events: none;
+.nft-question-mark {
+    font-size: 42px;
+    font-weight: 800;
+    color: #fbbf24;
+    text-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
 }
-
 
 </style>
  </head>
@@ -333,33 +355,41 @@
         </div>
     </div>
 
-        <!-- PAGE 6: NFT MARKETPLACE -->
-    <div id="page-marketplace" class="page">
-        <div class="top-bar">
-            <div style="font-size: 16px; font-weight: bold; color: #38bdf8;">🛍️ BeanGram NFT Marketplace</div>
-        </div>
-        
-        <div class="marketplace-coming-soon shadow-xl" style="position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0f172a; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; width: 100%; max-width: 320px; height: 350px; margin: 0 auto 15px auto; overflow: hidden;">
-            
-            <!-- GAMBAR UTAMA: Diperbesar ukurannya, ditaruh di tengah, dan diberi efek blur langsung -->
-            <img src="https://i.ibb.co.com/SXd7rh8S/logomarketplace.png" alt="NFT Marketplace Logo" style="width: 120px; height: 120px; object-fit: contain; filter: blur(8px); opacity: 0.85; margin-bottom: 15px;">
-            
-            <!-- TEKS OVERLAY DI ATAS GAMBAR -->
-            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(9, 13, 22, 0.75); backdrop-filter: blur(2px); display: flex; flexDirection: column; align-items: center; justify-content: center; padding: 20px; text-align: center;">
-                <div class="coming-soon-badge" style="font-size: 20px; font-weight: bold; color: #38bdf8; letter-spacing: 2px; margin-bottom: 8px;">🚀 COMING SOON!</div>
-                <div class="coming-soon-desc" style="font-size: 11px; color: #94a3b8; margin-bottom: 12px; line-height: 1.4;">
-                    BeanGram exclusive NFT marketplace is currently in final development. Get ready to collect next-gen digital assets!
-                </div>
-                <div style="font-size: 10px; background: rgba(56,189,248,0.1); color: #38bdf8; padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(56,189,248,0.2); display: inline-block;">
-                    🔒 Smart Contract Locked
-                </div>
-            </div>
-        </div>
-
-        <button class="btn-game-action" disabled style="width: 100%; max-width: 320px; padding: 14px; border-radius: 14px; border: none; font-size: 13px; font-weight: bold; cursor: not-allowed; background: rgba(30, 41, 59, 0.8); color: #64748b; margin: 0 auto; display: block;">
-            FEATURE LOCKED
-        </button>
+ <!-- PAGE: NFT MARKETPLACE (MYSTERY BOX) -->
+<div id="page-marketplace" class="page">
+    <!-- Header dengan Judul BeanGram NFT dan Badge Coming Soon di Kiri Atas -->
+    <div class="nft-header-container">
+        <div class="nft-title-main">💎 BeanGram NFT</div>
+        <div class="nft-coming-soon-badge">🚀 COMING SOON!</div>
     </div>
+    
+    <!-- Grid Kotak Misteri Tanda Tanya (Tanpa Blur) -->
+    <div class="nft-grid-container">
+        <div class="nft-mystery-box">
+            <div class="nft-question-mark">?</div>
+        </div>
+        <div class="nft-mystery-box">
+            <div class="nft-question-mark">?</div>
+        </div>
+        <div class="nft-mystery-box">
+            <div class="nft-question-mark">?</div>
+        </div>
+        <div class="nft-mystery-box">
+            <div class="nft-question-mark">?</div>
+        </div>
+        <div class="nft-mystery-box">
+            <div class="nft-question-mark">?</div>
+        </div>
+        <div class="nft-mystery-box">
+            <div class="nft-question-mark">?</div>
+        </div>
+    </div>
+
+    <!-- Tombol Fitur Terkunci di Bawah -->
+    <button class="btn-game-action" disabled style="width: 100%; max-width: 100%; padding: 14px; border-radius: 14px; border: none; font-size: 13px; font-weight: bold; cursor: not-allowed; background: rgba(30, 41, 59, 0.8); color: #64748b; display: block; text-align: center;">
+        LOCKED • REVEAL COMING SOON
+    </button>
+</div>
 
         
     <!-- Bottom Navigation Bar (BGRAM di sebelah kiri paling ujung) -->
