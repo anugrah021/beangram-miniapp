@@ -1,74 +1,49 @@
 import os
 import requests
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import Dict, Any, List
+from flask import Flask, request, jsonify
 
-# --- INISIALISASI UTAMA VERCEL ---
-app = FastAPI()
+app = Flask(__name__)
 
-# --- KONFIGURASI CORS AGAR TIDAK DIBLOKIR ---
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Mengambil Token Bot dan ID Admin dari Environment Variables Vercel
+TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+ADMIN_CHAT_ID = os.environ.get("ADMIN_CHAT_ID")  # ID Telegram Anda tempat notifikasi masuk
 
-# --- FUNGSI DASAR PENGIRIM TELEGRAM ---
-def send_telegram_notification(message: str):
-    bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
-    admin_chat_id = os.getenv("ADMIN_CHAT_ID")
-    if not bot_token or not admin_chat_id:
-        return None
-    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-    payload = {
-        "chat_id": admin_chat_id,
-        "text": message,
-        "parse_mode": "Markdown"
-    }
+@app.route('/api/withdraw', methods=['POST'])
+def handle_withdraw():
     try:
-        response = requests.post(url, json=payload)
-        return response.json()
-    except Exception as e:
-        print(f"Gagal mengirim pesan Telegram: {e}")
-        return None
-
-# --- ROUTE UTAMA CEK SERVER ---
-@app.get("/")
-def read_root():
-    return {"status": "success", "message": "BeanGram Backend API is running successfully!"}
-
-
-# --- MODEL DATA UNTUK WITHDRAW ---
-class WithdrawRequest(BaseModel):
-    user_id: str
-    username: str
-    amount: str
-
-
-# --- ENDPOINT API PENARIKAN (WITHDRAW) ---
-@app.post("/api/withdraw")
-def handle_withdraw(data: WithdrawRequest):
-    try:
-        # Menyusun format pesan notifikasi untuk Admin
-        message = (
-            f"🚨 **NOTIFIKASI WITHDRAW MASUK!** 🚨\n\n"
-            f"👤 Dari User: @{data.username}\n"
-            f"🆔 Telegram ID: `{data.user_id}`\n"
-            f"💰 Nominal: {data.amount}\n\n"
-            f"Status: Menunggu verifikasi admin."
-        )
-
-        # Mengirim pesan langsung ke Telegram Admin
-        res = send_telegram_notification(message)
+        data = request.get_json()
         
-        if res and res.get("ok"):
-            return {"success": True}
-        else:
-            return {"success": False, "error": "Gagal mengirim pesan ke Telegram Bot API. Periksa kembali Token/Chat ID."}
+        # Memastikan sinyal klik dari app.js diterima
+        if data and data.get("action") == "withdraw_clicked":
+            
+            # Otak kendali (main.py) meracik data notifikasi secara mandiri
+            pesan_admin = (
+                "🚨 *NOTIFIKASI PENARIKAN BARU* 🚨\n\n"
+                "👤 *Status:* User mengajukan Withdraw\n"
+                "💰 *Jumlah:* 24.0 BGRAM (Contoh)\n"
+                "⚡ *Sinyal:* Berhasil diterima oleh Otak Backend Vercel!"
+            )
+            
+            # Mengirim perintah langsung ke API Telegram untuk membunyikan chat admin
+            if TELEGRAM_BOT_TOKEN and ADMIN_CHAT_ID:
+                tg_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+                payload = {
+                    "chat_id": ADMIN_CHAT_ID,
+                    "text": pesan_admin,
+                    "parse_mode": "Markdown"
+                }
+                requests.post(tg_url, json=payload)
+            
+            # Memberikan respons sukses kembali ke app.js
+            return jsonify({
+                "success": True,
+                "message": "Permintaan penarikan diproses oleh otak kendali!"
+            })
+            
+        return jsonify({"success": False, "error": "Aksi tidak dikenal"}), 400
 
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        return jsonify({"success": False, "error": str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
