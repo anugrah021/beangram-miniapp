@@ -90,12 +90,13 @@
         .utility-btn{background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.08);color:#94a3b8;padding:12px;border-radius:14px;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;}
         .utility-btn:active{transform:scale(0.97);color:#38bdf8;border-color:rgba(56,189,248,0.3);}
 
-        /* Styling BeanGram NFT Mystery Box Grid */
+       /* Tampilan Full Screen untuk Mystery Box Grid */
 .nft-header-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
+    flex-shrink: 0;
 }
 .nft-title-main {
     font-size: 16px;
@@ -110,31 +111,30 @@
     padding: 3px 8px;
     border-radius: 8px;
     border: 1px solid rgba(245, 158, 11, 0.3);
-    letter-spacing: 0.5px;
 }
+/* Membuat grid memenuhi sisa ruang secara fleksibel */
 .nft-grid-container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2 Kolom agar pas di layar HP */
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-    max-height: 380px;
+    flex-grow: 1;
     overflow-y: auto;
-    padding-right: 4px;
-    margin-bottom: 15px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
 }
 .nft-mystery-box {
     background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,41,59,0.8));
     border: 1px solid rgba(56, 189, 248, 0.3);
     border-radius: 16px;
-    height: 130px;
+    min-height: 110px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    position: relative;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 .nft-question-mark {
-    font-size: 42px;
+    font-size: 38px;
     font-weight: 800;
     color: #fbbf24;
     text-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
@@ -355,38 +355,28 @@
         </div>
     </div>
 
- <!-- PAGE: NFT MARKETPLACE (MYSTERY BOX) -->
-<div id="page-marketplace" class="page">
-    <!-- Header dengan Judul BeanGram NFT dan Badge Coming Soon di Kiri Atas -->
+ <!-- PAGE: NFT MARKETPLACE (MYSTERY BOX FULL) -->
+<div id="page-marketplace" class="page" style="display: flex; flex-direction: column; height: 100%;">
+    <!-- Header -->
     <div class="nft-header-container">
         <div class="nft-title-main">💎 BeanGram NFT</div>
         <div class="nft-coming-soon-badge">🚀 COMING SOON!</div>
     </div>
     
-    <!-- Grid Kotak Misteri Tanda Tanya (Tanpa Blur) -->
+    <!-- Grid Kotak Misteri (Ditambah jumlahnya agar memenuhi layar ke bawah) -->
     <div class="nft-grid-container">
-        <div class="nft-mystery-box">
-            <div class="nft-question-mark">?</div>
-        </div>
-        <div class="nft-mystery-box">
-            <div class="nft-question-mark">?</div>
-        </div>
-        <div class="nft-mystery-box">
-            <div class="nft-question-mark">?</div>
-        </div>
-        <div class="nft-mystery-box">
-            <div class="nft-question-mark">?</div>
-        </div>
-        <div class="nft-mystery-box">
-            <div class="nft-question-mark">?</div>
-        </div>
-        <div class="nft-mystery-box">
-            <div class="nft-question-mark">?</div>
-        </div>
+        <div class="nft-mystery-box"><div class="nft-question-mark">?</div></div>
+        <div class="nft-mystery-box"><div class="nft-question-mark">?</div></div>
+        <div class="nft-mystery-box"><div class="nft-question-mark">?</div></div>
+        <div class="nft-mystery-box"><div class="nft-question-mark">?</div></div>
+        <div class="nft-mystery-box"><div class="nft-question-mark">?</div></div>
+        <div class="nft-mystery-box"><div class="nft-question-mark">?</div></div>
+        <div class="nft-mystery-box"><div class="nft-question-mark">?</div></div>
+        <div class="nft-mystery-box"><div class="nft-question-mark">?</div></div>
     </div>
 
-    <!-- Tombol Fitur Terkunci di Bawah -->
-    <button class="btn-game-action" disabled style="width: 100%; max-width: 100%; padding: 14px; border-radius: 14px; border: none; font-size: 13px; font-weight: bold; cursor: not-allowed; background: rgba(30, 41, 59, 0.8); color: #64748b; display: block; text-align: center;">
+    <!-- Tombol Fitur Terkunci di Bagian Paling Bawah Sebelum Nav Bar -->
+    <button class="btn-game-action" disabled style="width: 100%; padding: 12px; border-radius: 14px; border: none; font-size: 12px; font-weight: bold; cursor: not-allowed; background: rgba(30, 41, 59, 0.8); color: #64748b; text-align: center; flex-shrink: 0; margin-top: auto;">
         LOCKED • REVEAL COMING SOON
     </button>
 </div>
