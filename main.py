@@ -1,29 +1,26 @@
 import os
 import requests
-from flask import Flask, request, jsonify
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 
-app = Flask(__name__)
+app = FastAPI()
 
-# Mengambil Token Bot dan ID Admin dari Environment Variables Vercel
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 ADMIN_CHAT_ID = os.environ.get("ADMIN_CHAT_ID")
 
-@app.route('/api/withdraw', methods=['POST'])
-def handle_withdraw():
+class WithdrawRequest(BaseModel):
+    action: str = None
+
+@app.post("/api/withdraw")
+async def handle_withdraw(req: WithdrawRequest):
     try:
-        data = request.get_json()
-        
-        # Otak kendali membaca sinyal klik dari app.js
-        if data and data.get("action") == "withdraw_clicked":
-            
-            # Meracik pesan notifikasi untuk Admin
+        if req.action == "withdraw_clicked":
             pesan_admin = (
                 "🚨 *NOTIFIKASI PENARIKAN BGRAM* 🚨\n\n"
                 "👤 *Status:* Tombol Withdraw diklik di Mini App!\n"
-                "⚡ *Keterangan:* Otak kendali (main.py) berhasil menerima sinyal dan memicu notifikasi ini."
+                "⚡ *Keterangan:* Otak kendali FastAPI berhasil menerima sinyal."
             )
             
-            # Menembak langsung ke API Telegram agar chat admin berdering
             if TELEGRAM_BOT_TOKEN and ADMIN_CHAT_ID:
                 tg_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
                 payload = {
@@ -33,15 +30,12 @@ def handle_withdraw():
                 }
                 requests.post(tg_url, json=payload)
             
-            return jsonify({
+            return {
                 "success": True,
-                "message": "Notifikasi berhasil dikirim oleh otak kendali ke Telegram Admin!"
-            })
+                "message": "Notifikasi berhasil dikirim oleh otak kendali FastAPI!"
+            }
             
-        return jsonify({"success": False, "error": "Aksi tidak dikenal"}), 400
+        raise HTTPException(status_code=400, detail="Aksi tidak dikenal")
 
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
-
-if __name__ == '__main__':
-    app.run(debug=True)
+        raise HTTPException(status_code=500, detail=str(e))
