@@ -27,36 +27,24 @@
   @keyframes textImpact{0%,18%{transform:rotate(-4deg) scale(1)}22%{transform:rotate(-4deg) scale(0.94,0.88)}30%{transform:rotate(-4deg) scale(1.02)}100%{transform:rotate(-4deg) scale(1)}}
   .logo-text span{display:block}
 
-  /* WAITLIST LIVE GRAVITY BENERAN */
   .waitlist-wrap{width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px;height:38px;z-index:3}
   .waitlist-badge{
-    font-family:'Luckiest Guy',cursive;
-    font-size:22px;
-    letter-spacing:1px;
-    color:white;
-    -webkit-text-stroke:3px black;
-    text-shadow:4px 4px 0 black;
-    display:flex;align-items:center;gap:8px;
-    transform:rotate(-2deg);
-    animation:slideLive 3s cubic-bezier(0.68,-0.55,0.265,1.55) infinite;
-    white-space:nowrap;
+    font-family:'Luckiest Guy',cursive;font-size:22px;color:white;-webkit-text-stroke:3px black;text-shadow:4px 4px 0 black;
+    display:flex;align-items:center;gap:8px;transform:rotate(-2deg);
+    animation:slideLive 3s cubic-bezier(0.68,-0.55,0.265,1.55) infinite;white-space:nowrap;
   }
-  .dot{
-    width:11px;height:11px;background:#00FF5E;border-radius:50%;
-    border:2px solid black;
-    box-shadow:2px 2px 0 black;
-    animation:blink 0.9s infinite;
-  }
-  @keyframes slideLive{
-    0%{transform:translateX(130vw) rotate(-2deg)}
-    20%{transform:translateX(0) rotate(-2deg)}
-    70%{transform:translateX(0) rotate(-2deg)}
-    100%{transform:translateX(-130vw) rotate(-2deg)}
-  }
-  @keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.8)}}
+  .dot{width:11px;height:11px;background:#00FF5E;border-radius:50%;border:2px solid black;box-shadow:2px 2px 0 black;animation:blink 0.9s infinite}
+  @keyframes slideLive{0%{transform:translateX(130vw) rotate(-2deg)}20%{transform:translateX(0) rotate(-2deg)}70%{transform:translateX(0) rotate(-2deg)}100%{transform:translateX(-130vw) rotate(-2deg)}}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0.4}}
 
-  .btn-open{margin-top:22px;border:2.5px solid white;background:rgba(255,255,255,0.18);color:white;padding:12px 44px;border-radius:35px;font-weight:900;letter-spacing:1.5px;font-size:15px;cursor:pointer;backdrop-filter:blur(6px);z-index:10}
-  .btn-open:active{transform:scale(0.94);background:white;color:var(--blue)}
+  /* TOMBOL SANGAR */
+  .btn-stack{margin-top:24px;display:flex;flex-direction:column;gap:12px;align-items:center;z-index:10}
+  .btn-join{background:white;color:var(--blue);border:3px solid black;padding:13px 36px;border-radius:35px;font-weight:900;font-family:'Luckiest Guy',cursive;font-size:16px;letter-spacing:1px;cursor:pointer;box-shadow:4px 4px 0 black;animation:btnPulse 1.5s infinite}
+  @keyframes btnPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+  .btn-join:active{transform:scale(0.95)}
+  .btn-open{border:2.5px solid rgba(255,255,255,0.5);background:rgba(0,0,0,0.25);color:rgba(255,255,255,0.6);padding:12px 44px;border-radius:35px;font-weight:900;letter-spacing:1.5px;font-size:14px;cursor:not-allowed;transition:all 0.4s}
+  .btn-open.unlocked{border:2.5px solid white;background:rgba(255,255,255,0.18);color:white;cursor:pointer;backdrop-filter:blur(6px)}
+  .btn-open.unlocked:active{transform:scale(0.94);background:white;color:var(--blue)}
   .ver{position:absolute;bottom:22px;font-size:10px;opacity:0.75;color:white;letter-spacing:4px;font-weight:bold}
 </style>
 </head>
@@ -71,16 +59,47 @@
   <div class="logo-text"><span>BEAN</span><span>GRAM</span></div>
 </div>
 
-<!-- WAITLIST LIVE GRAVITY - DI ANTARA BEANGRAM & OPEN APP -->
 <div class="waitlist-wrap">
   <div class="waitlist-badge"><span class="dot"></span> WAITLIST LIVE</div>
 </div>
 
-<button class="btn-open" onclick="openApp()">OPEN APP</button>
+<div class="btn-stack">
+  <button class="btn-join" id="joinBtn" onclick="joinChannel()">JOIN @BeanGram_Official</button>
+  <button class="btn-open" id="openBtn" onclick="tryOpen()">🔒 JOIN CHANNEL TO UNLOCK</button>
+</div>
+
 <div class="ver">BEANGRAM V1.0</div>
 <script>
   const tg=window.Telegram.WebApp;tg.ready();tg.expand();
-  function openApp(){ if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy'); location.href='game.html'; }
+  const CHANNEL_URL="https://t.me/BeanGram_Official";
+  const CHANNEL_USERNAME="@BeanGram_Official";
+
+  function joinChannel(){
+    if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+    // buka channel
+    tg.openTelegramLink ? tg.openTelegramLink(CHANNEL_URL) : window.open(CHANNEL_URL,'_blank');
+    // simulasi unlock setelah 2 detik (nanti kita ganti cek API beneran)
+    setTimeout(()=>{unlockApp();},2000);
+  }
+  function unlockApp(){
+    const btn=document.getElementById('openBtn');
+    btn.classList.add('unlocked');
+    btn.innerHTML="OPEN APP";
+    if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+    // simpen biar gak kekunci lagi
+    localStorage.setItem('beangram_joined','1');
+  }
+  function tryOpen(){
+    const btn=document.getElementById('openBtn');
+    if(!btn.classList.contains('unlocked')){
+      if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+      return;
+    }
+    if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
+    location.href='game.html';
+  }
+  // auto unlock kalau udah pernah join
+  if(localStorage.getItem('beangram_joined')==='1'){unlockApp();}
 </script>
 </body>
 </html>
