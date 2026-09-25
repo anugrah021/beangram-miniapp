@@ -5,48 +5,76 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>BeanGram</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
 <style>
-  :root{--blue:#2F95FF}
   *{margin:0;padding:0;box-sizing:border-box}
-  body{background:var(--blue);height:100vh;display:flex;justify-content:center;align-items:center;flex-direction:column;overflow:hidden;position:relative}
-  .stage{display:flex;flex-direction:column;align-items:center;z-index:2}
-  .bean-wrap{animation:realBounce 2.2s cubic-bezier(0.68,-0.55,0.265,1.55) infinite;transform-origin:bottom center}
-  @keyframes realBounce{
-    0%{transform:translateY(-380px) scaleY(1.1) scaleX(0.9) rotate(-8deg)}
-    18%{transform:translateY(0) scaleY(1) scaleX(1) rotate(0)}
-    22%{transform:translateY(16px) scaleY(0.68) scaleX(1.32)}
-    30%{transform:translateY(-75px) scaleY(1.12) scaleX(0.88) rotate(3deg)}
-    42%{transform:translateY(0)}
-    46%{transform:translateY(8px) scaleY(0.82) scaleX(1.18)}
-    55%{transform:translateY(-30px)}
-    100%{transform:translateY(0)}
+  body{
+    background:#3599FF;
+    height:100vh;overflow:hidden;
+    display:flex;flex-direction:column;align-items:center;
+    position:relative;
   }
-  .bean-svg{width:112px;height:auto;filter:drop-shadow(0 20px 15px rgba(0,0,0,0.32))}
-  .logo-text{font-family:'Luckiest Guy',cursive;font-size:60px;line-height:0.85;color:white;text-align:center;-webkit-text-stroke:4.5px black;text-shadow:6px 7px 0 black;transform:rotate(-4deg);margin-top:10px;animation:textImpact 2.2s ease-in-out infinite}
-  @keyframes textImpact{0%,18%{transform:rotate(-4deg) scale(1)}22%{transform:rotate(-4deg) scale(0.94,0.88)}30%{transform:rotate(-4deg) scale(1.02)}100%{transform:rotate(-4deg) scale(1)}}
-  .logo-text span{display:block}
-  .btn-open{margin-top:42px;border:2.5px solid white;background:rgba(255,255,255,0.18);color:white;padding:12px 44px;border-radius:35px;font-weight:900;letter-spacing:1.5px;font-size:15px;cursor:pointer;backdrop-filter:blur(6px);z-index:10}
-  .btn-open:active{transform:scale(0.94);background:white;color:var(--blue)}
-  .ver{position:absolute;bottom:22px;font-size:10px;opacity:0.75;color:white;letter-spacing:4px;font-weight:bold}
+  /* PETA SAMAR BAWAH PERSIS REFERENSI */
+  body::after{
+    content:"";
+    position:absolute;bottom:-10%;left:-5%;width:110%;height:45%;
+    background:url('https://i.ibb.co/7Qp4k0T/map-uk.png') no-repeat bottom center / contain;
+    opacity:0.18;filter:brightness(2);
+    pointer-events:none;
+  }
+  /* KACANG LONCAT DI ATAS */
+  .bean-wrap{
+    margin-top:8vh;position:relative;
+    animation:floatBean 1.2s ease-in-out infinite alternate;
+    filter:drop-shadow(0 15px 15px rgba(0,0,0,0.2));
+  }
+  .bean-wrap::before{
+    content:"";position:absolute;top:-28px;left:50%;width:90%;height:14px;
+    transform:translateX(-50%);
+    background:
+      radial-gradient(ellipse at center, transparent 60%, white 61%) 0 0 / 100% 8px no-repeat,
+      radial-gradient(ellipse at center, transparent 60%, white 61%) 0 8px / 85% 8px no-repeat;
+    opacity:0.9;
+  }
+  .bean{
+    width:148px;height:auto;
+  }
+  @keyframes floatBean{
+    0%{transform:translateY(0) rotate(-8deg)}
+    100%{transform:translateY(12px) rotate(-2deg)}
+  }
+
+  /* TULISAN GRAVITY */
+  .gravity{
+    margin-top:2vh;width:88%;max-width:420px;
+    filter:drop-shadow(0 8px 0 rgba(0,0,0,0.15));
+  }
+
+  /* TOMBOL OPEN APP PERSIS REFERENSI */
+  .btn-open{
+    margin-top:6vh;z-index:2;
+    border:1.8px solid white;background:transparent;
+    color:white;padding:10px 38px;border-radius:30px;
+    font-weight:800;letter-spacing:0.8px;font-size:15px;
+    font-family:system-ui;
+  }
+  .btn-open:active{transform:scale(0.96);background:white;color:#3599FF}
+  .ver{position:absolute;bottom:22px;font-size:10px;color:white;opacity:0.6;letter-spacing:3px;z-index:2}
 </style>
 </head>
 <body>
-<div class="stage">
   <div class="bean-wrap">
-    <!-- KACANG PRESISI 1:1 LOGO - TANPA GAMBAR EKSTERNAL -->
-    <svg class="bean-svg" viewBox="0 0 120 175" xmlns="http://www.w3.org/2000/svg">
-      <path d="M 60 2 C 88 2, 116 24, 116 66 C 116 124, 86 173, 46 173 C 15 173, 1 143, 1 118 C 1 95, 22 86, 36 62 C 50 39, 28 2, 60 2 Z" fill="white"/>
-      <path d="M 68.5 46.5 C 80 62, 77 103, 41 126.5" stroke="#2F95FF" stroke-width="10.5" stroke-linecap="round" fill="none"/>
+    <!-- KACANG PUTIH POLOS PERSIS REFERENSI -->
+    <svg class="bean" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 25 5 C 55 5, 90 25, 85 65 C 80 105, 50 135, 20 125 C 0 118, -5 90, 10 70 C 22 55, 5 10, 25 5 Z" fill="white"/>
     </svg>
   </div>
-  <div class="logo-text"><span>BEAN</span><span>GRAM</span></div>
-</div>
-<button class="btn-open" onclick="openApp()">OPEN APP</button>
-<div class="ver">BEANGRAM V1.0</div>
-<script>
-  const tg=window.Telegram.WebApp;tg.ready();tg.expand();
-  function openApp(){ if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy'); location.href='game.html'; }
-</script>
+
+  <!-- GRAVITY TEXT - PAKAI GAMBAR CROP 100% MIRIP -->
+  <img class="gravity" src="public/beangram_gravity.png" alt="Bean Gram">
+
+  <button class="btn-open" onclick="location.href='game.html'">OPEN APP</button>
+  <div class="ver">BEANGRAM V1.0</div>
+
+<script>Telegram.WebApp.ready();Telegram.WebApp.expand();</script>
 </body>
 </html>
