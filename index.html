@@ -70,36 +70,64 @@
 
 <div class="ver">BEANGRAM V1.0</div>
 <script>
-  const tg=window.Telegram.WebApp;tg.ready();tg.expand();
-  const CHANNEL_URL="https://t.me/BeanGram_Official";
-  const CHANNEL_USERNAME="@BeanGram_Official";
+  const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
+  const CHANNEL_URL = "https://t.me/BeanGram_Official";
 
   function joinChannel(){
     if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-    // buka channel
     tg.openTelegramLink ? tg.openTelegramLink(CHANNEL_URL) : window.open(CHANNEL_URL,'_blank');
-    // simulasi unlock setelah 2 detik (nanti kita ganti cek API beneran)
-    setTimeout(()=>{unlockApp();},2000);
+    setTimeout(()=>{checkRealJoin();}, 2500);
+    let c=0; const iv=setInterval(()=>{checkRealJoin(); c++; if(c>7) clearInterval(iv);}, 2000);
   }
+
+  async function checkRealJoin(){
+    const user = tg.initDataUnsafe?.user;
+    if(!user?.id){
+      console.log('buka di browser biasa, skip cek');
+      return;
+    }
+    try{
+      const btn = document.getElementById('openBtn');
+      btn.innerHTML = "CHECKING...";
+      const res = await fetch('/api/check', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({user_id: user.id})
+      });
+      const j = await res.json();
+      console.log('check result', j);
+      if(j.joined){ unlockApp(); }
+      else{ 
+        btn.innerHTML = "🔒 JOIN CHANNEL TO UNLOCK";
+      }
+    }catch(e){ console.log('check gagal', e); }
+  }
+
   function unlockApp(){
     const btn=document.getElementById('openBtn');
     btn.classList.add('unlocked');
     btn.innerHTML="OPEN APP";
     if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-    // simpen biar gak kekunci lagi
     localStorage.setItem('beangram_joined','1');
   }
+
   function tryOpen(){
     const btn=document.getElementById('openBtn');
     if(!btn.classList.contains('unlocked')){
       if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+      joinChannel();
       return;
     }
     if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
     location.href='game.html';
   }
-  // auto unlock kalau udah pernah join
-  if(localStorage.getItem('beangram_joined')==='1'){unlockApp();}
+
+  // auto check pas load
+  checkRealJoin();
+  if(localStorage.getItem('beangram_joined')==='1'){ 
+    // tetap cek ulang biar gak bisa tipu
+    setTimeout(checkRealJoin, 1000);
+  }
 </script>
 </body>
 </html>
