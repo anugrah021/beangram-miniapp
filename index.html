@@ -10,10 +10,45 @@
   :root{ --blue:#2F95FF; }
   *{margin:0;padding:0;box-sizing:border-box}
   body{ background:var(--blue); height:100vh; display:flex; justify-content:center; align-items:center; flex-direction:column; overflow:hidden; }
-  .bean-wrap{ animation: bounce 1.8s ease-in-out infinite; margin-bottom:10px; }
-  @keyframes bounce{ 0%,100%{ transform:translateY(0) rotate(-3deg); } 50%{ transform:translateY(-30px) rotate(3deg) scale(1.05); } }
-  .bean-svg{ width:155px; height:auto; filter: drop-shadow(0 18px 18px rgba(0,0,0,0.25)); }
-  .logo-text{ font-family:'Luckiest Guy', cursive; font-size:64px; line-height:0.85; color:white; text-align:center; -webkit-text-stroke:5px black; text-shadow: 7px 8px 0px black; transform:rotate(-4deg); letter-spacing:1px; margin-top:10px; }
+
+  .stage{ display:flex; flex-direction:column; align-items:center; position:relative; }
+
+  .bean-wrap{
+    animation: realBounce 2.2s cubic-bezier(0.68,-0.55,0.265,1.55) infinite;
+    transform-origin: bottom center;
+    will-change: transform;
+  }
+  /* INI KUNCINYA CUY - MANTUL REAL PAKAI PEOT */
+  @keyframes realBounce{
+    0%   { transform: translateY(-350px) scaleY(1.1) scaleX(0.9) rotate(-8deg); }
+    18%  { transform: translateY(0px) scaleY(1) scaleX(1) rotate(0deg); }
+    22%  { transform: translateY(18px) scaleY(0.65) scaleX(1.35) rotate(0deg); } /* PEOT KENA TEKANAN TULISAN */
+    30%  { transform: translateY(-85px) scaleY(1.15) scaleX(0.85) rotate(4deg); } /* MANTUL KE ATAS MELAR */
+    42%  { transform: translateY(0px) scaleY(1) scaleX(1) rotate(0deg); }
+    46%  { transform: translateY(10px) scaleY(0.8) scaleX(1.2) rotate(0deg); } /* PEOT KEDUA LEBIH KECIL */
+    55%  { transform: translateY(-38px) scaleY(1.05) scaleX(0.95) rotate(-2deg); }
+    68%  { transform: translateY(0px) scaleY(1) scaleX(1); }
+    71%  { transform: translateY(5px) scaleY(0.9) scaleX(1.1); }
+    78%  { transform: translateY(-12px) scaleY(1.02) scaleX(0.98); }
+    85%  { transform: translateY(0px) scaleY(1) scaleX(1); }
+    100% { transform: translateY(0px) scaleY(1) scaleX(1); }
+  }
+
+  .bean-svg{ width:160px; height:auto; filter: drop-shadow(0 25px 20px rgba(0,0,0,0.3)); }
+  
+  .logo-text{ 
+    font-family:'Luckiest Guy', cursive; font-size:64px; line-height:0.85; color:white; text-align:center; 
+    -webkit-text-stroke:5px black; text-shadow: 7px 8px 0px black; 
+    transform:rotate(-4deg); letter-spacing:1px; margin-top:5px;
+    animation: textImpact 2.2s ease-in-out infinite;
+  }
+  @keyframes textImpact{
+    0%, 18% { transform: rotate(-4deg) scale(1); }
+    22% { transform: rotate(-4deg) scale(0.92, 0.85); } /* TULISAN JUGA IKUT KETEKAN DIKIT PAS KENA KACANG */
+    30% { transform: rotate(-4deg) scale(1.03); }
+    100% { transform: rotate(-4deg) scale(1); }
+  }
+
   .logo-text span{ display:block; }
   .btn-open{ margin-top:45px; border:2.5px solid white; background:rgba(255,255,255,0.2); color:white; padding:14px 42px; border-radius:35px; font-weight:900; letter-spacing:1.5px; font-size:17px; cursor:pointer; backdrop-filter:blur(5px); }
   .btn-open:active{ transform:scale(0.95); background:white; color:var(--blue); }
@@ -21,22 +56,23 @@
 </style>
 </head>
 <body>
-  <div class="bean-wrap">
-    <!-- KACANG ASLI BEANGRAM - SVG 100% MIRIP LOGO -->
-    <svg class="bean-svg" viewBox="0 0 100 155" xmlns="http://www.w3.org/2000/svg">
-      <path d="M52 3 C 78 3, 96 22, 96 58 C 96 105, 72 152, 38 152 C 12 152, 0 126, 0 103 C 0 85, 18 73, 29 58 C 40 43, 26 3, 52 3 Z" fill="white"/>
-      <path d="M 56 44 C 66 61, 61 94, 34 113" stroke="#2F95FF" stroke-width="9" stroke-linecap="round" fill="none"/>
-    </svg>
+  <div class="stage">
+    <div class="bean-wrap">
+      <svg class="bean-svg" viewBox="0 0 100 155" xmlns="http://www.w3.org/2000/svg">
+        <path d="M52 3 C 78 3, 96 22, 96 58 C 96 105, 72 152, 38 152 C 12 152, 0 126, 0 103 C 0 85, 18 73, 29 58 C 40 43, 26 3, 52 3 Z" fill="white"/>
+        <path d="M 56 44 C 66 61, 61 94, 34 113" stroke="#2F95FF" stroke-width="9" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+    <div class="logo-text"><span>BEAN</span><span>GRAM</span></div>
   </div>
 
-  <div class="logo-text"><span>BEAN</span><span>GRAM</span></div>
   <button class="btn-open" onclick="openApp()">OPEN APP</button>
   <div class="ver">BEANGRAM V1.0</div>
 
 <script>
   const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
   function openApp(){
-    if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+    if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
     window.location.href="game.html";
   }
 </script>
