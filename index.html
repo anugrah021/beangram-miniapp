@@ -7,119 +7,46 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
 <style>
-  :root{ --blue:#2F95FF; }
+  :root{--blue:#2F95FF}
   *{margin:0;padding:0;box-sizing:border-box}
-  body{ background:var(--blue); height:100vh; width:100vw; display:flex; justify-content:center; align-items:center; flex-direction:column; overflow:hidden; position:relative; }
-
-  .stage{ position:relative; display:flex; flex-direction:column; align-items:center; z-index:2; }
-
-  /* KACANG GEDE UTAMA */
-  .bean-wrap{
-    animation: realBounce 2.2s cubic-bezier(0.68,-0.55,0.265,1.55) infinite;
-    transform-origin: bottom center;
-    z-index:3;
-  }
+  body{background:var(--blue);height:100vh;display:flex;justify-content:center;align-items:center;flex-direction:column;overflow:hidden;position:relative}
+  .stage{display:flex;flex-direction:column;align-items:center;z-index:2}
+  .bean-wrap{animation:realBounce 2.2s cubic-bezier(0.68,-0.55,0.265,1.55) infinite;transform-origin:bottom center}
   @keyframes realBounce{
-    0%   { transform: translateY(-380px) scaleY(1.1) scaleX(0.9) rotate(-8deg); }
-    18%  { transform: translateY(0px) scaleY(1) scaleX(1) rotate(0deg); }
-    22%  { transform: translateY(16px) scaleY(0.68) scaleX(1.32) rotate(0deg); }
-    30%  { transform: translateY(-75px) scaleY(1.12) scaleX(0.88) rotate(3deg); }
-    42%  { transform: translateY(0px); }
-    46%  { transform: translateY(8px) scaleY(0.82) scaleX(1.18); }
-    55%  { transform: translateY(-30px); }
-    100% { transform: translateY(0px); }
+    0%{transform:translateY(-380px) scaleY(1.1) scaleX(0.9) rotate(-8deg)}
+    18%{transform:translateY(0) scaleY(1) scaleX(1) rotate(0)}
+    22%{transform:translateY(16px) scaleY(0.68) scaleX(1.32)}
+    30%{transform:translateY(-75px) scaleY(1.12) scaleX(0.88) rotate(3deg)}
+    42%{transform:translateY(0)}
+    46%{transform:translateY(8px) scaleY(0.82) scaleX(1.18)}
+    55%{transform:translateY(-30px)}
+    100%{transform:translateY(0)}
   }
-  .bean-main{ width:115px; height:auto; filter: drop-shadow(0 22px 18px rgba(0,0,0,0.32)); }
-
-  /* TULISAN */
-  .logo-text{ 
-    font-family:'Luckiest Guy', cursive; font-size:60px; line-height:0.85; color:white; text-align:center; 
-    -webkit-text-stroke:4.5px black; text-shadow: 6px 7px 0px black; 
-    transform:rotate(-4deg); margin-top:10px;
-    animation: textImpact 2.2s ease-in-out infinite;
-    z-index:2;
-  }
-  @keyframes textImpact{
-    0%,18%{ transform:rotate(-4deg) scale(1); }
-    22%{ transform:rotate(-4deg) scale(0.94,0.88); }
-    30%{ transform:rotate(-4deg) scale(1.02); }
-    100%{ transform:rotate(-4deg) scale(1); }
-  }
-  .logo-text span{ display:block; }
-
-  /* KACANG KECIL JATUHAN */
-  .rain-container{ position:absolute; top:-100px; left:0; width:100%; height:100%; pointer-events:none; overflow:visible; z-index:4; }
-  .mini-bean{
-    position:absolute;
-    width:24px;
-    filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));
-    animation: fallAndStack linear forwards;
-  }
-  @keyframes fallAndStack{
-    0%{ transform: translateY(-200px) rotate(0deg) scale(0.5); opacity:0; }
-    10%{ opacity:1; }
-    80%{ transform: translateY(var(--fallY)) rotate(360deg) scale(1); }
-    85%{ transform: translateY(calc(var(--fallY) + 8px)) rotate(380deg) scaleX(1.2) scaleY(0.8); } /* peot pas numpuk */
-    100%{ transform: translateY(var(--fallY)) rotate(360deg) scale(1); opacity:1; }
-  }
-
-  .btn-open{ margin-top:42px; border:2.5px solid white; background:rgba(255,255,255,0.18); color:white; padding:12px 44px; border-radius:35px; font-weight:900; letter-spacing:1.5px; font-size:15px; cursor:pointer; backdrop-filter:blur(6px); z-index:10; transition:0.2s; }
-  .btn-open:active{ transform:scale(0.94); background:white; color:var(--blue); }
-  .ver{ position:absolute; bottom:22px; font-size:10px; opacity:0.75; color:white; letter-spacing:4px; font-weight:bold; z-index:2; }
+  .bean-svg{width:112px;height:auto;filter:drop-shadow(0 20px 15px rgba(0,0,0,0.32))}
+  .logo-text{font-family:'Luckiest Guy',cursive;font-size:60px;line-height:0.85;color:white;text-align:center;-webkit-text-stroke:4.5px black;text-shadow:6px 7px 0 black;transform:rotate(-4deg);margin-top:10px;animation:textImpact 2.2s ease-in-out infinite}
+  @keyframes textImpact{0%,18%{transform:rotate(-4deg) scale(1)}22%{transform:rotate(-4deg) scale(0.94,0.88)}30%{transform:rotate(-4deg) scale(1.02)}100%{transform:rotate(-4deg) scale(1)}}
+  .logo-text span{display:block}
+  .btn-open{margin-top:42px;border:2.5px solid white;background:rgba(255,255,255,0.18);color:white;padding:12px 44px;border-radius:35px;font-weight:900;letter-spacing:1.5px;font-size:15px;cursor:pointer;backdrop-filter:blur(6px);z-index:10}
+  .btn-open:active{transform:scale(0.94);background:white;color:var(--blue)}
+  .ver{position:absolute;bottom:22px;font-size:10px;opacity:0.75;color:white;letter-spacing:4px;font-weight:bold}
 </style>
 </head>
 <body>
-
-  <div class="rain-container" id="rain"></div>
-
-  <div class="stage">
-    <div class="bean-wrap">
-      <img class="bean-main" src="public/bean.png" alt="bean">
-    </div>
-    <div class="logo-text"><span>BEAN</span><span>GRAM</span></div>
+<div class="stage">
+  <div class="bean-wrap">
+    <!-- KACANG PRESISI 1:1 LOGO - TANPA GAMBAR EKSTERNAL -->
+    <svg class="bean-svg" viewBox="0 0 120 175" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 60 2 C 88 2, 116 24, 116 66 C 116 124, 86 173, 46 173 C 15 173, 1 143, 1 118 C 1 95, 22 86, 36 62 C 50 39, 28 2, 60 2 Z" fill="white"/>
+      <path d="M 68.5 46.5 C 80 62, 77 103, 41 126.5" stroke="#2F95FF" stroke-width="10.5" stroke-linecap="round" fill="none"/>
+    </svg>
   </div>
-
-  <button class="btn-open" onclick="openApp()">OPEN APP</button>
-  <div class="ver">BEANGRAM V1.0</div>
-
+  <div class="logo-text"><span>BEAN</span><span>GRAM</span></div>
+</div>
+<button class="btn-open" onclick="openApp()">OPEN APP</button>
+<div class="ver">BEANGRAM V1.0</div>
 <script>
-  const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
-  
-  function openApp(){
-    if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-    window.location.href="game.html";
-  }
-
-  // HUJAN KACANG KECIL NUMPUK DI ATAS TULISAN
-  const rain = document.getElementById('rain');
-  const positions = [
-    {x: 35, y: 175, delay: 0.3},
-    {x: 55, y: 165, delay: 0.6},
-    {x: 75, y: 172, delay: 0.9},
-    {x: 30, y: 190, delay: 1.2},
-    {x: 65, y: 185, delay: 1.5},
-    {x: 50, y: 178, delay: 1.8},
-  ];
-
-  function spawnBeans(){
-    rain.innerHTML = '';
-    positions.forEach((p,i)=>{
-      const img = document.createElement('img');
-      img.src = 'public/bean.png';
-      img.className = 'mini-bean';
-      img.style.left = p.x + '%';
-      img.style.setProperty('--fallY', p.y + 'vh');
-      img.style.animationDuration = (1.2 + Math.random()*0.4) + 's';
-      img.style.animationDelay = p.delay + 's';
-      // rotasi awal acak biar natural
-      img.style.transform = `rotate(${Math.random()*180}deg)`;
-      rain.appendChild(img);
-    });
-  }
-
-  spawnBeans();
-  // ulang tiap 3 detik biar terus hujan
-  setInterval(spawnBeans, 3200);
+  const tg=window.Telegram.WebApp;tg.ready();tg.expand();
+  function openApp(){ if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy'); location.href='game.html'; }
 </script>
 </body>
 </html>
