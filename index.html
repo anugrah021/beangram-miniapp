@@ -1,131 +1,75 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>BeanGram</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
 <style>
-  :root{--blue:#2F95FF}
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{background:var(--blue);height:100vh;display:flex;justify-content:center;align-items:center;flex-direction:column;overflow:hidden;position:relative}
-  .stage{display:flex;flex-direction:column;align-items:center;z-index:2}
-  .bean-wrap{animation:realBounce 2.2s cubic-bezier(0.68,-0.55,0.265,1.55) infinite;transform-origin:bottom center}
-  @keyframes realBounce{
-    0%{transform:translateY(-380px) scaleY(1.1) scaleX(0.9) rotate(-8deg)}
-    18%{transform:translateY(0) scaleY(1) scaleX(1) rotate(0)}
-    22%{transform:translateY(16px) scaleY(0.68) scaleX(1.32)}
-    30%{transform:translateY(-75px) scaleY(1.12) scaleX(0.88) rotate(3deg)}
-    42%{transform:translateY(0)}
-    46%{transform:translateY(8px) scaleY(0.82) scaleX(1.18)}
-    55%{transform:translateY(-30px)}
-    100%{transform:translateY(0)}
-  }
-  .bean-svg{width:112px;height:auto;filter:drop-shadow(0 20px 15px rgba(0,0,0,0.32))}
-  .logo-text{font-family:'Luckiest Guy',cursive;font-size:60px;line-height:0.85;color:white;text-align:center;-webkit-text-stroke:4.5px black;text-shadow:6px 7px 0 black;transform:rotate(-4deg);margin-top:10px;animation:textImpact 2.2s ease-in-out infinite}
-  @keyframes textImpact{0%,18%{transform:rotate(-4deg) scale(1)}22%{transform:rotate(-4deg) scale(0.94,0.88)}30%{transform:rotate(-4deg) scale(1.02)}100%{transform:rotate(-4deg) scale(1)}}
-  .logo-text span{display:block}
-
-  .waitlist-wrap{width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px;height:38px;z-index:3}
-  .waitlist-badge{
-    font-family:'Luckiest Guy',cursive;font-size:22px;color:white;-webkit-text-stroke:3px black;text-shadow:4px 4px 0 black;
-    display:flex;align-items:center;gap:8px;transform:rotate(-2deg);
-    animation:slideLive 3s cubic-bezier(0.68,-0.55,0.265,1.55) infinite;white-space:nowrap;
-  }
-  .dot{width:11px;height:11px;background:#00FF5E;border-radius:50%;border:2px solid black;box-shadow:2px 2px 0 black;animation:blink 0.9s infinite}
-  @keyframes slideLive{0%{transform:translateX(130vw) rotate(-2deg)}20%{transform:translateX(0) rotate(-2deg)}70%{transform:translateX(0) rotate(-2deg)}100%{transform:translateX(-130vw) rotate(-2deg)}}
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:0.4}}
-
-  /* TOMBOL SANGAR */
-  .btn-stack{margin-top:24px;display:flex;flex-direction:column;gap:12px;align-items:center;z-index:10}
-  .btn-join{background:white;color:var(--blue);border:3px solid black;padding:13px 36px;border-radius:35px;font-weight:900;font-family:'Luckiest Guy',cursive;font-size:16px;letter-spacing:1px;cursor:pointer;box-shadow:4px 4px 0 black;animation:btnPulse 1.5s infinite}
-  @keyframes btnPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-  .btn-join:active{transform:scale(0.95)}
-  .btn-open{border:2.5px solid rgba(255,255,255,0.5);background:rgba(0,0,0,0.25);color:rgba(255,255,255,0.6);padding:12px 44px;border-radius:35px;font-weight:900;letter-spacing:1.5px;font-size:14px;cursor:not-allowed;transition:all 0.4s}
-  .btn-open.unlocked{border:2.5px solid white;background:rgba(255,255,255,0.18);color:white;cursor:pointer;backdrop-filter:blur(6px)}
-  .btn-open.unlocked:active{transform:scale(0.94);background:white;color:var(--blue)}
-  .ver{position:absolute;bottom:22px;font-size:10px;opacity:0.75;color:white;letter-spacing:4px;font-weight:bold}
+  body{margin:0;background:#3A9CFF;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;color:white;text-align:center}
+  .logo{width:140px;filter:drop-shadow(0 8px 15px rgba(0,0,0,.3))}
+  .bean-title{font-size:42px;font-weight:900;line-height:.9;margin:15px 0;text-shadow:3px 3px 0 #000,-3px -3px 0 #000}
+  .badge{background:#000;color:#fff;padding:4px 12px;border-radius:20px;font-size:12px;margin:10px 0;display:inline-block;letter-spacing:1px}
+  .btn{width:85%;max-width:320px;padding:14px;border-radius:50px;border:3px solid #000;font-weight:900;margin:6px 0;cursor:pointer}
+  .btn-join{background:#fff;color:#3A9CFF}
+  .btn-open{background:#2d7dd1;color:#fff;opacity:.6;transition:.3s}
+  .btn-open.unlocked{background:#fff;color:#3A9CFF;opacity:1;box-shadow:0 5px 0 #000}
 </style>
 </head>
 <body>
-<div class="stage">
-  <div class="bean-wrap">
-    <svg class="bean-svg" viewBox="0 0 120 175" xmlns="http://www.w3.org/2000/svg">
-      <path d="M 60 2 C 88 2, 116 24, 116 66 C 116 124, 86 173, 46 173 C 15 173, 1 143, 1 118 C 1 95, 22 86, 36 62 C 50 39, 28 2, 60 2 Z" fill="white"/>
-      <path d="M 68.5 46.5 C 80 62, 77 103, 41 126.5" stroke="#2F95FF" stroke-width="10.5" stroke-linecap="round" fill="none"/>
-    </svg>
-  </div>
-  <div class="logo-text"><span>BEAN</span><span>GRAM</span></div>
-</div>
 
-<div class="waitlist-wrap">
-  <div class="waitlist-badge"><span class="dot"></span> WAITLIST LIVE</div>
-</div>
+<img class="logo" src="https://i.imgur.com/Q1p2o6H.png">
+<div class="bean-title">BEAN<br>GRAM</div>
+<div class="badge">🟢 WAITLIST LIVE</div>
 
-<div class="btn-stack">
-  <button class="btn-join" id="joinBtn" onclick="joinChannel()">JOIN @BeanGram_Official</button>
-  <button class="btn-open" id="openBtn" onclick="tryOpen()">🔒 JOIN CHANNEL TO UNLOCK</button>
-</div>
+<button class="btn btn-join" onclick="joinChannel()">JOIN @BEANGRAM_OFFICIAL</button>
+<button id="openBtn" class="btn btn-open" onclick="tryOpen()">🔒 JOIN CHANNEL TO UNLOCK</button>
 
-<div class="ver">BEANGRAM V1.0</div>
+<div style="margin-top:60px;font-size:10px;letter-spacing:3px;opacity:.7">BEANGRAM V1.0</div>
+
 <script>
-  const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
-  const CHANNEL_URL = "https://t.me/BeanGram_Official";
+const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
+const CHANNEL_URL = "https://t.me/BeanGram_Official";
+let hasJoined = localStorage.getItem('hasJoined') === 'true';
 
-  function joinChannel(){
-    if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-    tg.openTelegramLink ? tg.openTelegramLink(CHANNEL_URL) : window.open(CHANNEL_URL,'_blank');
-    setTimeout(()=>{checkRealJoin();}, 1500);
-    let c=0; const iv=setInterval(()=>{checkRealJoin(); c++; if(c>10) clearInterval(iv);}, 2000);
-  }
-
-  async function checkRealJoin(){
-    const user = tg.initDataUnsafe?.user;
-    const btn = document.getElementById('openBtn');
-    if(!user?.id){
-      btn.innerHTML = "OPEN IN TELEGRAM";
-      return;
-    }
-    try{
-      btn.innerHTML = "CHECKING... 🔍";
-      const res = await fetch('/api/check', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({user_id: user.id})
-      });
-      const j = await res.json();
-      console.log(j);
-      if(j.joined){
-        unlockApp();
-      }else{
-        btn.innerHTML = "🔒 JOIN CHANNEL TO UNLOCK";
-        btn.classList.remove('unlocked');
-      }
-    }catch(e){
-      console.log('error', e);
-      btn.innerHTML = "🔒 JOIN CHANNEL TO UNLOCK";
-    }
-  }
-
-  function unlockApp(){
-    const btn=document.getElementById('openBtn');
+function updateButton(){
+  const btn = document.getElementById('openBtn');
+  if(hasJoined){
     btn.classList.add('unlocked');
-    btn.innerHTML="OPEN APP 🚀";
+    btn.innerHTML = "OPEN APP 🚀";
+  }
+}
+
+function joinChannel(){
+  if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+  // Buka channel
+  tg.openTelegramLink ? tg.openTelegramLink(CHANNEL_URL) : window.open(CHANNEL_URL,'_blank');
+  
+  // Langsung unlock setelah 1 detik - TANPA VERIFIKASI
+  setTimeout(()=>{
+    hasJoined = true;
+    localStorage.setItem('hasJoined','true');
+    updateButton();
     if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-  }
+  },1000);
+}
 
-  function tryOpen(){
-    const btn=document.getElementById('openBtn');
-    if(!btn.classList.contains('unlocked')){
-      if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-      joinChannel(); return;
-    }
-    if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-    location.href='game.html';
+function tryOpen(){
+  const btn = document.getElementById('openBtn');
+  if(!hasJoined){
+    joinChannel(); // kalau belum join, suruh join dulu
+    return;
   }
+  if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
+  location.href='game.html';
+}
 
-  checkRealJoin();
+// Cek pas balik dari channel, auto unlock
+document.addEventListener('visibilitychange', ()=>{
+  if(!document.hidden && hasJoined) updateButton();
+});
+
+// Saat load
+if(hasJoined) updateButton();
 </script>
 </body>
 </html>
