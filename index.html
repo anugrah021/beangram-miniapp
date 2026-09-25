@@ -10,49 +10,42 @@
   :root{--blue:#2F95FF}
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:var(--blue);height:100vh;display:flex;justify-content:center;align-items:center;flex-direction:column;overflow:hidden}
-  .stage{position:relative;width:280px;height:320px;display:flex;align-items:center;justify-content:flex-end;flex-direction:column}
-
-  /* BALON BULAT */
-  .balloon{
-    position:absolute;top:25px;left:50%;
-    width:150px;height:150px;
-    background:white;
-    border-radius:50%;
-    display:flex;justify-content:center;align-items:center;
-    box-shadow:0 18px 30px rgba(0,0,0,0.28), inset -10px -10px 20px rgba(0,0,0,0.12);
-    animation:balloonLife 3s ease-in-out infinite;
-    transform-origin:center bottom;
-  }
-  @keyframes balloonLife{
-    0%{transform:translateX(-50%) scale(0.02);opacity:0}
-    15%{opacity:1}
-    50%{transform:translateX(-50%) scale(1)}
-    70%{transform:translateX(-50%) scale(1) rotate(-2deg);border-radius:45% 55% 48% 52% / 48% 52% 55% 45%}
-    82%{transform:translateX(-50%) scale(1.18)}
-    91%{transform:translateX(-50%) scale(1.4);opacity:0;filter:blur(6px)}
-    100%{transform:translateX(-50%) scale(0);opacity:0}
-  }
-  .bean{width:78px;height:auto;filter:drop-shadow(0 4px 6px rgba(0,0,0,0.15))}
-
-  .logo-text{font-family:'Luckiest Guy',cursive;font-size:64px;line-height:0.85;color:white;text-align:center;-webkit-text-stroke:4.5px black;text-shadow:6px 7px 0 black;transform:rotate(-4deg);z-index:2}
+  .stage{display:flex;flex-direction:column;align-items:center}
+  .bean-logo{width:145px;height:auto;filter:drop-shadow(0 12px 15px rgba(0,0,0,0.25));margin-bottom:8px}
+  .logo-text{font-family:'Luckiest Guy',cursive;font-size:64px;line-height:0.85;color:white;text-align:center;-webkit-text-stroke:4.5px black;text-shadow:6px 7px 0 black;transform:rotate(-4deg)}
   .logo-text span{display:block}
-  .btn-open{margin-top:22px;border:2.5px solid white;background:rgba(255,255,255,0.18);color:white;padding:12px 44px;border-radius:35px;font-weight:900;letter-spacing:1.5px;font-size:15px;cursor:pointer;backdrop-filter:blur(6px)}
+  .btn-open{margin-top:40px;border:2.5px solid white;background:rgba(255,255,255,0.18);color:white;padding:13px 44px;border-radius:35px;font-weight:900;letter-spacing:1.5px;font-size:15px;cursor:pointer;backdrop-filter:blur(6px)}
+  .btn-open:active{transform:scale(0.95);background:white;color:var(--blue)}
   .ver{position:absolute;bottom:22px;font-size:10px;opacity:0.75;color:white;letter-spacing:4px;font-weight:bold}
 </style>
 </head>
 <body>
 <div class="stage">
-  <div class="balloon">
-    <!-- 1 BEAN PRESISI LANGSUNG DARI LOGO - BUKAN GAMBAR LUAR -->
-    <svg class="bean" viewBox="0 0 120 175" xmlns="http://www.w3.org/2000/svg">
-      <path d="M 60 2 C 88 2, 116 24, 116 66 C 116 124, 86 173, 46 173 C 15 173, 1 143, 1 118 C 1 95, 22 86, 36 62 C 50 39, 28 2, 60 2 Z" fill="white" stroke="white" stroke-width="2" stroke-linejoin="round"/>
-      <path d="M 68.5 46.5 C 80 62, 77 103, 41 126.5" stroke="#2F95FF" stroke-width="11" stroke-linecap="round" fill="none"/>
-    </svg>
-  </div>
+  <!-- LOGO BEANGRAM ASLI - 3 KACANG -->
+  <svg class="bean-logo" viewBox="0 0 200 145" xmlns="http://www.w3.org/2000/svg">
+    <!-- kacang 1 kiri -->
+    <g transform="translate(10,15) rotate(-22)">
+      <path d="M 30 2 C 44 2, 58 12, 58 33 C 58 62, 43 86, 23 86 C 7 86, 0 71, 0 59 C 0 47, 11 43, 18 31 C 25 19, 14 2, 30 2 Z" fill="white"/>
+      <path d="M 34 23 C 40 31, 38 51, 20 63" stroke="#2F95FF" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+    </g>
+    <!-- kacang 2 tengah atas -->
+    <g transform="translate(70,5) rotate(18)">
+      <path d="M 30 2 C 44 2, 58 12, 58 33 C 58 62, 43 86, 23 86 C 7 86, 0 71, 0 59 C 0 47, 11 43, 18 31 C 25 19, 14 2, 30 2 Z" fill="white"/>
+      <path d="M 34 23 C 40 31, 38 51, 20 63" stroke="#2F95FF" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+    </g>
+    <!-- kacang 3 kanan bawah -->
+    <g transform="translate(102,48) rotate(-8)">
+      <path d="M 30 2 C 44 2, 58 12, 58 33 C 58 62, 43 86, 23 86 C 7 86, 0 71, 0 59 C 0 47, 11 43, 18 31 C 25 19, 14 2, 30 2 Z" fill="white"/>
+      <path d="M 34 23 C 40 31, 38 51, 20 63" stroke="#2F95FF" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+    </g>
+  </svg>
+
   <div class="logo-text"><span>BEAN</span><span>GRAM</span></div>
 </div>
+
 <button class="btn-open" onclick="location.href='game.html'">OPEN APP</button>
 <div class="ver">BEANGRAM V1.0</div>
+
 <script>Telegram.WebApp.ready();Telegram.WebApp.expand();</script>
 </body>
 </html>
