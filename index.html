@@ -5,99 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>BeanGram</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Fredoka:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
 <style>
   :root{ --blue:#2F95FF; }
   *{margin:0;padding:0;box-sizing:border-box}
-  body{
-    background:var(--blue);
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-    overflow:hidden;
-    font-family:'Fredoka',sans-serif;
-  }
-  .bean-wrap{
-    animation: bounce 1.8s ease-in-out infinite;
-    margin-bottom:20px;
-  }
-  @keyframes bounce{
-    0%,100%{ transform:translateY(0) rotate(-5deg); }
-    50%{ transform:translateY(-25px) rotate(5deg); }
-  }
-  .bean{
-    width:120px;
-    height:180px;
-    background:white;
-    border-radius:50% 50% 50% 50% / 30% 60% 40% 70%;
-    transform:rotate(20deg);
-    position:relative;
-    box-shadow:0 15px 25px rgba(0,0,0,0.2);
-  }
-  .bean::after{
-    content:'';
-    position:absolute;
-    width:12px;
-    height:60px;
-    background:var(--blue);
-    border-radius:20px;
-    top:50%;
-    left:60%;
-    transform:translate(-50%,-50%) rotate(10deg);
-  }
-  .logo-text{
-    font-family:'Luckiest Guy', cursive;
-    font-size: 75px;
-    line-height:0.9;
-    color:white;
-    text-align:center;
-    -webkit-text-stroke: 6px black;
-    text-shadow: 8px 8px 0px black;
-    letter-spacing:2px;
-    transform:rotate(-3deg);
-  }
+  body{ background:var(--blue); height:100vh; display:flex; justify-content:center; align-items:center; flex-direction:column; overflow:hidden; }
+  .bean-wrap{ animation: bounce 1.8s ease-in-out infinite; margin-bottom:15px; }
+  @keyframes bounce{ 0%,100%{ transform:translateY(0) rotate(-2deg); } 50%{ transform:translateY(-28px) rotate(2deg); } }
+  .bean-img{ width:160px; height:auto; filter: drop-shadow(0 15px 20px rgba(0,0,0,0.25)); }
+  .logo-text{ font-family:'Luckiest Guy', cursive; font-size:62px; line-height:0.9; color:white; text-align:center; -webkit-text-stroke:5px black; text-shadow:7px 7px 0px black; transform:rotate(-4deg); letter-spacing:1px; }
   .logo-text span{ display:block; }
-  .btn-open{
-    margin-top:50px;
-    border:2px solid white;
-    background:rgba(255,255,255,0.15);
-    backdrop-filter:blur(10px);
-    color:white;
-    padding:12px 35px;
-    border-radius:30px;
-    font-weight:bold;
-    letter-spacing:1.5px;
-    font-size:16px;
-    cursor:pointer;
-    transition:0.2s;
-  }
+  .btn-open{ margin-top:45px; border:2px solid white; background:rgba(255,255,255,0.15); color:white; padding:12px 38px; border-radius:30px; font-weight:900; letter-spacing:1.5px; font-size:16px; cursor:pointer; }
   .btn-open:active{ transform:scale(0.95); background:white; color:var(--blue); }
-  .ver{ position:absolute; bottom:20px; font-size:11px; opacity:0.6; color:white; letter-spacing:2px; }
+  .ver{ position:absolute; bottom:22px; font-size:11px; opacity:0.7; color:white; letter-spacing:3px; font-weight:bold; }
 </style>
 </head>
 <body>
   <div class="bean-wrap">
-    <div class="bean"></div>
+    <img src="public/bean.png" class="bean-img" alt="bean">
   </div>
-
-  <div class="logo-text">
-    <span>Bean</span>
-    <span>Gram</span>
-  </div>
-
+  <div class="logo-text"><span>BEAN</span><span>GRAM</span></div>
   <button class="btn-open" onclick="openApp()">OPEN APP</button>
   <div class="ver">BEANGRAM V1.0</div>
-
 <script>
-  const tg = window.Telegram.WebApp;
-  tg.ready();
-  tg.expand();
+  const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
   function openApp(){
-    // efek getar kayak di Telegram
     if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-    window.location.href = "game.html";
+    window.location.href="game.html";
   }
 </script>
 </body>
