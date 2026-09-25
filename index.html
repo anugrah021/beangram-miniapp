@@ -11,95 +11,88 @@
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:var(--blue);height:100vh;display:flex;justify-content:center;align-items:center;flex-direction:column;overflow:hidden;position:relative}
 
- .stage{position:relative;width:260px;height:300px;display:flex;justify-content:flex-end;align-items:center;flex-direction:column}
+  .stage{position:relative;width:280px;height:320px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
 
-  /* Tempat numpuk kacang di atas tulisan */
- .pile-area{position:absolute;top:0;left:0;width:100%;height:140px;z-index:5;pointer-events:none}
-
- .mini-bean{
-    position:absolute;
-    width:38px;height:auto;
-    filter:drop-shadow(0 6px 6px rgba(0,0,0,0.25));
-    will-change:transform;
+  /* BALON KACANG */
+  .balloon-wrap{
+    position:absolute;top:30px;left:50%;transform:translateX(-50%);
+    width:140px;height:140px;
+    animation: balloonLife 3.2s ease-in-out infinite;
+    transform-origin:center bottom;
+  }
+  @keyframes balloonLife{
+    0%{transform:translateX(-50%) scale(0.05);opacity:0}
+    15%{opacity:1}
+    45%{transform:translateX(-50%) scale(1.05) rotate(-2deg)}
+    60%{transform:translateX(-50%) scale(1) rotate(1deg)}
+    75%{transform:translateX(-50%) scale(1.02) rotate(-1deg)}
+    85%{transform:translateX(-50%) scale(1.18);opacity:1} /* ngembang maksimal sebelum meletus */
+    90%{transform:translateX(-50%) scale(1.4);opacity:0;filter:blur(4px)}
+    100%{transform:translateX(-50%) scale(0);opacity:0}
   }
 
-  /* Animasi jatuh */
-  @keyframes fall{
-    0%{transform:translateY(-200px) rotate(0deg) scale(0.8);opacity:0}
-    10%{opacity:1}
-    85%{transform:translateY(var(--y)) rotate(var(--r)) scale(1)}
-    90%{transform:translateY(calc(var(--y) + 10px)) rotate(var(--r)) scaleX(1.25) scaleY(0.75)} /* peot pas numpuk */
-    100%{transform:translateY(var(--y)) rotate(var(--r)) scale(1)}
+  /* 3 kacang numpuk di dalam balon - biar bulat */
+  .bean-cluster{position:relative;width:100%;height:100%}
+  .b{position:absolute;width:58px;filter:drop-shadow(0 5px 8px rgba(0,0,0,0.25))}
+  .b1{left:10px;top:35px;transform:rotate(-25deg)}
+  .b2{left:48px;top:10px;transform:rotate(20deg)}
+  .b3{left:62px;top:62px;transform:rotate(-8deg)}
+
+  /* Partikel pecahan pas meletus */
+  .pop-particle{position:absolute;width:12px;height:12px;background:white;border-radius:50%;opacity:0}
+  @keyframes popFly{
+    0%{transform:translate(0,0) scale(1);opacity:1}
+    100%{transform:translate(var(--dx), var(--dy)) scale(0);opacity:0}
   }
 
- .bean-svg{width:100%;height:auto}
+  .logo-text{font-family:'Luckiest Guy',cursive;font-size:64px;line-height:0.85;color:white;text-align:center;-webkit-text-stroke:4.5px black;text-shadow:6px 7px 0 black;transform:rotate(-4deg);z-index:2;margin-bottom:20px}
+  .logo-text span{display:block}
 
- .logo-text{
-    font-family:'Luckiest Guy',cursive;font-size:62px;line-height:0.85;color:white;text-align:center;
-    -webkit-text-stroke:4.5px black;text-shadow:6px 7px 0 black;
-    transform:rotate(-4deg);z-index:2;margin-top:10px;
-  }
- .logo-text span{display:block}
-
- .btn-open{margin-top:35px;border:2.5px solid white;background:rgba(255,255,255,0.18);color:white;padding:12px 44px;border-radius:35px;font-weight:900;letter-spacing:1.5px;font-size:15px;cursor:pointer;backdrop-filter:blur(6px);z-index:10}
- .btn-open:active{transform:scale(0.94);background:white;color:var(--blue)}
- .ver{position:absolute;bottom:22px;font-size:10px;opacity:0.75;color:white;letter-spacing:4px;font-weight:bold}
+  .btn-open{margin-top:10px;border:2.5px solid white;background:rgba(255,255,255,0.18);color:white;padding:12px 44px;border-radius:35px;font-weight:900;letter-spacing:1.5px;font-size:15px;cursor:pointer;backdrop-filter:blur(6px);z-index:10}
+  .ver{position:absolute;bottom:22px;font-size:10px;opacity:0.75;color:white;letter-spacing:4px;font-weight:bold}
 </style>
 </head>
 <body>
 
 <div class="stage">
-  <div class="pile-area" id="pile"></div>
+  <div class="balloon-wrap" id="balloon">
+    <div class="bean-cluster" id="cluster">
+      <div class="b b1"><svg viewBox="0 0 120 175" xmlns="http://www.w3.org/2000/svg"><path d="M 60 2 C 88 2, 116 24, 116 66 C 116 124, 86 173, 46 173 C 15 173, 1 143, 1 118 C 1 95, 22 86, 36 62 C 50 39, 28 2, 60 2 Z" fill="white"/><path d="M 68.5 46.5 C 80 62, 77 103, 41 126.5" stroke="#2F95FF" stroke-width="11" stroke-linecap="round" fill="none"/></svg></div>
+      <div class="b b2"><svg viewBox="0 0 120 175" xmlns="http://www.w3.org/2000/svg"><path d="M 60 2 C 88 2, 116 24, 116 66 C 116 124, 86 173, 46 173 C 15 173, 1 143, 1 118 C 1 95, 22 86, 36 62 C 50 39, 28 2, 60 2 Z" fill="white"/><path d="M 68.5 46.5 C 80 62, 77 103, 41 126.5" stroke="#2F95FF" stroke-width="11" stroke-linecap="round" fill="none"/></svg></div>
+      <div class="b b3"><svg viewBox="0 0 120 175" xmlns="http://www.w3.org/2000/svg"><path d="M 60 2 C 88 2, 116 24, 116 66 C 116 124, 86 173, 46 173 C 15 173, 1 143, 1 118 C 1 95, 22 86, 36 62 C 50 39, 28 2, 60 2 Z" fill="white"/><path d="M 68.5 46.5 C 80 62, 77 103, 41 126.5" stroke="#2F95FF" stroke-width="11" stroke-linecap="round" fill="none"/></svg></div>
+    </div>
+  </div>
   <div class="logo-text"><span>BEAN</span><span>GRAM</span></div>
 </div>
 
-<button class="btn-open" onclick="openApp()">OPEN APP</button>
+<button class="btn-open" onclick="location.href='game.html'">OPEN APP</button>
 <div class="ver">BEANGRAM V1.0</div>
 
 <script>
 const tg=window.Telegram.WebApp;tg.ready();tg.expand();
-function openApp(){ if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy'); location.href='game.html'; }
+const balloon=document.getElementById('balloon');
 
-// TEMPLATE KACANG PRESISI MIRIP LOGO - INI YANG BIKIN MIRIP 100%
-function beanSVG(){ return `
-  <svg class="bean-svg" viewBox="0 0 120 175" xmlns="http://www.w3.org/2000/svg">
-    <path d="M 60 2 C 88 2, 116 24, 116 66 C 116 124, 86 173, 46 173 C 15 173, 1 143, 1 118 C 1 95, 22 86, 36 62 C 50 39, 28 2, 60 2 Z" fill="white"/>
-    <path d="M 68.5 46.5 C 80 62, 77 103, 41 126.5" stroke="#2F95FF" stroke-width="11" stroke-linecap="round" fill="none"/>
-  </svg>`; }
-
-const pile=document.getElementById('pile');
-// Posisi tumpukan biar numpuk natural di atas tulisan BEAN GRAM
-const stackPos=[
-  {x:110,y:115,r: -20},{x:80,y:105,r:25},{x:140,y:108,r:-10},
-  {x:60,y:125,r:15},{x:130,y:125,r:35},{x:95,y:85,r:-25},
-  {x:165,y:118,r:10},{x:45,y:100,r:-30},{x:115,y:65,r:5}
-];
-
-let idx=0;
-function dropOne(){
-  if(idx>=stackPos.length) return;
-  const p=stackPos[idx];
-  const div=document.createElement('div');
-  div.className='mini-bean';
-  div.style.left=p.x+'px';
-  div.style.setProperty('--y',p.y+'px');
-  div.style.setProperty('--r',p.r+'deg');
-  div.style.animation=`fall 0.9s cubic-bezier(0.34,1.56,0.64,1) forwards`;
-  div.innerHTML=beanSVG();
-  pile.appendChild(div);
-  idx++;
-  if(tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
+function createPop(){
+  for(let i=0;i<8;i++){
+    const p=document.createElement('div');
+    p.className='pop-particle';
+    p.style.left='50%';p.style.top='50%';
+    const ang=Math.random()*360;
+    const dist=60+Math.random()*80;
+    const dx=Math.cos(ang*Math.PI/180)*dist;
+    const dy=Math.sin(ang*Math.PI/180)*dist;
+    p.style.setProperty('--dx',dx+'px');
+    p.style.setProperty('--dy',dy+'px');
+    p.style.animation=`popFly 0.6s ease-out forwards`;
+    p.style.animationDelay='2.75s';
+    balloon.appendChild(p);
+    setTimeout(()=>p.remove(),800);
+  }
 }
 
-function startRain(){
-  pile.innerHTML=''; idx=0;
-  stackPos.forEach((_,i)=>{
-    setTimeout(dropOne, i*280);
-  });
-}
-
-startRain();
-setInterval(startRain, 4000); // ulang tiap 4 detik biar hidup terus
+// loop pecahan tiap cycle
+setInterval(createPop, 3200);
+setTimeout(createPop, 2750);
 </script>
 </body>
 </html>
