@@ -9,90 +9,50 @@
 <style>
   :root{--blue:#2F95FF}
   *{margin:0;padding:0;box-sizing:border-box}
-  body{background:var(--blue);height:100vh;display:flex;justify-content:center;align-items:center;flex-direction:column;overflow:hidden;position:relative}
+  body{background:var(--blue);height:100vh;display:flex;justify-content:center;align-items:center;flex-direction:column;overflow:hidden}
+  .stage{position:relative;width:280px;height:320px;display:flex;align-items:center;justify-content:flex-end;flex-direction:column}
 
-  .stage{position:relative;width:280px;height:320px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
-
-  /* BALON KACANG */
-  .balloon-wrap{
-    position:absolute;top:30px;left:50%;transform:translateX(-50%);
-    width:140px;height:140px;
-    animation: balloonLife 3.2s ease-in-out infinite;
+  /* BALON BULAT */
+  .balloon{
+    position:absolute;top:25px;left:50%;
+    width:150px;height:150px;
+    background:white;
+    border-radius:50%;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:0 18px 30px rgba(0,0,0,0.28), inset -10px -10px 20px rgba(0,0,0,0.12);
+    animation:balloonLife 3s ease-in-out infinite;
     transform-origin:center bottom;
   }
   @keyframes balloonLife{
-    0%{transform:translateX(-50%) scale(0.05);opacity:0}
+    0%{transform:translateX(-50%) scale(0.02);opacity:0}
     15%{opacity:1}
-    45%{transform:translateX(-50%) scale(1.05) rotate(-2deg)}
-    60%{transform:translateX(-50%) scale(1) rotate(1deg)}
-    75%{transform:translateX(-50%) scale(1.02) rotate(-1deg)}
-    85%{transform:translateX(-50%) scale(1.18);opacity:1} /* ngembang maksimal sebelum meletus */
-    90%{transform:translateX(-50%) scale(1.4);opacity:0;filter:blur(4px)}
+    50%{transform:translateX(-50%) scale(1)}
+    70%{transform:translateX(-50%) scale(1) rotate(-2deg);border-radius:45% 55% 48% 52% / 48% 52% 55% 45%}
+    82%{transform:translateX(-50%) scale(1.18)}
+    91%{transform:translateX(-50%) scale(1.4);opacity:0;filter:blur(6px)}
     100%{transform:translateX(-50%) scale(0);opacity:0}
   }
+  .bean{width:78px;height:auto;filter:drop-shadow(0 4px 6px rgba(0,0,0,0.15))}
 
-  /* 3 kacang numpuk di dalam balon - biar bulat */
-  .bean-cluster{position:relative;width:100%;height:100%}
-  .b{position:absolute;width:58px;filter:drop-shadow(0 5px 8px rgba(0,0,0,0.25))}
-  .b1{left:10px;top:35px;transform:rotate(-25deg)}
-  .b2{left:48px;top:10px;transform:rotate(20deg)}
-  .b3{left:62px;top:62px;transform:rotate(-8deg)}
-
-  /* Partikel pecahan pas meletus */
-  .pop-particle{position:absolute;width:12px;height:12px;background:white;border-radius:50%;opacity:0}
-  @keyframes popFly{
-    0%{transform:translate(0,0) scale(1);opacity:1}
-    100%{transform:translate(var(--dx), var(--dy)) scale(0);opacity:0}
-  }
-
-  .logo-text{font-family:'Luckiest Guy',cursive;font-size:64px;line-height:0.85;color:white;text-align:center;-webkit-text-stroke:4.5px black;text-shadow:6px 7px 0 black;transform:rotate(-4deg);z-index:2;margin-bottom:20px}
+  .logo-text{font-family:'Luckiest Guy',cursive;font-size:64px;line-height:0.85;color:white;text-align:center;-webkit-text-stroke:4.5px black;text-shadow:6px 7px 0 black;transform:rotate(-4deg);z-index:2}
   .logo-text span{display:block}
-
-  .btn-open{margin-top:10px;border:2.5px solid white;background:rgba(255,255,255,0.18);color:white;padding:12px 44px;border-radius:35px;font-weight:900;letter-spacing:1.5px;font-size:15px;cursor:pointer;backdrop-filter:blur(6px);z-index:10}
+  .btn-open{margin-top:22px;border:2.5px solid white;background:rgba(255,255,255,0.18);color:white;padding:12px 44px;border-radius:35px;font-weight:900;letter-spacing:1.5px;font-size:15px;cursor:pointer;backdrop-filter:blur(6px)}
   .ver{position:absolute;bottom:22px;font-size:10px;opacity:0.75;color:white;letter-spacing:4px;font-weight:bold}
 </style>
 </head>
 <body>
-
 <div class="stage">
-  <div class="balloon-wrap" id="balloon">
-    <div class="bean-cluster" id="cluster">
-      <div class="b b1"><svg viewBox="0 0 120 175" xmlns="http://www.w3.org/2000/svg"><path d="M 60 2 C 88 2, 116 24, 116 66 C 116 124, 86 173, 46 173 C 15 173, 1 143, 1 118 C 1 95, 22 86, 36 62 C 50 39, 28 2, 60 2 Z" fill="white"/><path d="M 68.5 46.5 C 80 62, 77 103, 41 126.5" stroke="#2F95FF" stroke-width="11" stroke-linecap="round" fill="none"/></svg></div>
-      <div class="b b2"><svg viewBox="0 0 120 175" xmlns="http://www.w3.org/2000/svg"><path d="M 60 2 C 88 2, 116 24, 116 66 C 116 124, 86 173, 46 173 C 15 173, 1 143, 1 118 C 1 95, 22 86, 36 62 C 50 39, 28 2, 60 2 Z" fill="white"/><path d="M 68.5 46.5 C 80 62, 77 103, 41 126.5" stroke="#2F95FF" stroke-width="11" stroke-linecap="round" fill="none"/></svg></div>
-      <div class="b b3"><svg viewBox="0 0 120 175" xmlns="http://www.w3.org/2000/svg"><path d="M 60 2 C 88 2, 116 24, 116 66 C 116 124, 86 173, 46 173 C 15 173, 1 143, 1 118 C 1 95, 22 86, 36 62 C 50 39, 28 2, 60 2 Z" fill="white"/><path d="M 68.5 46.5 C 80 62, 77 103, 41 126.5" stroke="#2F95FF" stroke-width="11" stroke-linecap="round" fill="none"/></svg></div>
-    </div>
+  <div class="balloon">
+    <!-- 1 BEAN PRESISI LANGSUNG DARI LOGO - BUKAN GAMBAR LUAR -->
+    <svg class="bean" viewBox="0 0 120 175" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 60 2 C 88 2, 116 24, 116 66 C 116 124, 86 173, 46 173 C 15 173, 1 143, 1 118 C 1 95, 22 86, 36 62 C 50 39, 28 2, 60 2 Z" fill="white" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M 68.5 46.5 C 80 62, 77 103, 41 126.5" stroke="#2F95FF" stroke-width="11" stroke-linecap="round" fill="none"/>
+    </svg>
   </div>
   <div class="logo-text"><span>BEAN</span><span>GRAM</span></div>
 </div>
-
 <button class="btn-open" onclick="location.href='game.html'">OPEN APP</button>
 <div class="ver">BEANGRAM V1.0</div>
-
-<script>
-const tg=window.Telegram.WebApp;tg.ready();tg.expand();
-const balloon=document.getElementById('balloon');
-
-function createPop(){
-  for(let i=0;i<8;i++){
-    const p=document.createElement('div');
-    p.className='pop-particle';
-    p.style.left='50%';p.style.top='50%';
-    const ang=Math.random()*360;
-    const dist=60+Math.random()*80;
-    const dx=Math.cos(ang*Math.PI/180)*dist;
-    const dy=Math.sin(ang*Math.PI/180)*dist;
-    p.style.setProperty('--dx',dx+'px');
-    p.style.setProperty('--dy',dy+'px');
-    p.style.animation=`popFly 0.6s ease-out forwards`;
-    p.style.animationDelay='2.75s';
-    balloon.appendChild(p);
-    setTimeout(()=>p.remove(),800);
-  }
-}
-
-// loop pecahan tiap cycle
-setInterval(createPop, 3200);
-setTimeout(createPop, 2750);
-</script>
+<script>Telegram.WebApp.ready();Telegram.WebApp.expand();</script>
 </body>
 </html>
