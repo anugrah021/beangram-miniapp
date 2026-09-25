@@ -72,82 +72,54 @@
 <script>
   const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
   const CHANNEL_URL = "https://t.me/BeanGram_Official";
-  const CHANNEL_USERNAME = "@BeanGram_Official";
-  // ID lu buat bypass testing (ganti sama ID Telegram lu)
-  const OWNER_IDS = [123456789]; // nanti isi ID lu
 
   function joinChannel(){
     if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-    tg.openTelegramLink? tg.openTelegramLink(CHANNEL_URL) : window.open(CHANNEL_URL,'_blank');
-    setTimeout(()=>{checkRealJoin();}, 2000);
+    tg.openTelegramLink ? tg.openTelegramLink(CHANNEL_URL) : window.open(CHANNEL_URL,'_blank');
+    setTimeout(()=>{checkRealJoin();}, 1500);
+    let c=0; const iv=setInterval(()=>{checkRealJoin(); c++; if(c>10) clearInterval(iv);}, 2000);
   }
 
   async function checkRealJoin(){
     const user = tg.initDataUnsafe?.user;
     const btn = document.getElementById('openBtn');
-
-    // BYPASS: kalau buka di browser biasa, langsung unlock biar bisa edit
     if(!user?.id){
-      console.log('browser preview - auto unlock');
-      unlockApp();
+      btn.innerHTML = "OPEN IN TELEGRAM";
       return;
     }
-
-    // BYPASS OWNER biar lu bisa masuk pas testing
-    // if(OWNER_IDS.includes(user.id)){ unlockApp(); return; }
-
     try{
-      btn.innerHTML = "CHECKING...";
-      const controller = new AbortController();
-      const timeout = setTimeout(()=>controller.abort(), 4000); // 4 detik max
-
+      btn.innerHTML = "CHECKING... 🔍";
       const res = await fetch('/api/check', {
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({user_id: user.id}),
-        signal: controller.signal
+        body:JSON.stringify({user_id: user.id})
       });
-      clearTimeout(timeout);
-
       const j = await res.json();
-      console.log('check result', j);
-
+      console.log(j);
       if(j.joined){
         unlockApp();
-      } else {
-        // kalau API error (bot belum admin dll) jangan stuck, kasih info
-        if(j.error){
-          console.log('API Error:', j.error);
-          btn.innerHTML = "⚠️ BOT BELUM ADMIN";
-          // buat testing, tetap unlock setelah 2 detik biar lu bisa masuk menu
-          setTimeout(()=>unlockApp(), 2000);
-        } else {
-          btn.innerHTML = "🔒 JOIN CHANNEL TO UNLOCK";
-        }
+      }else{
+        btn.innerHTML = "🔒 JOIN CHANNEL TO UNLOCK";
+        btn.classList.remove('unlocked');
       }
     }catch(e){
-      console.log('check gagal / timeout', e);
-      // KALAU TIMEOUT / ERROR, JANGAN STUCK - LANGSUNG UNLOCK BUAT DEV MODE
-      btn.innerHTML = "DEV MODE: TAP TO ENTER";
-      btn.classList.add('unlocked');
-      btn.onclick = ()=>{ location.href='game.html'; };
+      console.log('error', e);
+      btn.innerHTML = "🔒 JOIN CHANNEL TO UNLOCK";
     }
   }
 
   function unlockApp(){
     const btn=document.getElementById('openBtn');
     btn.classList.add('unlocked');
-    btn.innerHTML="OPEN APP";
+    btn.innerHTML="OPEN APP 🚀";
     if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-    localStorage.setItem('beangram_joined','1');
   }
 
   function tryOpen(){
     const btn=document.getElementById('openBtn');
     if(!btn.classList.contains('unlocked')){
       if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-      joinChannel();
-      return;
+      joinChannel(); return;
     }
     if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
     location.href='game.html';
