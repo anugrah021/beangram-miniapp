@@ -1,52 +1,91 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#02060e;color:#cfeaff;font-family:monospace;overflow-x:hidden}
-.grid{position:fixed;inset:0;background:radial-gradient(circle at 50% 0%,#0a2a5a,transparent 60%),linear-gradient(#0a2a5a33 1px,transparent 1px),linear-gradient(90deg,#0a2a5a33 1px,transparent 1px);background-size:100% 100%,40px 40px,40px 40px;z-index:-1}
-.wrap{max-width:420px;margin:0 auto;padding:16px}
-.top{display:flex;justify-content:space-between;font-size:11px;opacity:.7}
-.card{margin-top:14px;background:linear-gradient(180deg,#0d1b33cc,#070f22cc);border:1px solid #1e4a8a;border-radius:20px;padding:16px;backdrop-filter:blur(12px);box-shadow:0 0 40px #1a6aff33}
-.badge{display:inline-block;background:#00ff8860;border:1px solid #00ff88;color:#00ff88;padding:2px 8px;border-radius:999px;font-size:10px}
-.h1{font-size:22px;font-weight:900;color:#fff;margin:10px 0 4px}
-.p{font-size:13px;opacity:.7}
-.profile{display:flex;gap:12px;margin:16px 0;align-items:center}
-.avatar{width:56px;height:56px;border-radius:50%;border:2px solid #2f8bff;background:#0a2348;object-fit:cover}
-.rarity{padding:6px 10px;border-radius:8px;background:#1a3a6a;color:#6ab2ff;font-size:11px;border:1px solid #2f6abf}
-.bigNum{font-size:38px;color:#6ee7ff;font-weight:900}
-.bar{height:8px;background:#0d2348;border-radius:999px;overflow:hidden;margin:8px 0}
-.bar>div{height:100%;background:linear-gradient(90deg,#2f8bff,#6ee7ff);width:62%;box-shadow:0 0 10px #2f8bff}
-.btn{width:100%;padding:14px;border-radius:14px;border:0;font-weight:900;margin-top:12px;cursor:pointer}
-.btn-primary{background:linear-gradient(90deg,#2f8bff,#6ee7ff);color:#00152e}
-.btn-ghost{background:#0d2348;color:#6ab2ff;border:1px solid #1e4a8a}
-.xp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
-.xp div{background:#0a1c3a;border:1px solid #1e3a6a;border-radius:12px;padding:10px;font-size:12px}
-</style></head><body><div class="grid"></div>
-<div class="wrap">
-<div class="top"><span>SYSTEM: ONLINE ●</span><span>PHASE 1 • EARLY ACCESS</span></div>
-<div class="card">
-<div class="badge">● LIVE - 2,487 SECURED</div>
-<div class="h1">WAITLIST — SECURE YOUR SPOT</div>
-<div class="p">Join exclusive Vault Beta. Limited 5,000 slots.</div>
-<div class="profile">
-<img id="ava" class="avatar" src="">
-<div><div id="name" style="color:#fff;font-weight:700">BEAN USER</div><div id="usern" style="font-size:12px;opacity:.6">@username</div><div class="rarity" id="rarity">RARITY: ROLLING...</div></div>
+*{box-sizing:border-box}
+body{margin:0;background:#3A9CFF;font-family:Inter,sans-serif;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+.header{width:100%;padding:18px 20px;display:flex;justify-content:space-between;align-items:center}
+.logo-small{height:32px;filter:brightness(0) invert(1)}
+.badge{font-size:10px;letter-spacing:2px;background:#000;color:#fff;padding:6px 12px;border-radius:999px}
+.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;max-width:420px;padding:20px;text-align:center}
+.big-logo{width:110px;filter:drop-shadow(0 10px 20px rgba(0,0,0,.3)) brightness(0) invert(1);margin-bottom:10px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.title{font-size:36px;font-weight:900;line-height:.9;text-shadow:3px 3px 0 #000,-3px -3px 0 #000,3px -3px 0 #000,-3px 3px 0 #000;margin:10px 0}
+.coming{margin-top:20px;width:100%;background:#fff;border:4px solid #000;border-radius:24px;padding:16px;color:#000;position:relative;overflow:hidden;box-shadow:0 10px 0 #000}
+.machine-blur{filter:blur(8px) grayscale(.3);opacity:.7;user-select:none;pointer-events:none}
+.row{display:flex;gap:8px;margin:8px 0}
+.row div{flex:1;background:#e8f0ff;border:3px solid #000;border-radius:12px;padding:10px;font-weight:800}
+.row div small{display:block;font-size:10px;opacity:.6}
+.lock-overlay{position:absolute;inset:0;background:rgba(255,255,255,.75);backdrop-filter:blur(2px);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.lock-icon{width:64px;height:64px;background:#000;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;border:3px solid #fff;box-shadow:0 4px 0 #000;margin-bottom:10px;animation:pulse 1.5s infinite}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+.coming-text{font-size:28px;font-weight:900;letter-spacing:2px}
+.sub{font-size:12px;opacity:.7;margin-top:4px}
+.stats{margin-top:18px;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stats div{background:#000;color:#fff;border-radius:16px;padding:12px;text-align:center;border:2px solid #fff}
+.stats div b{display:block;font-size:18px;color:#3A9CFF}
+.btn{margin-top:18px;width:100%;padding:14px;background:#000;color:#fff;border:3px solid #fff;border-radius:999px;font-weight:900;letter-spacing:1px}
+.footer{font-size:9px;letter-spacing:3px;opacity:.7;margin:18px 0 10px}
+</style>
+</head>
+<body>
+
+<div class="header">
+<img class="logo-small" src="https://i.imgur.com/Q1p2o6H.png">
+<div class="badge">🟢 WAITLIST LIVE</div>
 </div>
-<div>WAITLIST POSITION</div>
-<div class="bigNum" id="pos">#1,248</div>
-<div class="p">You are in the top 0.8% of applicants</div>
-<div style="margin-top:12px;display:flex;justify-content:space-between;font-size:12px"><span>TOTAL SECURED</span><span>3,124 / 5,000</span></div>
-<div class="bar"><div></div></div>
-<button class="btn btn-primary" onclick="copyLink()">[ COPY INVITE LINK ]</button>
-<button class="btn btn-ghost" onclick="shareX()">[ SHARE ON X ]</button>
-<div class="xp"><div>Invite 3 friends<br><b>UPGRADE TO RARE</b></div><div>Post on X<br><b>+50 XP</b></div></div>
+
+<div class="center">
+<img class="big-logo" src="https://i.imgur.com/Q1p2o6H.png">
+<div class="title">BEAN<br>GRAM</div>
+<div style="font-size:11px;letter-spacing:3px;opacity:.9;margin-bottom:10px">GRAM MINING PROTOCOL</div>
+
+<!-- MACHINE YANG DI BLUR + LOCK -->
+<div class="coming">
+  <!-- Isi mesin pura2 (di blur) -->
+  <div class="machine-blur">
+    <div style="font-weight:900;font-size:16px">⛏️ BEAN MINER V1</div>
+    <div class="row"><div><small>HASH RATE</small>420 GH/s</div><div><small>MINED</small>1,284 BGRAM</div></div>
+    <div class="row"><div><small>ENERGY</small>85/100 ⚡</div><div><small>LEVEL</small>3</div></div>
+    <div style="background:#3A9CFF;color:#fff;border:3px solid #000;border-radius:12px;padding:12px;margin-top:8px;font-weight:900">MINE NOW</div>
+  </div>
+  <!-- Overlay Kunci -->
+  <div class="lock-overlay">
+    <div class="lock-icon">🔒</div>
+    <div class="coming-text">COMING SOON!!</div>
+    <div class="sub">Mining machine is under maintenance</div>
+    <div style="margin-top:10px;background:#000;color:#fff;padding:6px 14px;border-radius:999px;font-size:11px">EST. LAUNCH: Q1 2026</div>
+  </div>
 </div>
-<div style="text-align:center;font-size:10px;opacity:.4;margin:20px">WAITLIST CLOSES: DEC 31 2025 • BEANGRAM V1.0</div>
+
+<div class="stats">
+  <div><b id="spots">3,847</b><small>BEANS SECURED</small></div>
+  <div><b id="pos">#1,248</b><small>YOUR QUEUE</small></div>
 </div>
+
+<button class="btn" onclick="copyInvite()">COPY INVITE LINK 🔗</button>
+<div style="font-size:11px;margin-top:10px;opacity:.8" id="refInfo">Invite 3 friends to unlock early access</div>
+
+<div class="footer">BEANGRAM V1.0 • POWERED BY TON</div>
+</div>
+
 <script>
-const tg=Telegram.WebApp;tg.ready();
+const tg=window.Telegram.WebApp;tg.ready();tg.expand();
 const u=tg.initDataUnsafe?.user;
-if(u){document.getElementById('name').innerText=u.first_name;document.getElementById('usern').innerText='@'+(u.username||u.id);document.getElementById('ava').src=u.photo_url||'';document.getElementById('pos').innerText='#'+(1000+(u.id%4000));}
-const r=['COMMON','RARE','EPIC','LEGENDARY'][Math.floor(Math.random()*4)];document.getElementById('rarity').innerText='RARITY RANK: '+r;
-function copyLink(){const link=`https://t.me/Beangram_bot?start=${u?.id||'ref'}`;navigator.clipboard.writeText(link);tg.showAlert('Invite link copied! '+link)}
-function shareX(){tg.openLink(`https://twitter.com/intent/tweet?text=I just secured my BeanGram spot #${document.getElementById('pos').innerText}! Join waitlist:`)}
-</script></body></html>
+if(u){
+  document.getElementById('pos').innerText='#'+(1000+(u.id%4000));
+  document.getElementById('spots').innerText=(3000+ (u.id%1000));
+}
+function copyInvite(){
+  const link=`https://t.me/Beangram_bot?start=${u?.id||'bean'}`;
+  navigator.clipboard.writeText(link);
+  if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+  tg.showAlert('✅ Invite link copied!\n'+link+'\n\nShare ke temen biar dapet early access!');
+  document.getElementById('refInfo').innerText='Link copied! Share now 🚀';
+}
+</script>
+</body>
+</html>
