@@ -1,24 +1,52 @@
 <!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-body{margin:0;background:#ffef9c;font-family:'Comic Sans MS',sans-serif;text-align:center}
-.factory{background:#fff6a0;border-bottom:6px solid #5a3e00;padding:10px}
-.machine{width:90%;max-width:360px;margin:18px auto;background:#fff;border:4px solid #333;border-radius:20px;padding:14px;box-shadow:6px 6px 0 #333}
-.bean{font-size:44px;animation:bounce 1s infinite alternate}
-@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-10px)}}
-.btn{padding:16px 24px;background:#3ec700;border:4px solid #000;border-radius:999px;font-weight:900;font-size:18px;box-shadow:0 6px 0 #000;cursor:pointer;width:90%}
-.bar{height:14px;background:#ddd;border:3px solid #000;border-radius:999px;overflow:hidden}
-.bar div{height:100%;background:#3ec700;width:62%}
-</style></head><body>
-<div class="factory"><b>WONKA'S BEAN FACTORY - BEAN MINTING DIVISION</b><br>BEANS: <span id="bc">1,284</span> | ENERGY: 85/100</div>
-<div class="machine">
-<div class="bean">🫘</div>
-<div style="font-weight:900;font-size:20px">BEAN MIXER 3000</div>
-<div class="bar"><div id="prog"></div></div>
-<div style="margin:10px 0" id="status">Factory Status: OPERATIONAL<br>BEANS/HR: 420 ↑</div>
-<button class="btn" onclick="mint()">PRESS TO MINT</button>
-<div style="margin-top:10px;font-size:12px">INVENTORY: <span id="inv">12 COMMON • 3 RARE • 1 GOLDEN</span></div>
+*{box-sizing:border-box}body{margin:0;background:#02060e;color:#cfeaff;font-family:monospace;overflow-x:hidden}
+.grid{position:fixed;inset:0;background:radial-gradient(circle at 50% 0%,#0a2a5a,transparent 60%),linear-gradient(#0a2a5a33 1px,transparent 1px),linear-gradient(90deg,#0a2a5a33 1px,transparent 1px);background-size:100% 100%,40px 40px,40px 40px;z-index:-1}
+.wrap{max-width:420px;margin:0 auto;padding:16px}
+.top{display:flex;justify-content:space-between;font-size:11px;opacity:.7}
+.card{margin-top:14px;background:linear-gradient(180deg,#0d1b33cc,#070f22cc);border:1px solid #1e4a8a;border-radius:20px;padding:16px;backdrop-filter:blur(12px);box-shadow:0 0 40px #1a6aff33}
+.badge{display:inline-block;background:#00ff8860;border:1px solid #00ff88;color:#00ff88;padding:2px 8px;border-radius:999px;font-size:10px}
+.h1{font-size:22px;font-weight:900;color:#fff;margin:10px 0 4px}
+.p{font-size:13px;opacity:.7}
+.profile{display:flex;gap:12px;margin:16px 0;align-items:center}
+.avatar{width:56px;height:56px;border-radius:50%;border:2px solid #2f8bff;background:#0a2348;object-fit:cover}
+.rarity{padding:6px 10px;border-radius:8px;background:#1a3a6a;color:#6ab2ff;font-size:11px;border:1px solid #2f6abf}
+.bigNum{font-size:38px;color:#6ee7ff;font-weight:900}
+.bar{height:8px;background:#0d2348;border-radius:999px;overflow:hidden;margin:8px 0}
+.bar>div{height:100%;background:linear-gradient(90deg,#2f8bff,#6ee7ff);width:62%;box-shadow:0 0 10px #2f8bff}
+.btn{width:100%;padding:14px;border-radius:14px;border:0;font-weight:900;margin-top:12px;cursor:pointer}
+.btn-primary{background:linear-gradient(90deg,#2f8bff,#6ee7ff);color:#00152e}
+.btn-ghost{background:#0d2348;color:#6ab2ff;border:1px solid #1e4a8a}
+.xp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.xp div{background:#0a1c3a;border:1px solid #1e3a6a;border-radius:12px;padding:10px;font-size:12px}
+</style></head><body><div class="grid"></div>
+<div class="wrap">
+<div class="top"><span>SYSTEM: ONLINE ●</span><span>PHASE 1 • EARLY ACCESS</span></div>
+<div class="card">
+<div class="badge">● LIVE - 2,487 SECURED</div>
+<div class="h1">WAITLIST — SECURE YOUR SPOT</div>
+<div class="p">Join exclusive Vault Beta. Limited 5,000 slots.</div>
+<div class="profile">
+<img id="ava" class="avatar" src="">
+<div><div id="name" style="color:#fff;font-weight:700">BEAN USER</div><div id="usern" style="font-size:12px;opacity:.6">@username</div><div class="rarity" id="rarity">RARITY: ROLLING...</div></div>
+</div>
+<div>WAITLIST POSITION</div>
+<div class="bigNum" id="pos">#1,248</div>
+<div class="p">You are in the top 0.8% of applicants</div>
+<div style="margin-top:12px;display:flex;justify-content:space-between;font-size:12px"><span>TOTAL SECURED</span><span>3,124 / 5,000</span></div>
+<div class="bar"><div></div></div>
+<button class="btn btn-primary" onclick="copyLink()">[ COPY INVITE LINK ]</button>
+<button class="btn btn-ghost" onclick="shareX()">[ SHARE ON X ]</button>
+<div class="xp"><div>Invite 3 friends<br><b>UPGRADE TO RARE</b></div><div>Post on X<br><b>+50 XP</b></div></div>
+</div>
+<div style="text-align:center;font-size:10px;opacity:.4;margin:20px">WAITLIST CLOSES: DEC 31 2025 • BEANGRAM V1.0</div>
 </div>
 <script>
-let c=1284;function mint(){c++;document.getElementById('bc').innerText=c;document.getElementById('prog').style.width=(c%100)+'%';Telegram.WebApp.HapticFeedback.impactOccurred('heavy');let s=document.createElement('div');s.innerText='🫘 +1';s.style.position='fixed';s.style.left='50%';s.style.top='50%';s.style.fontSize='32px';s.style.animation='bounce .8s';document.body.appendChild(s);setTimeout(()=>s.remove(),800)}
+const tg=Telegram.WebApp;tg.ready();
+const u=tg.initDataUnsafe?.user;
+if(u){document.getElementById('name').innerText=u.first_name;document.getElementById('usern').innerText='@'+(u.username||u.id);document.getElementById('ava').src=u.photo_url||'';document.getElementById('pos').innerText='#'+(1000+(u.id%4000));}
+const r=['COMMON','RARE','EPIC','LEGENDARY'][Math.floor(Math.random()*4)];document.getElementById('rarity').innerText='RARITY RANK: '+r;
+function copyLink(){const link=`https://t.me/Beangram_bot?start=${u?.id||'ref'}`;navigator.clipboard.writeText(link);tg.showAlert('Invite link copied! '+link)}
+function shareX(){tg.openLink(`https://twitter.com/intent/tweet?text=I just secured my BeanGram spot #${document.getElementById('pos').innerText}! Join waitlist:`)}
 </script></body></html>
