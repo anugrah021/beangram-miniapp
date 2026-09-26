@@ -8,7 +8,7 @@
 *{box-sizing:border-box}
 body{margin:0;background:#3A9CFF;font-family:Inter,sans-serif;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center}
 .header{width:100%;padding:18px 20px;display:flex;justify-content:space-between;align-items:center}
-.logo-text{font-weight:900;font-size:18px;background:#fff;color:#3A9CFF;padding:6px 12px;border-radius:8px;border:3px solid #000;letter-spacing:1px}
+.logo-gravity{font-family: 'Fredoka One', cursive, sans-serif; font-weight:900; font-size:26px; color:#fff; text-shadow:3px 3px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 5px 0 #000; letter-spacing:1px; transform:rotate(-2deg)}
 .badge{font-size:10px;letter-spacing:2px;background:#000;color:#fff;padding:7px 14px;border-radius:999px}
 .center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;max-width:420px;padding:20px;text-align:center}
 .big-logo-wrap{width:110px;height:110px;background:#fff;border:4px solid #000;border-radius:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 0 #000;margin-bottom:12px;animation:float 3s ease-in-out infinite}
@@ -20,21 +20,29 @@ body{margin:0;background:#3A9CFF;font-family:Inter,sans-serif;color:#fff;min-hei
 .machine-blur{filter:blur(10px);opacity:.6;user-select:none;pointer-events:none}
 .row{display:flex;gap:8px;margin:8px 0}
 .row div{flex:1;background:#e8f0ff;border:3px solid #000;border-radius:12px;padding:10px;font-weight:800;font-size:13px}
-.lock-overlay{position:absolute;inset:0;background:rgba(255,255,255,.85);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.lock-overlay{position:absolute;inset:0;background:rgba(255,255,255,.88);display:flex;flex-direction:column;align-items:center;justify-content:center}
 .lock-icon{width:72px;height:72px;background:#000;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;border:3px solid #fff;box-shadow:0 4px 0 #000;margin-bottom:12px;animation:pulse 1.5s infinite}
 @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
 .coming-text{font-size:30px;font-weight:900;letter-spacing:2px;color:#000}
-.stats{margin-top:18px;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.stats div{background:#000;color:#fff;border-radius:18px;padding:14px;text-align:center;border:3px solid #fff;box-shadow:0 4px 0 #000}
-.stats div b{display:block;font-size:20px;color:#3A9CFF}
-.btn{margin-top:18px;width:100%;padding:15px;background:#000;color:#fff;border:3px solid #fff;border-radius:999px;font-weight:900;letter-spacing:1px;box-shadow:0 5px 0 #000;cursor:pointer}
+
+/* TON ADDRESS BOX */
+.ton-box{margin-top:18px;width:100%;background:#000;border:3px solid #fff;border-radius:20px;padding:16px;text-align:left;box-shadow:0 6px 0 #000}
+.ton-box h3{margin:0 0 6px;font-size:14px;color:#3A9CFF}
+.ton-box p{margin:0 0 10px;font-size:11px;opacity:.8;line-height:1.4;color:#fff}
+.ton-input{width:100%;padding:12px 14px;border-radius:12px;border:2px solid #fff;background:#111;color:#fff;font-size:13px;outline:none}
+.ton-input::placeholder{color:#666}
+.btn-submit{margin-top:10px;width:100%;padding:13px;background:#fff;color:#000;border:3px solid #000;border-radius:999px;font-weight:900;cursor:pointer;box-shadow:0 4px 0 #000}
+.btn-submit:disabled{background:#333;color:#777;border-color:#333;box-shadow:none}
+.success-badge{background:#00ff88;color:#000;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:800;display:inline-block;margin-top:8px}
+
 .footer{font-size:9px;letter-spacing:3px;opacity:.7;margin:18px 0 10px}
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
 </head>
 <body>
 
 <div class="header">
-<div class="logo-text">BGRAM</div>
+<div class="logo-gravity">BGRAM</div>
 <div class="badge">🟢 WAITLIST LIVE</div>
 </div>
 
@@ -52,32 +60,53 @@ body{margin:0;background:#3A9CFF;font-family:Inter,sans-serif;color:#fff;min-hei
   <div class="lock-overlay">
     <div class="lock-icon">🔒</div>
     <div class="coming-text">COMING SOON!!</div>
-    <div style="font-size:13px;opacity:.7;margin-top:4px">Mining machine is under maintenance</div>
   </div>
 </div>
 
-<div class="stats">
-  <div><b id="spots">3760</b>BEANS SECURED</div>
-  <div><b id="pos">#2760</b>YOUR QUEUE</div>
+<!-- GANTI BEANS SECURED JADI SUBMIT TON -->
+<div class="ton-box" id="tonBox">
+  <h3>🔗 SUBMIT TON ADDRESS</h3>
+  <p>Submit your TON address to get reward BGRAM & TON at launching</p>
+  <input id="tonInput" class="ton-input" placeholder="EQC... or UQC... paste your TON address">
+  <button id="tonBtn" class="btn-submit" onclick="submitTon()">SUBMIT ADDRESS</button>
+  <div id="tonStatus"></div>
 </div>
 
-<button class="btn" onclick="copyInvite()">COPY INVITE LINK 🔗</button>
-<div style="font-size:11px;margin-top:12px;opacity:.9">Invite 3 friends to unlock early access</div>
 <div class="footer">BEANGRAM V1.0 • POWERED BY TON</div>
 </div>
 
 <script>
 const tg=window.Telegram.WebApp;tg.ready();tg.expand();
 const u=tg.initDataUnsafe?.user;
-if(u){
-  document.getElementById('pos').innerText='#'+(1000+(u.id%4000));
-  document.getElementById('spots').innerText=(3000+ (u.id%1000));
+const KEY='bgram_ton_'+(u?.id||'guest');
+
+// Cek udah pernah submit belum
+function loadTon(){
+  const saved = localStorage.getItem(KEY);
+  if(saved){
+    document.getElementById('tonInput').value=saved;
+    document.getElementById('tonInput').disabled=true;
+    document.getElementById('tonBtn').disabled=true;
+    document.getElementById('tonBtn').innerText='ADDRESS SUBMITTED ✅';
+    document.getElementById('tonStatus').innerHTML=`<div class="success-badge">✅ Saved: ${saved.slice(0,6)}...${saved.slice(-4)}</div><div style="font-size:11px;margin-top:6px;opacity:.6">You will receive reward at launch. 1 submission only.</div>`;
+  }
 }
-function copyInvite(){
-  const link=`https://t.me/Beangram_bot?start=${u?.id||'bean'}`;
-  navigator.clipboard.writeText(link);
+loadTon();
+
+function submitTon(){
+  const addr=document.getElementById('tonInput').value.trim();
+  if(addr.length<20){ tg.showAlert('❌ Invalid TON address! Paste your real TON address (EQC... or UQC...)'); return; }
+  // Validasi simpel TON
+  if(!addr.startsWith('EQ') && !addr.startsWith('UQ') && !addr.startsWith('0Q')){
+    // tetep izinkan tapi kasih warning, karena ada format baru
+  }
+  localStorage.setItem(KEY, addr);
   if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-  tg.showAlert('✅ Invite link copied!\n'+link);
+  tg.showAlert('✅ TON Address saved!\n\nYou will get BGRAM & TON rewards at launching!');
+  loadTon();
+  
+  // Nanti kalau udah ada backend, kirim ke server lu disini:
+  // fetch('https://your-api.com/saveTon', {method:'POST', body: JSON.stringify({userId: u?.id, ton: addr})})
 }
 </script>
 </body>
