@@ -4,43 +4,39 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#3A9CFF;font-family:Inter,sans-serif;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center}
 .header{width:100%;padding:18px 20px;display:flex;justify-content:space-between;align-items:center}
-.logo-gravity{font-family: 'Fredoka One', cursive, sans-serif; font-weight:900; font-size:26px; color:#fff; text-shadow:3px 3px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 5px 0 #000; letter-spacing:1px; transform:rotate(-2deg)}
+.logo-gravity{font-family:'Fredoka One',cursive;font-weight:900;font-size:26px;color:#fff;text-shadow:3px 3px 0 #000,-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,0 5px 0 #000;letter-spacing:1px;transform:rotate(-2deg)}
 .badge{font-size:10px;letter-spacing:2px;background:#000;color:#fff;padding:7px 14px;border-radius:999px}
-.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;max-width:420px;padding:20px;text-align:center}
-.big-logo-wrap{width:110px;height:110px;background:#fff;border:4px solid #000;border-radius:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 0 #000;margin-bottom:12px;animation:float 3s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-.big-logo-emoji{font-size:64px}
-.title{font-size:38px;font-weight:900;line-height:.9;text-shadow:4px 4px 0 #000,-4px -4px 0 #000,4px -4px 0 #000,-4px 4px 0 #000;margin:8px 0 6px;letter-spacing:1px}
-.sub-protocol{font-size:12px;letter-spacing:4px;opacity:.9;margin-bottom:10px}
-.coming{margin-top:18px;width:100%;background:#fff;border:4px solid #000;border-radius:24px;padding:18px;color:#000;position:relative;overflow:hidden;box-shadow:0 10px 0 #000}
-.machine-blur{filter:blur(10px);opacity:.6;user-select:none;pointer-events:none}
-.row{display:flex;gap:8px;margin:8px 0}
-.row div{flex:1;background:#e8f0ff;border:3px solid #000;border-radius:12px;padding:10px;font-weight:800;font-size:13px}
+.center{flex:1;display:flex;flex-direction:column;align-items:center;width:100%;max-width:420px;padding:20px;text-align:center}
+.big-logo-wrap{width:100px;height:100px;background:#fff;border:4px solid #000;border-radius:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 0 #000;margin-bottom:12px}
+.big-logo-emoji{font-size:58px}
+.title{font-size:36px;font-weight:900;line-height:.9;text-shadow:4px 4px 0 #000,-4px -4px 0 #000,4px -4px 0 #000,-4px 4px 0 #000;margin:8px 0 4px}
+.sub-protocol{font-size:12px;letter-spacing:4px;opacity:.9;margin-bottom:12px}
+.coming{width:100%;background:#fff;border:4px solid #000;border-radius:24px;padding:18px;color:#000;position:relative;overflow:hidden;box-shadow:0 10px 0 #000}
+.machine-blur{filter:blur(10px);opacity:.5;pointer-events:none}
 .lock-overlay{position:absolute;inset:0;background:rgba(255,255,255,.88);display:flex;flex-direction:column;align-items:center;justify-content:center}
-.lock-icon{width:72px;height:72px;background:#000;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;border:3px solid #fff;box-shadow:0 4px 0 #000;margin-bottom:12px;animation:pulse 1.5s infinite}
-@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
-.coming-text{font-size:30px;font-weight:900;letter-spacing:2px;color:#000}
+.lock-icon{width:70px;height:70px;background:#000;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:34px;border:3px solid #fff;box-shadow:0 4px 0 #000;margin-bottom:10px}
+.coming-text{font-size:28px;font-weight:900;color:#000}
 
-/* TON ADDRESS BOX */
-.ton-box{margin-top:18px;width:100%;background:#000;border:3px solid #fff;border-radius:20px;padding:16px;text-align:left;box-shadow:0 6px 0 #000}
-.ton-box h3{margin:0 0 6px;font-size:14px;color:#3A9CFF}
-.ton-box p{margin:0 0 10px;font-size:11px;opacity:.8;line-height:1.4;color:#fff}
+/* BOX UTAMA */
+.main-box{margin-top:18px;width:100%;background:#000;border:3px solid #fff;border-radius:24px;padding:16px;box-shadow:0 6px 0 #000;text-align:left}
+.label{font-size:11px;letter-spacing:2px;color:#3A9CFF;font-weight:800;margin-bottom:6px}
+.main-box p{margin:0 0 10px;font-size:11px;line-height:1.4;opacity:.8;color:#fff}
 .ton-input{width:100%;padding:12px 14px;border-radius:12px;border:2px solid #fff;background:#111;color:#fff;font-size:13px;outline:none}
-.ton-input::placeholder{color:#666}
-.btn-submit{margin-top:10px;width:100%;padding:13px;background:#fff;color:#000;border:3px solid #000;border-radius:999px;font-weight:900;cursor:pointer;box-shadow:0 4px 0 #000}
-.btn-submit:disabled{background:#333;color:#777;border-color:#333;box-shadow:none}
-.success-badge{background:#00ff88;color:#000;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:800;display:inline-block;margin-top:8px}
-
-.footer{font-size:9px;letter-spacing:3px;opacity:.7;margin:18px 0 10px}
+.btn{width:100%;padding:13px;border-radius:999px;font-weight:900;cursor:pointer;margin-top:10px;border:3px solid #000}
+.btn-white{background:#fff;color:#000;box-shadow:0 4px 0 #444}
+.btn-blue{background:#3A9CFF;color:#fff;border-color:#fff;box-shadow:0 4px 0 #fff}
+.divider{height:2px;background:#222;margin:16px 0;position:relative}
+.divider span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#000;padding:0 10px;font-size:10px;letter-spacing:2px;color:#555}
+.success-badge{background:#00ff88;color:#000;padding:6px 12px;border-radius:999px;font-size:11px;font-weight:800;display:inline-block;margin-top:8px}
+.footer{font-size:9px;letter-spacing:3px;opacity:.7;margin:18px 0 10px;text-align:center}
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
 </head>
 <body>
-
 <div class="header">
 <div class="logo-gravity">BGRAM</div>
 <div class="badge">🟢 WAITLIST LIVE</div>
@@ -53,9 +49,7 @@ body{margin:0;background:#3A9CFF;font-family:Inter,sans-serif;color:#fff;min-hei
 
 <div class="coming">
   <div class="machine-blur">
-    <div style="font-weight:900;font-size:16px">⛏️ BEAN MINER V1</div>
-    <div class="row"><div><small>HASH RATE</small>420 GH/s</div><div><small>MINED</small>1,284 BGRAM</div></div>
-    <div class="row"><div><small>ENERGY</small>85/100 ⚡</div><div><small>LEVEL</small>3</div></div>
+    <div style="font-weight:900">⛏️ BEAN MINER V1 - 420 GH/s - 1,284 BGRAM</div>
   </div>
   <div class="lock-overlay">
     <div class="lock-icon">🔒</div>
@@ -63,13 +57,24 @@ body{margin:0;background:#3A9CFF;font-family:Inter,sans-serif;color:#fff;min-hei
   </div>
 </div>
 
-<!-- GANTI BEANS SECURED JADI SUBMIT TON -->
-<div class="ton-box" id="tonBox">
-  <h3>🔗 SUBMIT TON ADDRESS</h3>
+<!-- STEP 1 + STEP 2 NYAMBUNG -->
+<div class="main-box" id="tonBox">
+  <div class="label">STEP 1 • SECURE REWARD</div>
   <p>Submit your TON address to get reward BGRAM & TON at launching</p>
   <input id="tonInput" class="ton-input" placeholder="EQC... or UQC... paste your TON address">
-  <button id="tonBtn" class="btn-submit" onclick="submitTon()">SUBMIT ADDRESS</button>
+  <button id="tonBtn" class="btn btn-white" onclick="submitTon()">SUBMIT ADDRESS</button>
   <div id="tonStatus"></div>
+
+  <div class="divider"><span>THEN</span></div>
+
+  <div class="label">STEP 2 • BOOST REWARD</div>
+  <p>Invite your friends for big surprise in launch 🎁</p>
+  <div style="display:flex;gap:8px;margin-top:6px">
+    <div style="flex:1;background:#111;border:2px solid #333;border-radius:12px;padding:10px;text-align:center"><b id="invCount" style="color:#3A9CFF">0</b><br><span style="font-size:10px;opacity:.6">FRIENDS</span></div>
+    <div style="flex:1;background:#111;border:2px solid #333;border-radius:12px;padding:10px;text-align:center"><b style="color:#00ff88">2X</b><br><span style="font-size:10px;opacity:.6">BOOST</span></div>
+  </div>
+  <button class="btn btn-blue" onclick="copyInvite()">COPY INVITE LINK 🔗</button>
+  <div id="refStatus" style="font-size:11px;margin-top:8px;opacity:.6;text-align:center">Invite 3 friends to unlock surprise box</div>
 </div>
 
 <div class="footer">BEANGRAM V1.0 • POWERED BY TON</div>
@@ -79,34 +84,43 @@ body{margin:0;background:#3A9CFF;font-family:Inter,sans-serif;color:#fff;min-hei
 const tg=window.Telegram.WebApp;tg.ready();tg.expand();
 const u=tg.initDataUnsafe?.user;
 const KEY='bgram_ton_'+(u?.id||'guest');
+const INVKEY='bgram_inv_'+(u?.id||'guest');
 
-// Cek udah pernah submit belum
 function loadTon(){
-  const saved = localStorage.getItem(KEY);
+  const saved=localStorage.getItem(KEY);
   if(saved){
     document.getElementById('tonInput').value=saved;
     document.getElementById('tonInput').disabled=true;
     document.getElementById('tonBtn').disabled=true;
     document.getElementById('tonBtn').innerText='ADDRESS SUBMITTED ✅';
-    document.getElementById('tonStatus').innerHTML=`<div class="success-badge">✅ Saved: ${saved.slice(0,6)}...${saved.slice(-4)}</div><div style="font-size:11px;margin-top:6px;opacity:.6">You will receive reward at launch. 1 submission only.</div>`;
+    document.getElementById('tonStatus').innerHTML=`<div class="success-badge">✅ ${saved.slice(0,6)}...${saved.slice(-4)} saved</div>`;
   }
 }
-loadTon();
+function loadInv(){
+  const c=parseInt(localStorage.getItem(INVKEY)||'0');
+  document.getElementById('invCount').innerText=c;
+  if(c>=3) document.getElementById('refStatus').innerText='🎉 Surprise unlocked! Keep inviting!';
+}
+loadTon();loadInv();
 
 function submitTon(){
   const addr=document.getElementById('tonInput').value.trim();
-  if(addr.length<20){ tg.showAlert('❌ Invalid TON address! Paste your real TON address (EQC... or UQC...)'); return; }
-  // Validasi simpel TON
-  if(!addr.startsWith('EQ') && !addr.startsWith('UQ') && !addr.startsWith('0Q')){
-    // tetep izinkan tapi kasih warning, karena ada format baru
-  }
-  localStorage.setItem(KEY, addr);
-  if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-  tg.showAlert('✅ TON Address saved!\n\nYou will get BGRAM & TON rewards at launching!');
+  if(addr.length<20){tg.showAlert('Invalid TON address');return;}
+  localStorage.setItem(KEY,addr);
+  tg.HapticFeedback?.notificationOccurred('success');
+  tg.showAlert('✅ TON Address saved! You will get BGRAM & TON rewards at launching!');
   loadTon();
-  
-  // Nanti kalau udah ada backend, kirim ke server lu disini:
-  // fetch('https://your-api.com/saveTon', {method:'POST', body: JSON.stringify({userId: u?.id, ton: addr})})
+}
+function copyInvite(){
+  const link=`https://t.me/Beangram_bot?start=${u?.id||'bean'}`;
+  navigator.clipboard.writeText(link);
+  let c=parseInt(localStorage.getItem(INVKEY)||'0')+1;
+  // ini simulasi, nanti ganti pakai data real dari backend
+  localStorage.setItem(INVKEY,c.toString());
+  loadInv();
+  tg.HapticFeedback?.impactOccurred('heavy');
+  tg.showAlert('🔗 Invite link copied!\n\n'+link+'\n\nInvite your friends for big surprise in launch!');
+  document.getElementById('refStatus').innerText='Link copied! Keep sharing 🚀';
 }
 </script>
 </body>
